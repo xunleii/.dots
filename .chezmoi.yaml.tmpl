@@ -1,0 +1,23 @@
+sourceDir: {{ .chezmoi.sourceDir }}
+format: yaml
+
+# --- Chezmoi settings ---
+edit:
+  command: code
+git:
+  autoAdd: true
+  autoCommit: false
+  autoPush: false
+diff:
+  format: git
+  pager: diff-so-fancy
+merge:
+  command: code
+  args: ["--diff"]
+
+# --- Template data ---
+data:
+  name: Alexandre Nicolaie
+  full_name: Alexandre Nicolaie dit Clairville
+  email: {{ promptString "What is your workspace email"}}
+  gpg_fingerprint: 157F66A73778881698E79F7F58E8FB093C41F023
