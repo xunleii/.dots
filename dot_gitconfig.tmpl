@@ -16,7 +16,6 @@
   # Enable colors in color-supporting terminals
   ui = auto
 
-
 [alias]
   # List available aliases
   aliases = !git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'
@@ -71,7 +70,7 @@
 [branch]
 	# autoSetupMerge controls whether `git branch` and `git checkout -b`
 	# imply the `--track` option
-	autoSetupMerge = always
+	#autoSetupMerge = local
 	# autoSetupRebase controls whether new branches should be set up to
 	# be rebased upon `git pull`
 	autoSetupRebase = always

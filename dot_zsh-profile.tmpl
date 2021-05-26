@@ -65,6 +65,13 @@ bindkey '^[[1;5C' forward-word                                  # [Ctrl+Left] - 
 bindkey '^H' backward-kill-word                                 # [Ctrl+Delete] - Delete previous word with ctrl+backspace
 bindkey '^[[Z' undo                                             # [Shift+Tab] - Undo last action
 
+# --- Nix & ASDF
+# -----------------------------------------------------------------------------
+[[ ! -f "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]] || . "${HOME}/.nix-profile/etc/profile.d/nix.sh"
+[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/asdf.sh"
+[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || fpath+="${HOME}/.asdf/completions"
+[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/completions/_asdf"
+
 # -- Custom variables/paths
 # -----------------------------------------------------------------------------
 export EDITOR="vim"
@@ -113,10 +120,4 @@ alias k9sx="k9s --readonly=false"
 
 # --- Direnv
 # eval $(direnv hook zsh)
-
-# --- Nix & ASDF
-[[ ! -f "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]] || . "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/asdf.sh"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || fpath+="${HOME}/.asdf/completions"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/completions/_asdf"
 
