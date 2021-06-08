@@ -1,0 +1,10 @@
+#!/bin/env bash
+{{ template "banner.tmpl" "ASDF - update all" }}
+
+for tool in $(cat ~/.tool-versions | cut -d' ' -f1);
+do
+  echo "$(tput bold)> upgrade ${tool}$(tput sgr0)"
+  asdf install "${tool}" latest
+  asdf global "${tool}" "$(asdf latest "${tool}")"
+  echo -e "{{ repeat 60 "-" }}"
+done
