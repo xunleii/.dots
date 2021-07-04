@@ -1,6 +1,6 @@
 {{ template "banner.tmpl" "ZSH - Profiles" }}
 
-# -- Options section
+# --- Options section
 # -----------------------------------------------------------------------------
 setopt correct                                                  # Auto correct mistakes
 setopt extendedglob                                             # Extended globbing. Allows using regular expressions with *
@@ -17,7 +17,7 @@ zstyle ':completion:*' list-colors "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;
 zstyle ':completion:*' rehash true                              # automatically find new executables in path 
 zstyle ':completion:*' menu select
 
-# --- Speed up completions
+# ---- Speed up completions
 zstyle ':completion:*' accept-exact '*(N)'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
@@ -27,7 +27,7 @@ HISTSIZE=10000
 SAVEHIST=5000
 WORDCHARS=${WORDCHARS//\/[&.;]}                                 # Don't consider certain characters part of the word
 
-# -- Color section
+# --- Color section
 # -----------------------------------------------------------------------------
 export LESS_TERMCAP_mb=$'\E[01;32m'
 export LESS_TERMCAP_md=$'\E[01;32m'
@@ -38,7 +38,7 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;36m'
 export LESS=-r
 
-# -- Keybindings section
+# --- Keybindings section
 # -----------------------------------------------------------------------------
 bindkey -e
 bindkey '^[[7~' beginning-of-line                               # [Home] - Go to beginning of line
@@ -65,14 +65,37 @@ bindkey '^[[1;5C' forward-word                                  # [Ctrl+Left] - 
 bindkey '^H' backward-kill-word                                 # [Ctrl+Delete] - Delete previous word with ctrl+backspace
 bindkey '^[[Z' undo                                             # [Shift+Tab] - Undo last action
 
-# --- Nix & ASDF
+# --- Utility configuration
 # -----------------------------------------------------------------------------
-[[ ! -f "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]] || . "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/asdf.sh"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || fpath+="${HOME}/.asdf/completions"
-[[ ! -f "${HOME}/.asdf/asdf.sh" ]] || . "${HOME}/.asdf/completions/_asdf"
 
-# -- Custom variables/paths
+# ---- p10k override
+typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='❯'
+typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
+  # =========================[ Line #1 ]=========================
+  os_icon                 # os identifier
+  dir                     # current directory
+  vcs                     # git status
+  # =========================[ Line #2 ]=========================
+  newline                 # \n
+  prompt_char             # prompt symbol
+)
+
+# remove '❯' on copy/paste
+alias '❯'=''
+
+# ---- Direnv
+# NOTE: must be used before all, in order to manage custom environment
+# eval $(direnv hook zsh)
+(( ${+commands[direnv]} )) && source <(direnv hook zsh)
+
+# ---- Fzf
+(( ! ${+commands[fzf]} )) && source ~/.fzf.zsh
+
+# ---- ASDF
+(( ! ${+commands[asdf]} )) && source "${HOME}/.asdf/asdf.sh"
+(( ${+commands[asdf]} )) && fpath+=(${ASDF_DIR}/completions $fpath)
+
+# --- Custom variables/paths
 # -----------------------------------------------------------------------------
 export EDITOR="vim"
 export VISUAL="vim"
@@ -82,15 +105,15 @@ export GOROOT=/usr/local/go
 export GOPATH=~/.go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
-# -- Custom aliases
+# --- Custom aliases
 # -----------------------------------------------------------------------------
-# --- Utility
+# ---- Utility
 alias ls='ls --color=auto'
 alias la='ls -la'
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias wt='while true; do clear; task; sleep 1; done'
 
-# --- Fasd
+# ---- Fasd
 if (( ${+commands[fasd]} )); then
   source <(command fasd --init auto)
 
@@ -105,19 +128,12 @@ if (( ${+commands[fasd]} )); then
   alias zz='fasd_cd -d -i' # cd with interactive selection
 fi
 
-# --- Kubernetes
+# ---- Kubernetes
 alias k="kubectl"
 alias kn="kubectl config set-context --current --namespace"
 alias kx="kubectl config use-context"
 (( ${+commands[kubectl]} )) && source <(command kubectl completion zsh)
 
-# --- K9S
+# ---- K9s
 alias k9s="k9s --readonly"
 alias k9sx="k9s --readonly=false"
-
-# --- TheFuck
-(( ${+commands[thefuck]} )) && source <(command thefuck --alias)
-
-# --- Direnv
-# eval $(direnv hook zsh)
-

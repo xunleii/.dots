@@ -7,17 +7,28 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# --- Profile management
+# -----------------------------------------------------------------------------
+# ---- Load personal ZSH profile
+[[ -f "${HOME}/.zsh-profile" ]] && . "${HOME}/.zsh-profile"
+
+# ---- Refresh compinit if needed (heavy task) (from https://gist.github.com/ctechols/ca1035271ad134841284#gistcomment-3485425)
+# NOTE: refresh .zcompdump once a day
+autoload -Uz compinit
+setopt extendedglob
+if [[ -n "${ZSH_COMPDUMP}"(#qN.mh+24) ]]; then
+  compinit -i -d "${ZSH_COMPDUMP}"
+  compdump
+else
+  compinit -C
+fi
+
 # --- Local binary folder
 # -----------------------------------------------------------------------------
 # ---- Create and/or export local /bin path
 local localbin="${HOME}/.local/bin"
 [[ -d "${localbin}" ]] || mkdir -p "${localbin}"
 export PATH="${PATH}:${localbin}"
-
-# --- Profile management
-# -----------------------------------------------------------------------------
-# ---- Load personal ZSH profile
-[ -f "${HOME}/.zsh-profile" ] && . "${HOME}/.zsh-profile"
 
 # --- Antigen management
 # -----------------------------------------------------------------------------
@@ -34,3 +45,6 @@ source "${plugin_cache}"
 # -----------------------------------------------------------------------------
 # ---- Load p10k theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# ---- Kitty (must be after compinit)
+(( ${+commands[kitty]} )) && source <(kitty + complete setup zsh)
