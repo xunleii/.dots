@@ -175,7 +175,7 @@
 {{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
 {{ if stat $wkspaces }}
 # ---
-{{-   range (output "ls" "/home/alexandre/Workspace" | trim | split "\n") }}
+{{-   range (output "ls" "/home/alexandre/Workspaces" | trim | split "\n") }}
 [includeIf "gitdir:{{joinPath $wkspaces .}}"]
   path = {{ joinPath $wkspaces . ".gitconfig" }}
 {{   end }}
