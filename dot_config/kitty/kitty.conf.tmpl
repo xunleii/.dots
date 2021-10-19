@@ -373,7 +373,7 @@ url_color               #90a959
 
 #: Terminal bell {{ "{{{" }}
 
-# enable_audio_bell yes
+enable_audio_bell no
 
 #: Enable/disable the audio bell. Useful in environments that require
 #: silence.
@@ -1090,8 +1090,8 @@ map kitty_mod+enter new_window
 
 #: Custom mapping for split layout management::
 
-map ctrl+alt+enter      launch --location=vsplit
-map ctrl+shift+enter    launch --location=hsplit
+map ctrl+alt+enter      launch --location=vsplit --cwd=current
+map ctrl+shift+enter    launch --location=hsplit --cwd=current
 map ctrl+shift+alt+m    layout_action rotate
 
 map shift+up move_window up
