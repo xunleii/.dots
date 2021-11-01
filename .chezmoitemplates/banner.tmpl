@@ -1,10 +1,16 @@
+{{- $title := "XNLI-Workspace" -}}
+{{- if kindIs "map" . -}}{{- $title = .Title -}}{{- end -}}
+{{- $title = (regexReplaceAll "(.)" $title "${1} ") -}}
+
+{{- $subtitle := . -}}
+{{- if kindIs "map" . -}}{{- $subtitle = .Subtitle -}}{{- end -}}
 #                                       __
 #                                     /\\ \
 #                                   /\\ \\ \\
 #                                   \// // //
 #                                     \//_/
 #
-#                          X N L I - W o r k s p a c e
-# {{ repeat (div (sub 77 (len .)) 2 | int) " " }}{{ . }}
+# {{ repeat (div (sub 77 (len $title)) 2 | int) " " }}{{ $title }}
+# {{ repeat (div (sub 77 (len $subtitle)) 2 | int) " " }}{{ $subtitle }}
 #
 # -----------------------------------------------------------------------------
