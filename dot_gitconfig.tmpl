@@ -18,7 +18,9 @@
 
 [alias]
   # List available aliases
-  aliases = config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'
+  aliases = "!git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'"
+  # Show default branch
+  main = branch --remotes --list "'*/HEAD'" --format "'%(symref:lstrip=3)'"
   # Display tree-like log, because default log is a pain…
   lg = log --graph --date=relative --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%an %ad)%Creset'
   # Useful when you have to update your last commit
