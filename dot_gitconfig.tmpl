@@ -63,8 +63,8 @@
   # editor = code --wait # TODO: check if vim can do that much better than vscode
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
-  # Paginate output with `diff-so-fancy` by default
-  pager = {{- if lookPath "diff-so-fancy" }} diff-so-fancy |{{ end }} less --tabs=4 -RFX
+  # Paginate output with `delta` by default
+  pager = {{- if lookPath "delta" }} delta --side-by-side |{{ end }} less --tabs=4 -RFX
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 

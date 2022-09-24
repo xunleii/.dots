@@ -1,11 +1,13 @@
 {{ template "banner.tmpl" "Fish - Profiles" }}
+# --- Global path section
+# -----------------------------------------------------------------------------
+fish_add_path $HOME/.local/bin
+
 # --- Keybindings section
 # -----------------------------------------------------------------------------
-if command -sq fzf_configure_bindings
-  fzf_configure_bindings --directory=\cf --git_log=\cg --git_status=\cs   # [Ctrl+F] Find file in directory
-                                                                          # [Ctrl+G] Find file in git history
-                                                                          # [Ctrl+S] Find file in git status
-end
+fzf_configure_bindings --directory=\cf --git_log=\cg --git_status=\cs   # [Ctrl+F] Find file in directory
+                                                                        # [Ctrl+G] Find file in git history
+                                                                        # [Ctrl+S] Find file in git status
 
 # --- Tide section
 # -----------------------------------------------------------------------------
@@ -49,17 +51,22 @@ end
 
 # - golang
 if command -sq go
-  set --global GOROOT "$HOME/.asdf/installs/golang/"(asdf current golang | awk '{{ "{{" }} print $2 }}')"/go"
-  set --global GOPATH "$HOME/.local/share/go"
+  set --global --export GOROOT "$HOME/.asdf/installs/golang/"(asdf current golang | awk '{{ "{{" }} print $2 }}')"/go"
+  set --global --export GOPATH "$HOME/.local/share/go"
   fish_add_path $GOROOT/bin $GOPATH/bin
+end
+
+# - rust
+if command -sq rust
+  fish_add_path --global $HOME/.cargo/env
 end
 
 # --- Custom variables/paths
 # -----------------------------------------------------------------------------
-set --global EDITOR "nvim"
-set --global VISUAL $EDITOR
-set --global GIT_EDITOR $EDITOR
-set --global TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
+set --global --export EDITOR "nvim"
+set --global --export VISUAL $EDITOR
+set --global --export GIT_EDITOR $EDITOR
+set --global --export TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
 
 # --- Custom aliases/abbreviations
 # -----------------------------------------------------------------------------
@@ -72,6 +79,7 @@ end
 # - kitty abbreviations
 if command -sq kitty
   abbr --add --global kycat kitty +kitten icat
+  abbr --add --global icat kitty +kitten icat
   abbr --add --global kydiff kitty +kitten diff
 end
 
@@ -102,7 +110,7 @@ abbr --add --global g git
 
 abbr --add --global gl git pull
 abbr --add --global gp git push
-abbr --add --global gpf git push -f
+abbr --add --global gpf git push --force-with-lease
 abbr --add --global grb git rebase
 abbr --add --global grba git rebase --abort
 abbr --add --global grbc git rebase --continue
@@ -112,11 +120,6 @@ abbr --add --global gsc git switch --create
 
 # - grep abbreviations
 alias grep "grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}"
-if command -sq rg
-  functions --erase grep
-
-  abbr --add --global grep rg
-end
 
 # - ls abbreviations
 alias ls "ls --color=auto"
@@ -124,12 +127,7 @@ abbr --add --global ll ls -lh
 abbr --add --global la ls -lah
 
 if command -sq exa
-  functions --erase ls
-
-  alias exa "exa --icons --grid"
-  abbr --add --global ls exa
-  abbr --add --global ll exa -lh
-  abbr --add --global la exa -lah
+  abbr --add --global exa "exa --icons --grid"
 end
 
 # - vim abbreviation
