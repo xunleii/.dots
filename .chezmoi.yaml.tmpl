@@ -2,12 +2,6 @@ sourceDir: {{ .chezmoi.sourceDir }}
 format: yaml
 
 # --- Chezmoi settings ---
-cd:
-  command: zsh
-
-edit:
-  command: code
-
 git:
   autoAdd: true
   autoCommit: false
@@ -26,6 +20,3 @@ data:
   name: Alexandre Nicolaie
   full_name: Alexandre Nicolaie dit Clairville
   email: {{ promptString "What is your workspace email"}}
-  gpg:
-    enable_git_sign: {{ promptBool "Enable GPG sign for git" }}
-    fingerprint: 157F66A73778881698E79F7F58E8FB093C41F023

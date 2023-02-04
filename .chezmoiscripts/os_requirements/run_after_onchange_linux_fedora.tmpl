@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          X N L I - W o r k s p a c e
+#                      Chezmoi - Environment installer
+#
+# -----------------------------------------------------------------------------
+# Script library
+{{ template "bash_library" . }}
+
+# -----------------------------------------------------------------------------
+only_run_on! "linux_fedora"
+
+if ! (@ command -v 'tig' && @ command -v 'delta'); then
+  title 'Install missing GIT tools (`tig` and `git-delta`)'
+  (
+    sudo dnf install tig git-delta
+  )
+fi

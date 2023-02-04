@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          X N L I - W o r k s p a c e
+#                      Chezmoi - Environment installer
+#
+# -----------------------------------------------------------------------------
+# Script library
+{{ template "bash_library" . }}
+
+# -----------------------------------------------------------------------------
+
+# Install ASDF
+if [ ! -d "${HOME}/.asdf" ]; then
+  title 'Install `asdf` package manager'
+
+  asdf_version=v0.11.1
+  git clone https://github.com/asdf-vm/asdf.git "${HOME}/.asdf" --branch "${asdf_version}"
+fi
+
+# Generates dedicated SSH keys for git
+if [ ! -f "${HOME}/.ssh/git.ed25519.pub" ]; then
+  title "Generate dedicated SSH key for git"
+
+  ssh-keygen -t ed25519 -C "$(hostname)_GitOnly" -f "${HOME}/.ssh/git.ed25519"
+
+  echo "SSH public key: $(tput bold)$(cat "${HOME}/.ssh/git.ed25519.pub")$(tput sgr0)"
+  echo "Please copy the previous key and press Enter."
+  read
+
+  xdg-open "https://github.com/settings/ssh/new?ssh_key"
+fi

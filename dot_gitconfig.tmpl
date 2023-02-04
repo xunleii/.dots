@@ -10,7 +10,6 @@
 [user]
   email = {{ .email }}
   name = {{ .full_name }}
-{{- if .gpg.enable_git_sign }}  signingkey = {{ .gpg.fingerprint }}{{ end }}
 
 [color]
   # Enable colors in color-supporting terminals

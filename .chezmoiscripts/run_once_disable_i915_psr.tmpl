@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          X N L I - W o r k s p a c e
+#                      Chezmoi - Environment installer
+#
+# -----------------------------------------------------------------------------
+# Script library
+{{ template "bash_library" . }}
+
+# -----------------------------------------------------------------------------
+# Disable Panel Self Refresh (PSR) on Intel graphic card (issue that freeze the current UI)
+
+# NOTE: only enable this script if the graphic card uses `i915` drivers
+only_run_on! "linux"
+if ! lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep 'Kernel driver in use' | grep 'i915' &> /dev/null; then
+  exit
+fi
+
+# shellcheck disable=SC2016
+title 'Disable `Panel Self Refresh` (PSR) on Intel graphic card (See https://bugzilla.redhat.com/show_bug.cgi?id=2055360)'
+(
+  # https://bugzilla.redhat.com/show_bug.cgi?id=2055360
+  cat <<EOF | sudo tee /etc/modprobe.d/i915.conf
+# Disable Panel Self Refresh (PSR) feature on i915
+# See https://bugzilla.redhat.com/show_bug.cgi?id=2055360
+options i915 enable_psr=0
+EOF
+) > /dev/null
