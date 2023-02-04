@@ -10,27 +10,43 @@
 #
 # -----------------------------------------------------------------------------
 # Script library
-{{ template "bash_library" . }}
+{{ template "libbash/common" . }}
+{{ template "libbash/command" . }}
 
 # -----------------------------------------------------------------------------
 
-# Install ASDF
+# Install asdf
 if [ ! -d "${HOME}/.asdf" ]; then
   title 'Install `asdf` package manager'
-
-  asdf_version=v0.11.1
-  git clone https://github.com/asdf-vm/asdf.git "${HOME}/.asdf" --branch "${asdf_version}"
+  (
+    asdf_version=v0.11.1
+    git clone https://github.com/asdf-vm/asdf.git "${HOME}/.asdf" --branch "${asdf_version}"
+  )
 fi
 
 # Generates dedicated SSH keys for git
 if [ ! -f "${HOME}/.ssh/git.ed25519.pub" ]; then
   title "Generate dedicated SSH key for git"
+  (
+    ssh-keygen -t ed25519 -C "$(hostname)_GitOnly" -f "${HOME}/.ssh/git.ed25519"
 
-  ssh-keygen -t ed25519 -C "$(hostname)_GitOnly" -f "${HOME}/.ssh/git.ed25519"
+    echo "SSH public key: $(tput bold)$(cat "${HOME}/.ssh/git.ed25519.pub")$(tput sgr0)"
+    echo "Please copy the previous key and press Enter."
+    read
 
-  echo "SSH public key: $(tput bold)$(cat "${HOME}/.ssh/git.ed25519.pub")$(tput sgr0)"
-  echo "Please copy the previous key and press Enter."
-  read
+    xdg-open "https://github.com/settings/ssh/new?ssh_key"
+  )
+fi
 
-  xdg-open "https://github.com/settings/ssh/new?ssh_key"
+# Install Caskaydia Cove Nerd Font
+if [[ ! -f "${HOME}/.local/share/fonts/Caskaydia Cove Nerd Font Complete Light.otf" ]]; then
+  title "Install Caskaydia Cove Nerd Font"
+  (
+    @ pushd "$(mktemp --directory)" || exit
+    @ wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/CascadiaCode.zip
+    @ unzip CascadiaCode.zip
+    @ mkdir --parent ~/.local/share/fonts/
+    @ mv *.otf ~/.local/share/fonts/
+    @ popd || exit
+  )
 fi

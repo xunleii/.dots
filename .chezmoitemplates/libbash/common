@@ -13,14 +13,9 @@ function only_run_on!() {
   *) exit 1 ;;
   esac
 }
-# NOTE: quick shortcut for silent actions
-function @() {
-  set -o errexit;
-  set -o errtrace;
-  set -o pipefail;
 
-  eval "$@" &> /dev/null
-}
+# NOTE: quick shortcut for silent actions
+function @() { eval "$@" &> /dev/null; }
 
 function h1() { echo "$(tput bold)- $1$(tput sgr0)"; }; function title() { h1 "$@"; }
 function h2() { echo "$(tput bold)-- $1$(tput sgr0)"; }; function subtitle() { h2 "$@"; }
