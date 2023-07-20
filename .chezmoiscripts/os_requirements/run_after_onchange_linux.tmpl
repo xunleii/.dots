@@ -14,7 +14,7 @@
 {{ template "libbash/command" . }}
 
 # -----------------------------------------------------------------------------
-only_run_on! "linux"
+only_run_on! "linux" || exit 0
 
 if ! command_missing? 'fish'; then
   if [[ "$(cat /etc/passwd | grep "^${USER}:" | cut -d: -f 7)" != "$(which fish)" ]]; then
