@@ -1,0 +1,22 @@
+function command_missing?() { for cmd in "$@"; do @ command -v "${cmd}" || return 0; done; return 1; }
+
+function os_pkg_add() {
+    command_missing? "$1" || return 0
+
+    if run_on? "debian" || run_on? "ubuntu"; then
+        sudo apt-get install --assume-yes "$1"
+    elif run_on? "archlinux"; then
+        sudo pacman -S --noconfirm "$1"
+    elif run_on? "fedora"; then
+        sudo dnf install --assumeyes "$1"
+    elif run_on? "centos"; then
+        sudo yum install --assumeyes "$1"
+    elif run_on? "opensuse"; then
+        sudo zypper install --non-interactive "$1"
+    elif run_on? "alpine"; then
+        sudo apk add "$1"
+    else
+        echo "ERROR: Unsupported OS: ${sys_os}"
+        exit 1
+    fi
+}
