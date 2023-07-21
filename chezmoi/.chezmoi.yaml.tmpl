@@ -1,0 +1,40 @@
+sourceDir: {{ .chezmoi.sourceDir }}
+format: yaml
+
+# --- Chezmoi settings ---
+git:
+  autoAdd: true
+  autoCommit: true
+  autoPush: false
+  commitMessageTemplate: |
+    :floppy_disk: update dotfiles
+
+    {{ "{{" }}- range .Ordinary -}}
+    {{ "{{" }} if and (eq .X 'A') (eq .Y '.') -}}- Add {{ "{{" }} .Path | targetRelPath }}
+    {{ "{{" }} else if and (eq .X 'D') (eq .Y '.') -}}- Remove {{ "{{" }} .Path | targetRelPath }}
+    {{ "{{" }} else if and (eq .X 'M') (eq .Y '.') -}}- Update {{ "{{" }} .Path | targetRelPath }}
+    {{ "{{" }} else }}{{ "{{" }}with (printf "unsupported XY: %q" (printf "%c%c" .X .Y)) }}{{ "{{" }} fail . }}{{ "{{" }} end }}
+    {{ "{{" }} end }}
+    {{ "{{" }}- end -}}
+
+    {{ "{{" }}- range .RenamedOrCopied -}}
+    {{ "{{" }} if and (eq .X 'R') (eq .Y '.') }}- Change attributes of {{ "{{" }} .Path | targetRelPath }}
+    {{ "{{" }} else }}{{ "{{" }}with (printf "unsupported XY: %q" (printf "%c%c" .X .Y)) }}{{ "{{" }} fail . }}{{ "{{" }} end }}
+    {{ "{{" }} end }}
+    {{ "{{" }}- end -}}
+
+    {{ "{{" }}- range .Unmerged -}}
+    {{ "{{" }} fail "unmerged files" }}
+    {{ "{{" }}- end -}}
+
+    {{ "{{" }}- range .Untracked -}}
+    {{ "{{" }} fail "untracked files" }}
+    {{ "{{" }}- end -}}
+
+diff:
+  format: git
+
+# --- Template data ---
+data:
+  name: {{ promptString "What is your GIT name" }}
+  email: {{ promptString "What is your GIT email" }}

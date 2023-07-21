@@ -1,1 +1,2 @@
 function command_missing?() { for cmd in "$@"; do @ command -v "${cmd}" || return 0; done; return 1; }
+
