@@ -1,3 +1,14 @@
+[".asdf"]
+type = "git-repo"
+url = "https://github.com/asdf-vm/asdf.git"
+
 [".asdf/plugins/zoxide"]
 type = "git-repo"
+exact = true
 url = "https://github.com/nyrst/asdf-zoxide.git"
+
+[".local/bin/fzf"]
+type = "archive-file"
+url = "https://github.com/junegunn/fzf/releases/download/{{ .fzf_version }}/fzf-{{ .fzf_version }}-{{ .chezmoi.os }}_{{ .chezmoi.arch }}.tar.gz"
+path = "fzf"
+executable = true

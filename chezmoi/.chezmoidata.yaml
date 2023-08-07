@@ -1,0 +1,3 @@
+# --- application version
+# renovate: datasource=github-tags depName=junegunn/fzf
+fzf_version: 0.42.0
