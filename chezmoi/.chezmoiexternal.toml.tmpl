@@ -10,6 +10,29 @@ type = "git-repo"
 exact = true
 url = "https://github.com/nyrst/asdf-zoxide.git"
 
+# --- BAT installation
+[".local/bin/bat"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
+path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/bat"
+{{ end }}
+executable = true
+
+[".local/share/man/man1/bat-find.1"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
+path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/bat.1"
+{{ end }}
+
+[".local/config/fish/completions/bat.fish"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
+path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/autocomplete/bat.fish"
+{{ end }}
+
 # --- DIRENV installation
 [".local/bin/direnv"]
 type = "file"
