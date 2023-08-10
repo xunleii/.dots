@@ -33,6 +33,23 @@ url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version
 path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/autocomplete/bat.fish"
 {{ end }}
 
+# --- BTOP installation
+[".local/bin/btop"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/aristocratos/btop/releases/download/{{ .packages.btop_version }}/btop-x86_64-linux-musl.tbz"
+{{ end }}
+path = "./btop/bin/btop"
+executable = true
+
+[".config/btop/themes"]
+type = "archive"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/aristocratos/btop/releases/download/{{ .packages.btop_version }}/btop-x86_64-linux-musl.tbz"
+{{ end }}
+include = ["./btop/themes/*"]
+stripComponents = 3
+
 # --- DELTA installation
 [".local/bin/delta"]
 type = "archive-file"
