@@ -1,0 +1,8 @@
+#!/bin/env fish
+{{ template "banner.tmpl" "Fish - Post-install script (fisher)" -}}
+# hashlock: {{ include "dot_config/private_fish/fish_plugins" | sha256sum }}
+
+if ! command -sq fisher
+    curl -sL https://git.io/fisher | source
+end
+fisher update

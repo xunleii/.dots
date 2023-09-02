@@ -1,0 +1,7 @@
+#!/bin/env fish
+{{ template "banner.tmpl" "Fish - Post-install script (asdf)" }}
+# hashlock: {{ include "dot_tool_versions" | sha256sum }}
+
+asdf install asdf-helper latest
+asdf shell asdf-helper latest
+asdf-helper install
