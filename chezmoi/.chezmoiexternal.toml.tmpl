@@ -64,12 +64,6 @@ path = "delta-{{ .packages.delta_version }}-x86_64-unknown-linux-gnu/delta"
 {{ end }}
 executable = true
 
-# --- DIRENV installation
-[".local/bin/direnv"]
-type = "file"
-url = "https://github.com/direnv/direnv/releases/download/{{ .packages.direnv_version }}/direnv.{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
-executable = true
-
 # --- FD-FIND installation
 [".local/bin/fd"]
 type = "archive-file"
