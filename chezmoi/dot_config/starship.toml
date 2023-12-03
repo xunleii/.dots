@@ -26,7 +26,7 @@ vimcmd_visual_symbol = "[⑆](purple bold)›"
 [cmd_duration]
 disabled = false
 format = "[]($style)[[ ]($style inverted)$duration]($style inverted)[]($style) "
-min_time = 1
+min_time = 750
 style = "bright-yellow"
 
 [conda]
