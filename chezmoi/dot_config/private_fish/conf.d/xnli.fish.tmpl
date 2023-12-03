@@ -65,6 +65,13 @@ if command -sq chezmoi
   chezmoi completion fish | source
 end
 
+# - github CLI
+if command -sq gh
+  abbr --add --global !! gh copilot suggest -t shell
+  abbr --add --global git! gh copilot suggest -t git
+  abbr --add --global gh! gh copilot suggest -t gh
+end
+
 # - golang
 if command -sq go
   set --global --export GOROOT "$HOME/.asdf/installs/golang/"(asdf current golang | awk '{{ "{{" }} print $2 }}')"/go"
