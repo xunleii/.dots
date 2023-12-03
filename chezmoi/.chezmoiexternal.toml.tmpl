@@ -93,3 +93,10 @@ type = "archive-file"
 url = "https://github.com/junegunn/fzf/releases/download/{{ .packages.fzf_version }}/fzf-{{ .packages.fzf_version }}-{{ .chezmoi.os }}_{{ .chezmoi.arch }}.tar.gz"
 path = "fzf"
 executable = true
+
+# --- Starship installation
+[".local/bin/starship"]
+type = "archive-file"
+url = "https://github.com/starship/starship/releases/download/{{ .packages.starship_version }}/starship-x86_64-unknown-linux-gnu.tar.gz"
+path = "starship"
+executable = true
