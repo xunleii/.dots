@@ -1,5 +1,5 @@
 add_newline = false
-format = "$line_break$os$time$git_branch$git_status$fill $conda$python$vagrant$fill $aws$azure$gcloud$kubernetes$fill $cmd_duration$status $line_break$line_break$sudo$username$hostname$directory$character"
+format = "$line_break$os$git_branch$git_status$fill $conda$python$vagrant$fill $aws$azure$gcloud$kubernetes$fill$cmd_duration$status$line_break$line_break$sudo$username$hostname$directory$character"
 
 [aws]
 disabled = false
@@ -25,7 +25,7 @@ vimcmd_visual_symbol = "[⑆](purple bold)›"
 
 [cmd_duration]
 disabled = false
-format = "[]($style)[[ ]($style inverted)$duration]($style inverted)[]($style) "
+format = " []($style)[[ ]($style inverted)$duration]($style inverted)[]($style) "
 min_time = 750
 style = "bright-yellow"
 
@@ -90,7 +90,7 @@ symbol = "󱃾"
 
 [os]
 disabled = false
-format = "[](fg:$style)[$symbol]($style inverted)[]($style bg:bright-black)"
+format = "[](fg:$style)[$symbol]($style inverted)[]($style) "
 style = "blue"
 
   [os.symbols]
@@ -139,7 +139,7 @@ symbol = "󰌠"
 
 [status]
 disabled = false
-format = "[$status $symbol]($style)"
+format = " [$status $symbol]($style) "
 map_symbol = true
 not_executable_symbol = "󰮘"
 not_found_symbol = "󰍉"
@@ -159,9 +159,9 @@ format = "[!](red)"
 
 [time]
 disabled = false
-format = "[ $time]($style bg:bright-white inverted)[]($style) "
-style = "bright-black"
-time_format = "%H:%M"
+format = "[$time]($style)"
+style = "bright-white"
+time_format = "%H:%M:%S"
 
 [username]
 disabled = false
