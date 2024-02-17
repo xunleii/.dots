@@ -94,6 +94,22 @@ url = "https://github.com/junegunn/fzf/releases/download/{{ .packages.fzf_versio
 path = "fzf"
 executable = true
 
+# --- GIT-ABSORB installation
+[".local/bin/git-absorb"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/tummychow/git-absorb/releases/download/{{ .packages.git_absorb_version }}/git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl.tar.gz"
+path = "git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl/git-absorb"
+{{ end }}
+executable = true
+
+[".local/share/man/man1/git-absorb.1"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/tummychow/git-absorb/releases/download/{{ .packages.git_absorb_version }}/git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl.tar.gz"
+path = "git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl/doc/git-absorb.1"
+{{ end }}
+
 # --- Starship installation
 [".local/bin/starship"]
 type = "archive-file"
