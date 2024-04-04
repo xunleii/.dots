@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          X N L I - W o r k s p a c e
+#                      Chezmoi - Environment installer
+#
+# -----------------------------------------------------------------------------
+# Script library
+{{ template "libbash/common" . }}
+{{ template "libbash/command" . }}
+
+# -----------------------------------------------------------------------------
+only_run_on! "linux_debian" || exit 0
+
+if command_missing? 'tig' 'delta'; then
+  title 'Install missing GIT tools (`tig` and `git-delta`)'
+  (
+    sudo apt install --yes tig
+
+    _=$(mktemp -d)
+    pushd ${}
+
+    asset_url=$(
+      curl --silent https://api.github.com/repos/dandavison/delta/releases/latest \
+      | jq '.assets[] | select(.browser_download_url | test("git-delta_[^_]+_amd64.deb")) | .browser_download_url' --raw-output
+    )
+    curl --output git-delta.deb
+    sudo apt install --yes ./git-delta.deb
+
+    popd
+    rm --recursive ${_}
+  )
+fi
+
+if command_missing? 'kitty' 'fish' 'fzf' 'fd' 'nvim' 'direnv'; then
+  title 'Install missing Terminal tools (`kitty`, `fish`, `nvim`, `direnv` and `fzf`)'
+  (
+    sudo apt install kitty fish fzf fd-find util-linux-user neovim direnv
+  )
+fi
