@@ -1,4 +1,0 @@
-[submodule "dot_asdf"]
-	path = dot_asdf
-	url = https://github.com/asdf-vm/asdf.git
-	branch = v0.8.0
