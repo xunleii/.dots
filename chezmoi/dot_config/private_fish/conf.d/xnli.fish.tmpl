@@ -45,6 +45,21 @@ if command -sq direnv
   end
 end
 
+# - starship prompt
+if command -sq starship
+  function starship_transient_prompt_func
+    starship module line_break
+    starship module sudo
+    starship module username
+    starship module hostname
+    starship module directory
+    starship module character
+  end
+
+  starship init fish --print-full-init | source
+  enable_transience
+end
+
 # - chezmoi
 if command -sq chezmoi
   chezmoi completion fish | source
