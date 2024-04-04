@@ -17,7 +17,7 @@ function run_on?() {
   *) return 1 ;;
   esac
 }
-function run_on_docker?() { set -x; test -f /proc/1/cgroup && [[ "$(</proc/1/cgroup)" = *:docker:* ]] }
+function run_on_docker?() { set -x; test -f /proc/1/cgroup && [[ "$(</proc/1/cgroup)" = *:docker:* ]]; }
 
 # NOTE: quick shortcut for silent actions
 function @() { eval "$@" &> /dev/null; }
