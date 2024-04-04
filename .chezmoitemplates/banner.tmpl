@@ -1,6 +1,6 @@
 {{- $title := "XNLI-Workspace" -}}
 {{- if kindIs "map" . -}}{{- $title = .Title -}}{{- end -}}
-{{- $title = (regexReplaceAll "(.)" $title "${1} ") -}}
+{{- $title = (trim (regexReplaceAll "(.)" $title "${1} ")) -}}
 
 {{- $subtitle := . -}}
 {{- if kindIs "map" . -}}{{- $subtitle = .Subtitle -}}{{- end -}}
