@@ -107,12 +107,6 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # --- Custom aliases
 # -----------------------------------------------------------------------------
-# ---- Utility
-alias ls='ls --color=auto'
-alias la='ls -la'
-alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
-alias wt='while true; do clear; task; sleep 1; done'
-
 # ---- Fasd
 if (( ${+commands[fasd]} )); then
   source <(command fasd --init auto)
@@ -128,12 +122,22 @@ if (( ${+commands[fasd]} )); then
   alias zz='fasd_cd -d -i' # cd with interactive selection
 fi
 
+# ---- K9s
+alias k9s="k9s --readonly"
+alias k9sx="k9s --readonly=false"
+
+# ---- Kitty
+alias kycat="kitty +kitten icat"
+alias kydiff="kitty +kitten diff"
+
 # ---- Kubernetes
 alias k="kubectl"
 alias kn="kubectl config set-context --current --namespace"
 alias kx="kubectl config use-context"
 (( ${+commands[kubectl]} )) && source <(command kubectl completion zsh)
 
-# ---- K9s
-alias k9s="k9s --readonly"
-alias k9sx="k9s --readonly=false"
+# ---- Utility
+alias ls='ls --color=auto'
+alias la='ls -la'
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+alias wt='while true; do clear; task; sleep 1; done'
