@@ -10,14 +10,22 @@
 #
 # -----------------------------------------------------------------------------
 # Script library
-{{ template "bash_library" . }}
+{{ template "libbash/common" . }}
+{{ template "libbash/command" . }}
 
 # -----------------------------------------------------------------------------
 only_run_on! "linux_fedora"
 
-if ! (@ command -v 'tig' && @ command -v 'delta'); then
+if command_missing? 'tig' 'delta'; then
   title 'Install missing GIT tools (`tig` and `git-delta`)'
   (
     sudo dnf install tig git-delta
+  )
+fi
+
+if command_missing? 'kitty' 'fish' 'fzf' 'fd'; then
+  title 'Install missing Terminal tools (`kitty`, `fish` and `fzf`)'
+  (
+    sudo dnf install kitty fish fzf fd-find util-linux-user
   )
 fi
