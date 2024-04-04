@@ -5,15 +5,17 @@
 #                                   \// // //
 #                                     \//_/
 #
-#                          X N L I - W o r k s p a c e
+#                          A N D C - W o r k s p a c e
 #                      Chezmoi - Environment installer
 #
 # -----------------------------------------------------------------------------
 # Script library
-{{ template "libbash/common" . }}
+{{ template "libshell/common" . }}
 
 # -----------------------------------------------------------------------------
 # Install WhiteSur Gnome theme.
+run_on_docker? && exit 0 # NOTE: disable this script if the current environment is a docker container
+
 only_run_on! "linux_amd64" || exit 0
 if ! command -v gnome-shell &> /dev/null; then
   echo "No GNOME environment found... aborted"

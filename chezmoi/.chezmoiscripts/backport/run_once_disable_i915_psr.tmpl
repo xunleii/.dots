@@ -5,20 +5,21 @@
 #                                   \// // //
 #                                     \//_/
 #
-#                          X N L I - W o r k s p a c e
+#                          A N D C - W o r k s p a c e
 #                      Chezmoi - Environment installer
 #
 # -----------------------------------------------------------------------------
 # Script library
-{{ template "libbash/common" . }}
+{{ template "libshell/common" . }}
 
 # -----------------------------------------------------------------------------
 # Disable Panel Self Refresh (PSR) on Intel graphic card (issue that freeze the current UI)
+run_on_docker? && exit 0 # NOTE: disable this script if the current environment is a docker container
 
 # NOTE: only enable this script if the graphic card uses `i915` drivers
-only_run_on! "linux" || exit 0
-if ! lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep 'Kernel driver in use' | grep 'i915' &> /dev/null; then
-  exit
+run_on? "linux" || exit 0
+if ! (lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep 'Kernel driver in use' | grep 'i915') &> /dev/null; then
+  exit 0
 fi
 
 # shellcheck disable=SC2016

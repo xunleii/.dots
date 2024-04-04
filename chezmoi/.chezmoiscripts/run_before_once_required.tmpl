@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          A N D C - W o r k s p a c e
+#                      Chezmoi - Environment installer
+#
+# -----------------------------------------------------------------------------
+# Description: install all required command used by other scripts
+
+# -----------------------------------------------------------------------------
+# Script library
+{{ template "libshell/common" . }}
+{{ template "libshell/pkg" . }}
+
+# -----------------------------------------------------------------------------
+if run_on? "linux"; then
+  title "Install all required packages to run all installation scripts"
+  os_pkg_add "jq" # JQ is required by libshell/packages to manage github releases
+  os_pkg_add "pciutils" # PCIUtils is required by libshell/packages to detect PCI devices
+else
+  error "All scripts are only compatible with Linux (not with {{ .chezmoi.os }})"
+  exit 1
+fi

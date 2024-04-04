@@ -1,0 +1,30 @@
+# shellcheck disable=SC2034
+sys_os="{{ .chezmoi.os }}"
+sys_os_arch="{{ .chezmoi.os }}_{{ .chezmoi.arch }}"
+{{- if .chezmoi.osRelease }}
+sys_os_release="{{ .chezmoi.os }}_{{ .chezmoi.osRelease.id }}"
+sys_os_release_arch="{{ .chezmoi.os }}_{{ .chezmoi.osRelease.id }}_{{ .chezmoi.arch }}"
+sys_os_release_slug="{{ .chezmoi.osRelease.id }}"
+{{- end }}
+
+function run_on?() {
+  case $1 in
+  "${sys_os}") ;;
+  "${sys_os_arch}") ;;
+  "${sys_os_release}") ;;
+  "${sys_os_release_arch}") ;;
+  "${sys_os_release_slug}") ;;
+  *) return 1 ;;
+  esac
+}
+function run_on_docker?() { set -x; test -f /proc/1/cgroup && [[ "$(</proc/1/cgroup)" = *:docker:* ]] }
+
+# NOTE: quick shortcut for silent actions
+function @() { eval "$@" &> /dev/null; }
+function tput!() { tput 2> /dev/null; }
+
+function h1() { echo "$(tput! bold)- $1$(tput! sgr0)"; }; function title() { h1 "$@"; }
+function h2() { echo "$(tput! bold)-- $1$(tput! sgr0)"; }; function subtitle() { h2 "$@"; }
+function h3() { echo "$(tput! bold)--- $1$(tput! sgr0)"; }
+function h4() { echo "$(tput! bold)---- $1$(tput! sgr0)"; }
+function h5() { echo "$(tput! bold)----- $1$(tput! sgr0)"; }
