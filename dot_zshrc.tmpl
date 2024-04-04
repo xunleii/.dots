@@ -1,0 +1,36 @@
+{{ template "banner.tmpl" "ZSH - Run configuration" }}
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block, everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# --- Local binary folder
+# -----------------------------------------------------------------------------
+# ---- Create and/or export local /bin path
+local localbin="${HOME}/.local/bin"
+[[ -d "${localbin}" ]] || mkdir -p "${localbin}"
+export PATH="${PATH}:${localbin}"
+
+# --- Profile management
+# -----------------------------------------------------------------------------
+# ---- Load personal ZSH profile
+[ -f "${HOME}/.zsh-profile" ] && . "${HOME}/.zsh-profile"
+
+# --- Antigen management
+# -----------------------------------------------------------------------------
+# ---- Install antibody if not exists
+(( $+commands[antibody] )) || (curl -sfL git.io/antibody | sh -s - -b "${HOME}/.local/bin") 
+
+# ---- Generates plugin cache to speed up ZSH init
+local plugin_cache="${HOME}/.zsh-plugins-loaded"
+([[ ! -f "{$plugin_cache}" ]] || [[ "${HOME}/.zsh-plugins" -nt "${plugin_cache}" ]]) && \
+  (head -n 11 "${HOME}/.zsh-plugins" > "${plugin_cache}" && antibody bundle < "${HOME}/.zsh-plugins" >> "${plugin_cache}")
+source "${plugin_cache}"
+
+# --- Theme management
+# -----------------------------------------------------------------------------
+# ---- Load p10k theme
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
