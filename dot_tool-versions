@@ -1,5 +1,5 @@
-bitwarden v1.16.0
-gcloud 301.0.0
-github-cli 1.10.3
+bitwarden 1.16.0
+gcloud 343.0.0
+github-cli 1.11.0
 kubectl 1.21.1
-terraform 0.15.4
+terraform 1.0.0
