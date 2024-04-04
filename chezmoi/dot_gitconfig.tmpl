@@ -73,10 +73,13 @@
   whitespace = -trailing-space
 
 # ---
+[init]
+  defaultBranch = main
+
 [branch]
   # autoSetupMerge controls whether `git branch` and `git checkout -b`
   # imply the `--track` option
-  #autoSetupMerge = always
+  autoSetupMerge = always
   # autoSetupRebase controls whether new branches should be set up to
   # be rebased upon `git pull`
   autoSetupRebase = always
@@ -154,6 +157,8 @@
   # Disable decorate for reflog
   # (because there is no dedicated `reflog` section available)
   decorate = false
+  # Show GPG signature in git log
+  showSignature = true
 
 [status]
   # Display submodule rev change summaries in status
@@ -164,6 +169,7 @@
 [tag]
   # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
   sort = version:refname
+
 [versionsort]
   suffix = -pre
   suffix = .pre

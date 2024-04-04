@@ -134,11 +134,17 @@ abbr --add --global gsc git switch --create
 # - grep abbreviations
 alias grep "grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}"
 
+# - lazygit abbreviations
+if command -sq lazygit
+  abbr --add --global lg lazygit
+end
+
 # - ls abbreviations
 alias ls "ls --color=auto"
 abbr --add --global ll ls -lh
 abbr --add --global la ls -lah
 
+# - exa abbreviations
 if command -sq exa
   abbr --add --global exa "exa --icons --grid"
 end
