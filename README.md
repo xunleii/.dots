@@ -19,14 +19,7 @@ sudo apt install curl git zsh diff-so-fancy
 
 - [`kitty`](https://sw.kovidgoyal.net/kitty/) *(alternative to terminator)*: GPU powered terminal with many features
   - *NOTE: `sudo update-alternatives --config x-terminal-emulator` to update default terminal*
-- `terminator`: python-based terminator (allows split & broadcast)
-  - with custom icon 
-    ```
-    mkdir -p ${HOME}/.icons/Numix/
-    wget https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/blob/master/Papirus/64x64/apps/terminator.svg -O ${HOME}/.icons/Numix/terminator.svg
-    cat /usr/share/applications/terminator.desktop | sed "s|Icon=terminal|Icon=${HOME}/.icons/Numix/terminator.svg|" > ${HOME}/.local/share/applications/terminator.desktop
-    ```
-  
+
 ### Shell tools
 
 - [`direnv`](https://direnv.net/): A feature that can load and unload environment variables depending on the current directory.
