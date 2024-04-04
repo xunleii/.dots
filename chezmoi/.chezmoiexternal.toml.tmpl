@@ -33,6 +33,15 @@ url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version
 path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/autocomplete/bat.fish"
 {{ end }}
 
+# --- DELTA installation
+[".local/bin/delta"]
+type = "archive-file"
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
+url = "https://github.com/dandavison/delta/releases/download/{{ .packages.delta_version }}/delta-{{ .packages.delta_version }}-x86_64-unknown-linux-gnu.tar.gz"
+path = "delta-{{ .packages.delta_version }}-x86_64-unknown-linux-gnu/delta"
+{{ end }}
+executable = true
+
 # --- DIRENV installation
 [".local/bin/direnv"]
 type = "file"

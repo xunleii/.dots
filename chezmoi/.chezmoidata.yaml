@@ -3,6 +3,9 @@ packages:
   # renovate: datasource=github-tags depName=sharkdp/bat
   bat_version: v0.23.0
 
+  # renovate: datasource=github-tags depName=dandavison/delta
+  delta_version: 0.16.5
+
   # renovate: datasource=github-tags depName=direnv/direnv
   direnv_version: v2.32.3
 
