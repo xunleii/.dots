@@ -7,6 +7,13 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# --- Local binary folder
+# -----------------------------------------------------------------------------
+# ---- Create and/or export local /bin path
+local localbin="${HOME}/.local/bin"
+[[ -d "${localbin}" ]] || mkdir -p "${localbin}"
+export PATH="${PATH}:${localbin}"
+
 # --- Profile management
 # -----------------------------------------------------------------------------
 # ---- Load personal ZSH profile
@@ -23,17 +30,10 @@ else
   compinit -C
 fi
 
-# --- Local binary folder
-# -----------------------------------------------------------------------------
-# ---- Create and/or export local /bin path
-local localbin="${HOME}/.local/bin"
-[[ -d "${localbin}" ]] || mkdir -p "${localbin}"
-export PATH="${PATH}:${localbin}"
-
 # --- Antigen management
 # -----------------------------------------------------------------------------
 # ---- Install antibody if not exists
-(( $+commands[antibody] )) || (curl -sfL git.io/antibody | sh -s - -b "${HOME}/.local/bin") 
+(( $+commands[antibody] )) || (curl -sfL git.io/antibody | sh -s - -b "${HOME}/.local/bin")
 
 # ---- Generates plugin cache to speed up ZSH init
 local plugin_cache="${HOME}/.zsh-plugins-loaded"

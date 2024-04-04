@@ -62,7 +62,7 @@
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
   # Paginate output with `diff-so-fancy` by default
-  pager = {{- if lookPath "diff-so-fancy" }} diff-so-fancy | {{ end }}less --tabs=4 -RFX
+  pager = {{- if lookPath "diff-so-fancy" }} diff-so-fancy |{{ end }} less --tabs=4 -RFX
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
@@ -70,7 +70,7 @@
 [branch]
   # autoSetupMerge controls whether `git branch` and `git checkout -b`
   # imply the `--track` option
-  autoSetupMerge = auto
+  #autoSetupMerge = always
   # autoSetupRebase controls whether new branches should be set up to
   # be rebased upon `git pull`
   autoSetupRebase = always
@@ -175,7 +175,7 @@
 {{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
 {{ if stat $wkspaces }}
 # ---
-{{-   range (output "ls" "/home/alexandre/Workspaces" | trim | split "\n") }}
+{{-   range (output "ls" $wkspaces | trim | split "\n") }}
 [includeIf "gitdir:{{joinPath $wkspaces .}}"]
   path = {{ joinPath $wkspaces . ".gitconfig" }}
 {{   end }}
