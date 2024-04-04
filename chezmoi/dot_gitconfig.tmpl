@@ -178,7 +178,7 @@
   suffix = -rc
   suffix = .rc
 
-{{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
+{{- $wkspaces := (joinPath .chezmoi.homeDir "Documents/Workspaces") }}
 {{ if stat $wkspaces }}
 # ---
 {{-   range (output "ls" $wkspaces | trim | split "\n") }}
