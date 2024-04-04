@@ -20,4 +20,6 @@ data:
   name: Alexandre Nicolaie
   full_name: Alexandre Nicolaie dit Clairville
   email: {{ promptString "What is your workspace email"}}
-  gpg_fingerprint: 157F66A73778881698E79F7F58E8FB093C41F023
+  gpg:
+    enable_git_sign: {{ promptBool "Enable GPG sign for git" }}
+    fingerprint: 157F66A73778881698E79F7F58E8FB093C41F023
