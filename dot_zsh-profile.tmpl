@@ -2,6 +2,8 @@
 
 # --- Options section
 # -----------------------------------------------------------------------------
+fpath=("${HOME}/.local/share/zsh/completions" "$fpath[@]")      # Add local ZSH completion files
+
 setopt correct                                                  # Auto correct mistakes
 setopt extendedglob                                             # Extended globbing. Allows using regular expressions with *
 setopt nocaseglob                                               # Case insensitive globbing
@@ -83,6 +85,19 @@ typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
 # remove '❯' on copy/paste
 alias '❯'=''
 
+# ---- ASDF
+(( ! ${+commands[asdf]} )) && source "${HOME}/.asdf/asdf.sh"
+(( ${+commands[asdf]} )) && fpath+=(${ASDF_DIR}/completions $fpath)
+
+# ---- Bitwarden
+if (( ${+commands[bw]} )); then
+  [[ -f "${HOME}/.local/share/zsh/completions/_bw" ]] || (
+    mkdir -p "${HOME}/.local/share/zsh/completions"
+    bw completion --shell zsh > "${HOME}/.local/share/zsh/completions/_bw"
+  )
+  alias bw_session='export BW_SESSION=$(bw unlock --raw)'
+fi
+
 # ---- Direnv
 # NOTE: must be used before all, in order to manage custom environment
 # eval $(direnv hook zsh)
@@ -90,10 +105,6 @@ alias '❯'=''
 
 # ---- Fzf
 (( ! ${+commands[fzf]} )) && source ~/.fzf.zsh
-
-# ---- ASDF
-(( ! ${+commands[asdf]} )) && source "${HOME}/.asdf/asdf.sh"
-(( ${+commands[asdf]} )) && fpath+=(${ASDF_DIR}/completions $fpath)
 
 # --- Custom variables/paths
 # -----------------------------------------------------------------------------
