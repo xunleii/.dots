@@ -2,15 +2,15 @@
 
 # ---
 # Sources:
-#		- https://git-scm.com/docs/git-config
-#		- https://gist.github.com/tdd/470582
-#		- https://gist.github.com/pyrtsa/4148804
+#  - https://git-scm.com/docs/git-config
+#  - https://gist.github.com/tdd/470582
+#  - https://gist.github.com/pyrtsa/4148804
 
 # ---
 [user]
-	email = {{ .email }}
-	name = {{ .full_name }}
-	{{ if .gpg.enable_git_sign }}signingkey = {{ .gpg.fingerprint }}{{ end }}
+  email = {{ .email }}
+  name = {{ .full_name }}
+  {{ if .gpg.enable_git_sign }}signingkey = {{ .gpg.fingerprint }}{{ end }}
 
 [color]
   # Enable colors in color-supporting terminals
@@ -34,46 +34,46 @@
   review-local = "!git lg @{push}.."
   # Edit last commit message
   reword = commit --amend
-	# Set the current branch upstream
-	set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+  # Set the current branch upstream
+  set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
   # Undo last commit but keep changed files in stage
   uncommit = reset --soft HEAD~1
   # Remove file(s) from Git but not from disk
   untrack = rm --cache --
 
-	# List files aliases
-	ls           = "!git status -suno"
-	ls-modified  = "!git status --porcelain -uno | awk 'match($1, /M/) {print $2}'"
-	ls-added     = "!git status --porcelain -uno | awk 'match($1, /A/) {print $2}'"
-	ls-deleted   = "!git status --porcelain -uno | awk 'match($1, /D/) {print $2}'"
-	ls-renamed   = "!git status --porcelain -uno | awk 'match($1, /R/) {print $2}'"
-	ls-copied    = "!git status --porcelain -uno | awk 'match($1, /C/) {print $2}'"
-	ls-updated   = "!git status --porcelain -uno | awk 'match($1, /U/) {print $2}'"
-	ls-staged    = "!git status --porcelain -uno | grep -P '^[MA]' | awk '{ print $2 }'"
-	ls-untracked = "!git status --porcelain -uall | awk '$1 == \"??\" {print $2}'"
-	ls-ignored   = "!git ls-files --others --ignored --exclude-standard"
+  # List files aliases
+  ls           = "!git status -suno"
+  ls-modified  = "!git status --porcelain -uno | awk 'match($1, /M/) {print $2}'"
+  ls-added     = "!git status --porcelain -uno | awk 'match($1, /A/) {print $2}'"
+  ls-deleted   = "!git status --porcelain -uno | awk 'match($1, /D/) {print $2}'"
+  ls-renamed   = "!git status --porcelain -uno | awk 'match($1, /R/) {print $2}'"
+  ls-copied    = "!git status --porcelain -uno | awk 'match($1, /C/) {print $2}'"
+  ls-updated   = "!git status --porcelain -uno | awk 'match($1, /U/) {print $2}'"
+  ls-staged    = "!git status --porcelain -uno | grep -P '^[MA]' | awk '{ print $2 }'"
+  ls-untracked = "!git status --porcelain -uall | awk '$1 == \"??\" {print $2}'"
+  ls-ignored   = "!git ls-files --others --ignored --exclude-standard"
 
 # ---
 [core]
-	editor = code --wait
-	excludesfile = {{ .chezmoi.homeDir }}/.gitignore
+  # editor = code --wait # TODO: check if vim can do that much better than vscode
+  excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
-	# Paginate output with `diff-so-fancy` by default
-	pager = {{- if lookPath "diff-so-fancy" }}diff-so-fancy | {{ end }}less --tabs=4 -RFX
+  # Paginate output with `diff-so-fancy` by default
+  pager = {{- if lookPath "diff-so-fancy" }}diff-so-fancy | {{ end }}less --tabs=4 -RFX
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
 [interactive]
-	{{ if lookPath "diff-so-fancy" }}diffFilter = diff-so-fancy --patch{{ end }}
+  {{ if lookPath "diff-so-fancy" }}diffFilter = diff-so-fancy --patch{{ end }}
 
 # ---
 [branch]
-	# autoSetupMerge controls whether `git branch` and `git checkout -b`
-	# imply the `--track` option
-	#autoSetupMerge = local
-	# autoSetupRebase controls whether new branches should be set up to
-	# be rebased upon `git pull`
-	autoSetupRebase = always
+  # autoSetupMerge controls whether `git branch` and `git checkout -b`
+  # imply the `--track` option
+  #autoSetupMerge = local
+  # autoSetupRebase controls whether new branches should be set up to
+  # be rebased upon `git pull`
+  autoSetupRebase = always
 
 [diff]
   # Use better, descriptive initials (c, i, w) instead of a/b.
@@ -86,6 +86,7 @@
   submodule = log
   # Use VSCode as default diff tool when running `git diff-tool`
   tool = vscode
+
 [difftool "vscode"]
   cmd = code --wait --diff $LOCAL $REMOTE
 
@@ -167,9 +168,9 @@
 
 # ---
 [url "git@gitlab.com:"]
-	insteadOf = https://gitlab.com/
+  insteadOf = https://gitlab.com/
 [url "git@github.com:"]
-	insteadOf = https://github.com/
+  insteadOf = https://github.com/
 
 {{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
 {{ if stat $wkspaces }}
