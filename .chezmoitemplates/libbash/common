@@ -1,8 +1,10 @@
 # shellcheck disable=SC2034
 sys_os="{{ .chezmoi.os }}"
 sys_os_arch="{{ .chezmoi.os }}_{{ .chezmoi.arch }}"
+{{- if .chezmoi.osRelease }}
 sys_os_release="{{ .chezmoi.os }}_{{ .chezmoi.osRelease.id }}"
 sys_os_release_arch="{{ .chezmoi.os }}_{{ .chezmoi.osRelease.id }}_{{ .chezmoi.arch }}"
+{{- end }}
 
 function only_run_on!() {
   case $1 in
