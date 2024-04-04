@@ -1,0 +1,9 @@
+# --- Chezmoi configuration ---
+.chezmoi.toml.tmpl
+
+# --- Repository metadata ---
+LICENSE
+README.md
+
+# --- Scripts
+scripts/**
