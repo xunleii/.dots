@@ -1,0 +1,18 @@
+#!/bin/env bash
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                          X N L I - W o r k s p a c e
+#                      Chezmoi - Required tools installer
+#
+# -----------------------------------------------------------------------------
+
+{{ if eq .chezmoi.os "linux" -}}
+# --- Install package for Linux
+# -----------------------------------------------------------------------------
+echo "> Install required package for your system ({{ .chezmoi.osRelease.prettyName }} - {{ .chezmoi.arch }})"
+{{      include (printf "./scripts/install-package/%s_%s_%s" .chezmoi.os .chezmoi.osRelease.id .chezmoi.arch ) }}
+{{ end -}}

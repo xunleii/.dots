@@ -1,0 +1,29 @@
+{{ template "banner.tmpl" "Git - Global config" }}
+
+[core]
+	excludesfile = /home/anicolaie/.gitignore
+
+[user]
+	email = {{ .email }}
+	name = {{ .full_name }}
+	signingkey = {{ .gpg_fingerprint }}
+
+[push]
+	default = current
+
+[pull]
+	rebase = true
+
+[rebase]
+	autosquash = true
+
+[url "git@gitlab.com:"]
+	insteadOf = https://gitlab.com/
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+[alias]
+	set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+
+[includeIf "gitdir:~/Workspace/xnk/"]
+  path = ~/Workspace/xnk/.gitconfig
