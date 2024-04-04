@@ -53,24 +53,24 @@
   ls-untracked = status --porcelain -uall | awk '$1 == \"??\" {print $2}'
   ls-ignored   = ls-files --others --ignored --exclude-standard
 
+  # Prune all local branches not available on remote
+  prune-all = "!git remote prune origin && git branch --merged | grep -v '^*' | xargs git branch -d"
+
 # ---
 [core]
   # editor = code --wait # TODO: check if vim can do that much better than vscode
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
   # Paginate output with `diff-so-fancy` by default
-  pager = {{- if lookPath "diff-so-fancy" }}diff-so-fancy | {{ end }}less --tabs=4 -RFX
+  pager = {{- if lookPath "diff-so-fancy" }} diff-so-fancy | {{ end }}less --tabs=4 -RFX
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
-
-[interactive]
-  {{ if lookPath "diff-so-fancy" }}diffFilter = diff-so-fancy --patch{{ end }}
 
 # ---
 [branch]
   # autoSetupMerge controls whether `git branch` and `git checkout -b`
   # imply the `--track` option
-  autoSetupMerge = always
+  autoSetupMerge = auto
   # autoSetupRebase controls whether new branches should be set up to
   # be rebased upon `git pull`
   autoSetupRebase = always
@@ -126,7 +126,7 @@
   # Automagically reorder and prefix your commands while doing an interactive
   # rebase. This has to be used with `--fixup` and/or `--squash` options for
   # `git commit`.
-  autoSquash = true
+  autoSquash = false
   # Automatically stash current WD and stage when running rebase
   # then you won't have to manually `git stash push` and `git stash pop`
   # after and before your rebase.

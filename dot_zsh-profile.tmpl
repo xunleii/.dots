@@ -112,7 +112,7 @@ export EDITOR="vim"
 export VISUAL="vim"
 export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache" 
 
-export GOROOT=/usr/local/go
+export GOROOT="${HOME}/.asdf/installs/golang/$(asdf current golang | awk {{ "'{{ print $2 }}'" }})/go"
 export GOPATH=~/.go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
@@ -145,7 +145,8 @@ alias kydiff="kitty +kitten diff"
 alias k="kubectl"
 alias kn="kubectl config set-context --current --namespace"
 alias kx="kubectl config use-context"
-(( ${+commands[kubectl]} )) && source <(command kubectl completion zsh)
+((( ${+commands[kubectl]} )) && [[ ! -f "${HOME}/.local/share/zsh/completions/_kubectl" ]]) && kubectl completion zsh > "${HOME}/.local/share/zsh/completions/_kubectl" 
+
 
 # ---- Utility
 alias ls='ls --color=auto'
