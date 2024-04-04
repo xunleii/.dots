@@ -14,7 +14,7 @@
 {{ template "libbash/command" . }}
 
 # -----------------------------------------------------------------------------
-only_run_on! "linux_fedora"
+only_run_on! "linux_fedora" || exit 0
 
 if command_missing? 'tig' 'delta'; then
   title 'Install missing GIT tools (`tig` and `git-delta`)'

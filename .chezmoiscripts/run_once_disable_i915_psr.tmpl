@@ -16,7 +16,7 @@
 # Disable Panel Self Refresh (PSR) on Intel graphic card (issue that freeze the current UI)
 
 # NOTE: only enable this script if the graphic card uses `i915` drivers
-only_run_on! "linux"
+only_run_on! "linux" || exit 0
 if ! lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep 'Kernel driver in use' | grep 'i915' &> /dev/null; then
   exit
 fi

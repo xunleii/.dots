@@ -14,7 +14,7 @@
 
 # -----------------------------------------------------------------------------
 # Install WhiteSur Gnome theme.
-only_run_on! "linux_amd64"
+only_run_on! "linux_amd64" || exit 0
 if ! command -v gnome-shell &> /dev/null; then
   echo "No GNOME environment found... aborted"
   exit
