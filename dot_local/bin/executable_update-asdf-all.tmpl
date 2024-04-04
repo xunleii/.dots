@@ -1,0 +1,14 @@
+#!/bin/env bash
+{{ template "banner.tmpl" "ASDF - update all" }}
+
+[[ -f "${PWD}/.tool-versions" ]] && ASDF_VERSIONS="${PWD}/.tool-versions" || ASDF_VERSIONS="${HOME}/.tool-versions"
+
+for plugin in $(cat ${ASDF_VERSIONS} | awk {{ "'{{ print $1 }}'" }});
+do
+  asdf list "${plugin}" 2> /dev/null || (echo "$(tput bold)> install plugin ${plugin}$(tput sgr0)" && asdf plugin add "${plugin}")
+
+  echo "$(tput bold)> upgrade ${plugin}$(tput sgr0)"
+  asdf install "${plugin}" latest
+  asdf global "${plugin}" "$(asdf latest "${plugin}")"
+  echo -e "{{ repeat 60 "-" }}"
+done
