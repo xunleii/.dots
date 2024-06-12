@@ -1,0 +1,48 @@
+{{ template "banner.tmpl" "Fish - Tweak profile" }}
+
+# --- Prompt tweaks to give a `warp` like behavior
+# -----------------------------------------------------------------------------
+# Bind CTRL+L to clear the terminal and move the prompt at the end
+bind \cl 'tput clear && tput cup (tput lines) 0; commandline -f repaint'
+
+# Move the prompt at the end of the terminal when the window is resized
+# or on the warp_prompt event
+set --global __terminal_last_lines (tput lines)
+function warp_prompt_on_winch --on-signal WINCH --on-event warp_prompt
+    # NOTE{{ .chezmoi.pathListSeparator }} change the prompt position only if the there is a vertical
+    #       panel resize
+    if test (tput lines) -ne $__terminal_last_lines
+        tput cuu 3
+        tput ed
+    end
+
+    set --global __terminal_last_lines (tput lines)
+    tput cup (tput lines) 0
+end
+
+# NOTE{{ .chezmoi.pathListSeparator }} emit warp_prompt during load to move the prompt at the end
+emit warp_prompt
+
+# --- Special overrides
+# - Override the fzf wrapper to emit warp_prompt after the command
+function _fzf_wrapper --description "Prepares some environment variables before executing fzf."
+    # Make sure fzf uses fish to execute preview commands, some of which
+    # are autoloaded fish functions so don't exist in other shells.
+    # Use --function so that it doesn't clobber SHELL outside this function.
+    set -f --export SHELL (command --search fish)
+
+    # If FZF_DEFAULT_OPTS is not set, then set some sane defaults.
+    # See https{{ .chezmoi.pathListSeparator }}{{ .chezmoi.pathSeparator }}{{ .chezmoi.pathSeparator }}github.com{{ .chezmoi.pathSeparator }}junegunn{{ .chezmoi.pathSeparator }}fzf#environment-variables
+    if not set --query FZF_DEFAULT_OPTS
+        # cycle allows jumping between the first and last results, making scrolling faster
+        # layout=reverse lists results top to bottom, mimicking the familiar layouts of {{ .chezmoi.config.git.command }} log, history, and env
+        # border shows where the fzf window begins and ends
+        # height=90% leaves space to see the current command and some scrollback, maintaining context of work
+        # preview-window=wrap wraps long lines in the preview window, making reading easier
+        # marker=* makes the multi-select marker more distinguishable from the pointer (since both default to >)
+        set --export FZF_DEFAULT_OPTS '--cycle --layout=reverse --border --height=90% --preview-window=wrap --marker="*"'
+    end
+
+    fzf $argv
+    emit warp_prompt
+end

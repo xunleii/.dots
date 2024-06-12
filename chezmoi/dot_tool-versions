@@ -1,9 +1,10 @@
 asdf-helper 0.6.0
 direnv 2.34.0
-github-cli 2.47.0
-golang 1.22.2
-lazygit 0.41.0
-nodejs 21.7.2
-python 3.12.2
-rust 1.77.1
+github-cli 2.50.0
+golang 1.22.4
+lazygit 0.42.0
+mc 2024-05-09T17-04-24Z
+nodejs 22.3.0
+python 3.12.4
+rust 1.78.0
 zoxide 0.9.4

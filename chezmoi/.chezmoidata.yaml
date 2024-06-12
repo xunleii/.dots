@@ -1,25 +1,25 @@
 # --- application version
 packages:
   # renovate: datasource=github-tags depName=sharkdp/bat
-  bat_version: v0.23.0
+  bat_version: v0.24.0
 
   # renovate: datasource=github-tags depName=aristocratos/btop
-  btop_version: v1.2.13
+  btop_version: v1.3.2
 
   # renovate: datasource=github-tags depName=dandavison/delta
-  delta_version: 0.16.5
+  delta_version: 0.17.0
 
   # renovate: datasource=github-tags depName=direnv/direnv
-  direnv_version: v2.32.3
+  direnv_version: v2.34.0
 
   # renovate: datasource=github-tags depName=sharkdp/fd
-  fd_version: v8.7.0
+  fd_version: v10.1.0
 
   # renovate: datasource=github-tags depName=junegunn/fzf
-  fzf_version: 0.42.0
+  fzf_version: 0.53.0
 
   # renovate: datasource=github-tags depName=tummychow/git-absorb
-  git_absorb_version: 0.6.11
+  git_absorb_version: 0.6.13
 
   # renovate: datasource=github-tags depName=starship/starship
-  starship_version: v1.16.0
+  starship_version: v1.19.0

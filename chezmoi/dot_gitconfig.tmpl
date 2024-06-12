@@ -79,7 +79,7 @@
 [branch]
   # autoSetupMerge controls whether `git branch` and `git checkout -b`
   # imply the `--track` option
-  autoSetupMerge = always
+  # autoSetupMerge = always
   # autoSetupRebase controls whether new branches should be set up to
   # be rebased upon `git pull`
   autoSetupRebase = always
@@ -177,6 +177,9 @@
   suffix = .beta
   suffix = -rc
   suffix = .rc
+
+[absorb]
+  fixupTargetAlwaysSHA = true
 
 {{- $wkspaces := (joinPath .chezmoi.homeDir "Documents/Workspaces") }}
 {{ if stat $wkspaces }}
