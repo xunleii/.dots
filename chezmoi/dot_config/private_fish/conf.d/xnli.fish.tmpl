@@ -10,8 +10,33 @@ fzf_configure_bindings --directory=\cf --git_log=\cg --git_status=\cs   # [Ctrl+
                                                                         # [Ctrl+G] Find file in git history
                                                                         # [Ctrl+S] Find file in git status
 
+# --- Prompt configuration
+# -----------------------------------------------------------------------------
+# - starship prompt
+if command -sq starship
+  function starship_transient_prompt_func
+    starship module line_break
+    starship module sudo
+    starship module directory
+    starship module character
+  end
+
+  function starship_transient_rprompt_func
+    starship module time
+  end
+
+  starship init fish --print-full-init | source
+  enable_transience
+end
+
 # --- Utility configuration
 # -----------------------------------------------------------------------------
+# - mise
+# NOTE: must be used before all, in order to manage all "standalone" tools
+if command -sq mise
+  mise hook-env | source
+end
+
 # - direnv
 # NOTE: must be used before all, in order to manage custom environment
 # NOTE²: @pjeby (https://github.com/direnv/direnv/issues/583#issuecomment-626109571)
@@ -36,45 +61,11 @@ if command -sq direnv
   end
 end
 
-# - starship prompt
-if command -sq starship
-  function starship_transient_prompt_func
-    starship module line_break
-    starship module sudo
-    starship module directory
-    starship module character
-  end
-
-  function starship_transient_rprompt_func
-    starship module time
-  end
-
-  starship init fish --print-full-init | source
-  enable_transience
-end
-
-# - chezmoi
-if command -sq chezmoi
-  chezmoi completion fish | source
-end
-
 # - github CLI
 if command -sq gh
   abbr --add --global !! gh copilot suggest -t shell
   abbr --add --global git! gh copilot suggest -t git
   abbr --add --global gh! gh copilot suggest -t gh
-end
-
-# - golang
-if command -sq go
-  set --global --export GOROOT "$HOME/.asdf/installs/golang/"(asdf current golang | awk '{{ "{{" }} print $2 }}')"/go"
-  set --global --export GOPATH "$HOME/.local/share/go"
-  fish_add_path $GOROOT/bin $GOPATH/bin
-end
-
-# - rust
-if command -sq rust
-  fish_add_path --global $HOME/.cargo/env
 end
 
 # --- Custom variables/paths

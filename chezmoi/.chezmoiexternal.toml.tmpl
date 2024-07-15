@@ -1,42 +1,7 @@
-# vim: ft=toml
-
-# --- ASDF & plugin installation
-[".asdf"]
-type = "git-repo"
-url = "https://github.com/asdf-vm/asdf.git"
-
-[".asdf/plugins/asdf-helper"]
-type = "git-repo"
-exact = true
-url = "https://github.com/ngyewch/asdf-helper-plugin.git"
-
-[".asdf/plugins/zoxide"]
-type = "git-repo"
-exact = true
-url = "https://github.com/nyrst/asdf-zoxide.git"
-
 # --- BAT installation
-[".local/bin/bat"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/bat"
-{{ end }}
-executable = true
-
-[".local/share/man/man1/bat-find.1"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/bat.1"
-{{ end }}
-
 [".local/config/fish/completions/bat.fish"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/bat/releases/download/{{ .packages.bat_version }}/bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "bat-{{ .packages.bat_version }}-x86_64-unknown-linux-gnu/autocomplete/bat.fish"
-{{ end }}
+type = "file"
+url = "https://raw.githubusercontent.com/sharkdp/bat/master/assets/completions/bat.fish.in"
 
 # --- BTOP installation
 [".local/bin/btop"]
@@ -55,64 +20,15 @@ url = "https://github.com/aristocratos/btop/releases/download/{{ .packages.btop_
 include = ["./btop/themes/*"]
 stripComponents = 3
 
-# --- DELTA installation
-[".local/bin/delta"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/dandavison/delta/releases/download/{{ .packages.delta_version }}/delta-{{ .packages.delta_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "delta-{{ .packages.delta_version }}-x86_64-unknown-linux-gnu/delta"
-{{ end }}
+# --- Mise installation
+[".local/bin/mise"]
+type = "file"
+url = "https://github.com/jdx/mise/releases/download/{{ .packages.mise_version }}/mise-{{ .packages.mise_version }}-linux-x64"
 executable = true
 
-# --- FD-FIND installation
-[".local/bin/fd"]
+# --- Usage installation
+[".local/bin/usage"]
 type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/fd/releases/download/{{ .packages.fd_version }}/fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu/fd"
-{{ end }}
-executable = true
-
-[".local/share/man/man1/fd-find.1"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/fd/releases/download/{{ .packages.fd_version }}/fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu/fd.1"
-{{ end }}
-
-[".local/config/fish/completions/fd.fish"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/sharkdp/fd/releases/download/{{ .packages.fd_version }}/fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu.tar.gz"
-path = "fd-{{ .packages.fd_version }}-x86_64-unknown-linux-gnu/autocomplete/fd.fish"
-{{ end }}
-
-# --- FZF installation
-[".local/bin/fzf"]
-type = "archive-file"
-url = "https://github.com/junegunn/fzf/releases/download/{{ .packages.fzf_version }}/fzf-{{ .packages.fzf_version }}-{{ .chezmoi.os }}_{{ .chezmoi.arch }}.tar.gz"
-path = "fzf"
-executable = true
-
-# --- GIT-ABSORB installation
-[".local/bin/git-absorb"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/tummychow/git-absorb/releases/download/{{ .packages.git_absorb_version }}/git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl.tar.gz"
-path = "git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl/git-absorb"
-{{ end }}
-executable = true
-
-[".local/share/man/man1/git-absorb.1"]
-type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/tummychow/git-absorb/releases/download/{{ .packages.git_absorb_version }}/git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl.tar.gz"
-path = "git-absorb-{{ .packages.git_absorb_version }}-x86_64-unknown-linux-musl/doc/git-absorb.1"
-{{ end }}
-
-# --- Starship installation
-[".local/bin/starship"]
-type = "archive-file"
-url = "https://github.com/starship/starship/releases/download/{{ .packages.starship_version }}/starship-x86_64-unknown-linux-gnu.tar.gz"
-path = "starship"
+url = "https://github.com/jdx/usage/releases/download/{{ .packages.usage_version }}/usage-x86_64-unknown-linux-gnu.tar.gz"
+path = "usage"
 executable = true
