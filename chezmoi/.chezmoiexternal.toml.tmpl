@@ -1,34 +1,127 @@
+{{ $os_arch := printf "%s/%s" .chezmoi.os .chezmoi.arch -}}
+# This file has been generated for {{ $os_arch }} system
+
 # --- BAT installation
 [".local/config/fish/completions/bat.fish"]
 type = "file"
 url = "https://raw.githubusercontent.com/sharkdp/bat/master/assets/completions/bat.fish.in"
 
+{{ with .packages.btop -}}
+{{ if has $os_arch (keys .release_names) -}}
 # --- BTOP installation
 [".local/bin/btop"]
 type = "archive-file"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/aristocratos/btop/releases/download/{{ .packages.btop_version }}/btop-x86_64-linux-musl.tbz"
-{{ end }}
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "aristocratos/btop" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "aristocratos/btop" .version (get .release_names $os_arch) }}"
+{{- end }}
 path = "./btop/bin/btop"
 executable = true
 
 [".config/btop/themes"]
 type = "archive"
-{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.arch "amd64") }}
-url = "https://github.com/aristocratos/btop/releases/download/{{ .packages.btop_version }}/btop-x86_64-linux-musl.tbz"
-{{ end }}
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "aristocratos/btop" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "aristocratos/btop" .version (get .release_names $os_arch) }}"
+{{- end }}
 include = ["./btop/themes/*"]
 stripComponents = 3
+{{- else -}}
+# --- BTOP not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
 
+{{ with .packages.direnv -}}
+{{ if has $os_arch (keys .release_names) -}}
+# --- Direnv installation
+[".local/bin/direnv"]
+type = "file"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "direnv/direnv" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "direnv/direnv" .version (get .release_names $os_arch) }}"
+{{- end }}
+executable = true
+{{- else -}}
+# --- Mise not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
+
+{{ with .packages.lazygit -}}
+{{ if has $os_arch (keys .release_names) -}}
+# --- Lazygit installation
+[".local/bin/lazygit"]
+type = "archive-file"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "jesseduffield/lazygit" .version (get .release_names $os_arch) }}"
+{{- end }}
+path = "lazygit"
+executable = true
+{{- else -}}
+# --- Lazygit not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
+
+{{ with .packages.mise -}}
+{{ if has $os_arch (keys .release_names) -}}
 # --- Mise installation
 [".local/bin/mise"]
 type = "file"
-url = "https://github.com/jdx/mise/releases/download/{{ .packages.mise_version }}/mise-{{ .packages.mise_version }}-linux-x64"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "jdx/mise" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "jdx/mise" .version (get .release_names $os_arch) }}"
+{{- end }}
 executable = true
+{{- else -}}
+# --- Mise not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
 
+{{ with .packages.usage -}}
+{{ if has $os_arch (keys .release_names) -}}
 # --- Usage installation
 [".local/bin/usage"]
 type = "archive-file"
-url = "https://github.com/jdx/usage/releases/download/{{ .packages.usage_version }}/usage-x86_64-unknown-linux-gnu.tar.gz"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "jdx/usage" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "jdx/usage" .version (get .release_names $os_arch) }}"
+{{- end }}
 path = "usage"
 executable = true
+{{- else -}}
+# --- Usage not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
+
+{{ with .packages.zoxide -}}
+{{ if has $os_arch (keys .release_names) -}}
+# --- Zoxide installation
+[".local/bin/zoxide"]
+type = "archive-file"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "ajeetdsouza/zoxide" .version (get .release_names $os_arch) }}"
+{{- end }}
+path = "zoxide"
+executable = true
+
+[".config/fish/conf.d/zoxide.fish"]
+type = "archive-file"
+{{ if eq .version "latest" -}}
+url = "{{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (get .release_names $os_arch) }}"
+{{- else -}}
+url = "{{ gitHubReleaseAssetURL "ajeetdsouza/zoxide" .version (get .release_names $os_arch) }}"
+{{- end }}
+path = "completions/zoxide.fish"
+executable = true
+{{- else -}}
+# --- Usage not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
