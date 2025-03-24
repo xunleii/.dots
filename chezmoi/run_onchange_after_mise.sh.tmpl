@@ -8,7 +8,7 @@ source <(mise activate bash)
 mise shell go
 mise shell rust
 
-source <(mise hook-env bash)
+mise hook-env
 mkdir --parent ~/.config/fish/conf.d ~/.config/fish/completions
 mise activate fish > ~/.config/fish/conf.d/mise.fish
 mise completion fish > ~/.config/fish/completions/mise.fish
