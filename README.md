@@ -15,7 +15,7 @@ mkdir -p $HOME/.local/bin
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt upgrade
 sudo apt update
-sudo apt install build-essential fish gzip keychain neovim unzip
+sudo apt install build-essential fish git gzip keychain neovim unzip
 
 # Install and configure chezmoi
 BINDIR=$HOME/.local/bin sh -c "$(curl -fsLS https://raw.githubusercontent.com/twpayne/chezmoi/master/assets/scripts/install.sh)" -- init --apply https://github.com/xunleii/.dots
