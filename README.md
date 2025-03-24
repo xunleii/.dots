@@ -5,12 +5,19 @@
 
 ## TLDR;
 
+### On Debian-based systems _(like Ubuntu)_
+
 ```bash
+export PATH=$HOME/.local/bin:$PATH
+mkdir -p $HOME/.local/bin
+
+# Install fish
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt upgrade
 sudo apt update
 sudo apt install build-essential fish gzip keychain neovim unzip
 
+# Install and configure chezmoi
 BINDIR=$HOME/.local/bin sh -c "$(curl -fsLS https://raw.githubusercontent.com/twpayne/chezmoi/master/assets/scripts/install.sh)" -- init --apply https://github.com/xunleii/.dots
 ```
 

@@ -1,6 +1,19 @@
 {{ $os_arch := printf "%s/%s" .chezmoi.os .chezmoi.arch -}}
 # This file has been generated for {{ $os_arch }} system
 
+{{ with .packages.bitwarden_secret_manager -}}
+{{ if has $os_arch (keys .release_names) -}}
+# --- Bitwarden Secret Manager installation
+[".local/bin/bws"]
+type = "archive-file"
+url = "{{ gitHubReleaseAssetURL "bitwarden/sdk-sm" .version (get .release_names $os_arch) }}"
+path = "bws"
+executable = true
+{{- else -}}
+# --- Bitwarden Secret Manager not available for {{ $os_arch }}
+{{- end }}
+{{- end }}
+
 # --- BAT installation
 [".local/config/fish/completions/bat.fish"]
 type = "file"

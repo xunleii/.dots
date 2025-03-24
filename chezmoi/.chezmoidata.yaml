@@ -1,5 +1,14 @@
 # --- application version
 packages:
+  bitwarden_secret_manager:
+    # renovate: datasource=github-tags depName=bitwarden/sdk-sm prefix=bws-
+    version: bws-v1.0.0
+    release_names:
+      linux/amd64: bws-x86_64-unknown-linux-gnu-*.zip
+      linux/arm64: bws-aarch64-unknown-linux-gnu-*.zip
+      darwin/amd64: bws-x86_64-apple-darwin-*.zip
+      darwin/arm64: bws-aarch64-apple-darwin-*.zip
+
   btop:
     # renovate: datasource=github-tags depName=aristocratos/btop
     version: latest

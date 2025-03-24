@@ -38,3 +38,5 @@ diff:
 data:
   name: {{ promptString "What is your GIT name" }}
   email: {{ promptString "What is your GIT email" }}
+  bitwarden:
+    access_token: {{ promptStringOnce . "bitwarden.access_token" (printf "Get a Bitwarden access token for this machine (%s)" .chezmoi.fqdnHostname) }}
