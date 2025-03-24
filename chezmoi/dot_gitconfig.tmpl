@@ -68,7 +68,7 @@
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
   # Paginate output with `delta` by default
-  pager = {{- if lookPath "delta" }} delta --side-by-side {{ else }} less --tabs=4 -RFX {{ end }}
+  pager = {{- if lookPath "difft" }} difft {{ else }} less --tabs=4 -RFX {{ end }}
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
@@ -93,11 +93,10 @@
   wordRegex = .
   # Display submodule-related information (commit listings)
   submodule = log
-  # Use VSCode as default diff tool when running `git diff-tool`
-  tool = vscode
-
-[difftool "vscode"]
-  cmd = code --wait --diff $LOCAL $REMOTE
+  {{ if lookPath "difft" -}}
+  # Use difftastic as default diff tool when running `git diff-tool`
+  external = difft
+  {{- end }}
 
 [fetch]
   # Auto-fetch submodule changes (sadly, won't auto-update)

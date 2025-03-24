@@ -32,7 +32,11 @@ git:
     {{ "{{" }}- end -}}
 
 diff:
+  {{ if lookPath "difft" -}}
+  command: difft
+  {{- else -}}
   format: git
+  {{- end }}
 
 # --- Template data ---
 data:
