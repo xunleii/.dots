@@ -68,7 +68,7 @@
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
   # Paginate output with `delta` by default
-  pager = {{- if lookPath "difft" }} difft {{ else }} less --tabs=4 -RFX {{ end }}
+  pager = less --tabs=4 -RFX
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
