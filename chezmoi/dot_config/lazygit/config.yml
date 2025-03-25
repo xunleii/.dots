@@ -4,3 +4,15 @@ git:
   overrideGpg: true
   parseEmoji: true
 
+customCommands:
+  - command: czg --signoff --gpg-sign
+    context: files
+    description: Run commitizen to commit files
+    key: c
+    loadingText: Opening git cz - Loading...
+    subprocess: true
+  - command: git-absorb --one-fixup-per-commit --force-author
+    context: files
+    description: Absorb changes into the previous commit
+    key: a
+    loadingText: Absorbing changes - Loading...
