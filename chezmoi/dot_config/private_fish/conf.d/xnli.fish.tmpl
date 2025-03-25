@@ -39,6 +39,11 @@ if command -sq mise
   mise hook-env | source
 end
 
+# - atui
+if command -sq atui
+  atui init fish | source
+end
+
 # - direnv
 # NOTE: must be used before all, in order to manage custom environment
 # NOTE²: @pjeby (https://github.com/direnv/direnv/issues/583#issuecomment-626109571)
@@ -70,6 +75,11 @@ if command -sq gh
   abbr --add --global gh! gh copilot suggest -t gh
 end
 
+# - chezmoi
+if command -sq chezmoi
+  chezmoi completion fish | source
+end
+
 # --- Custom variables/paths
 # -----------------------------------------------------------------------------
 set --global --export EDITOR "nvim"
@@ -79,17 +89,20 @@ set --global --export TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
 
 # --- Custom aliases/abbreviations
 # -----------------------------------------------------------------------------
+# - bitwarden secrets
+if command -sq bws
+  function bws!
+    BWS_SERVER_URL="https://vault.bitwarden.eu" \
+    BWS_ACCESS_TOKEN=(chezmoi execute-template "{{ "{{" }} .bitwarden.access_token }}") \
+    bws --output table $argv
+  end
+  abbr --add bws bws!
+end
+
 # - k9s abbreviations
 if command -sq k9s
   abbr --add --global k9s k9s --readonly
   abbr --add --global k9s! k9s
-end
-
-# - kitty abbreviations
-if command -sq kitty
-  abbr --add --global kycat kitty +kitten icat
-  abbr --add --global icat kitty +kitten icat
-  abbr --add --global kydiff kitty +kitten diff
 end
 
 # - kubectl abbreviations
