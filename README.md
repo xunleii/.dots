@@ -15,10 +15,13 @@ mkdir -p $HOME/.local/bin
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt upgrade
 sudo apt update
-sudo apt install build-essential fish git gzip keychain neovim unzip
+sudo apt install build-essential fish git gzip keychain neovim unzip wslu
 
 # Install and configure chezmoi
 BINDIR=$HOME/.local/bin sh -c "$(curl -fsLS https://raw.githubusercontent.com/twpayne/chezmoi/master/assets/scripts/install.sh)" -- init --apply https://github.com/xunleii/.dots
+
+# Configure fish as default shell
+chsh -s $(which fish)
 ```
 
 ## How to use this repository
@@ -29,6 +32,14 @@ I created this repository to store my own configuration and settings for my comp
 Currently, it has been tested for these systems:
 - ~~**Fedora 37 Workstation**~~ _(no more maintained)_
 - **WSL Ubuntu 23.04** on **Windows 11** _(to be tested on CI)_
+
+## Troubleshoot and FAQ
+
+### How to load my SSH key to the keychain automatically on WSL?
+
+```fish
+keychain_add <path_to_your_ssh_key>
+```
 
 ## Packages requirements
 
