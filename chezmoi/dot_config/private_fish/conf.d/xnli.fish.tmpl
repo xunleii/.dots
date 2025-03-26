@@ -80,6 +80,10 @@ if command -sq chezmoi
   chezmoi completion fish | source
 end
 
+# - zoxide
+if command -sq zoxide
+  zoxide init fish | source
+end
 # --- Custom variables/paths
 # -----------------------------------------------------------------------------
 set --global --export EDITOR "nvim"
