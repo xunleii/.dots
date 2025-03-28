@@ -1,8 +1,13 @@
 {{ template "banner.tmpl" "Fish - Profiles" }}
 
-# --- Global path section
+# --- Path section
 # -----------------------------------------------------------------------------
 fish_add_path $HOME/.local/bin
+
+# NOTE: must be used before all, in order to manage all "standalone" tools
+if command -sq mise
+  mise hook-env | source
+end
 
 # --- Keybindings section
 # -----------------------------------------------------------------------------
@@ -33,12 +38,6 @@ end
 
 # --- Utility configuration
 # -----------------------------------------------------------------------------
-# - mise
-# NOTE: must be used before all, in order to manage all "standalone" tools
-if command -sq mise
-  mise hook-env | source
-end
-
 # - atui
 if command -sq atui
   atui init fish | source
