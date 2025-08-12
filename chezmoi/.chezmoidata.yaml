@@ -31,11 +31,11 @@ packages:
     # renovate: datasource=github-tags depName=jesseduffield/lazygit
     version: latest
     release_names:
-      linux/amd64: lazygit_*_Linux_x86_64.tar.gz
-      linux/arm: lazygit_*_Linux_armv6.tar.gz
-      linux/arm64: lazygit_*_Linux_arm64.tar.gz
-      darwin/amd64: lazygit_*_Darwin_x86_64.tar.gz
-      darwin/arm64: lazygit_*_Darwin_arm64.tar.gz
+      linux/amd64: lazygit_*_linux_x86_64.tar.gz
+      linux/arm: lazygit_*_linux_armv6.tar.gz
+      linux/arm64: lazygit_*_linux_arm64.tar.gz
+      darwin/amd64: lazygit_*_darwin_x86_64.tar.gz
+      darwin/arm64: lazygit_*_darwin_arm64.tar.gz
 
   mise:
     # renovate: datasource=github-tags depName=jdx/mise
