@@ -1,0 +1,16 @@
+{{ template "banner.tmpl" "Fish - Base Configuration" }}
+
+# --- XDG Base Directory Specification
+# -----------------------------------------------------------------------------
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+# --- Path Configuration
+# -----------------------------------------------------------------------------
+fish_add_path $HOME/.local/bin
+
+# NOTE: must be used before all, in order to manage all "standalone" tools
+if command -sq mise
+  mise activate | source
+end

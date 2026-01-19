@@ -1,0 +1,79 @@
+{{ template "banner.tmpl" "Fish - Aliases & Abbreviations" }}
+
+# --- Bitwarden Secrets (bws)
+# -----------------------------------------------------------------------------
+if command -sq bws
+  function bws!
+    BWS_SERVER_URL="https://vault.bitwarden.eu" \
+    BWS_ACCESS_TOKEN=(chezmoi execute-template "{{ "{{" }} .bitwarden.access_token }}") \
+    bws --output table $argv
+  end
+  abbr --add bws bws!
+end
+
+# --- K9s (Kubernetes CLI)
+# -----------------------------------------------------------------------------
+if command -sq k9s
+  abbr --add --global k9s k9s --readonly
+  abbr --add --global k9s! k9s
+end
+
+# --- Kubectl (Kubernetes CLI)
+# -----------------------------------------------------------------------------
+if command -sq kubectl
+
+  # ---- Download kubectl completion
+  set --local __kubectl_completion_path "$__fish_config_dir/completions/kubectl.fish"
+  if not test -e $__kubectl_completion_path
+    set --local __kubectl_completion_sha "ced676392575d618d8b80b3895cdc3159be3f628"
+    set --local __kubectl_completion_url "https://raw.githubusercontent.com/evanlucas/fish-kubectl-completions/$__kubectl_completion_sha/completions/kubectl.fish"
+
+    curl -fsSL "$__kubectl_completion_url" > "$__kubectl_completion_path"
+  end
+
+  abbr --add --global k kubectl
+  abbr --add --global kn kubectl config set-context --current --namespace
+  abbr --add --global kx kubectl config use-context
+end
+
+# --- Git
+# -----------------------------------------------------------------------------
+abbr --add --global g git
+
+abbr --add --global gl git pull
+abbr --add --global gp git push
+abbr --add --global gpf git push --force-with-lease
+abbr --add --global grb git rebase
+abbr --add --global grba git rebase --abort
+abbr --add --global grbc git rebase --continue
+abbr --add --global gst git status
+abbr --add --global gs git switch
+abbr --add --global gsc git switch --create
+
+# --- Grep
+# -----------------------------------------------------------------------------
+alias grep "grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}"
+
+# --- Lazygit
+# -----------------------------------------------------------------------------
+if command -sq lazygit
+  abbr --add --global lg lazygit
+end
+
+# --- Ls (file listing)
+# -----------------------------------------------------------------------------
+alias ls "ls --color=auto"
+abbr --add --global ll ls -lh
+abbr --add --global la ls -lah
+
+# --- Exa (modern ls replacement)
+# -----------------------------------------------------------------------------
+if command -sq exa
+  abbr --add --global exa "exa --icons --grid"
+end
+
+# --- Vim/Neovim
+# -----------------------------------------------------------------------------
+if command -sq nvim
+  abbr --add --global vim nvim
+end

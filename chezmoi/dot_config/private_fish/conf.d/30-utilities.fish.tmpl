@@ -1,0 +1,52 @@
+{{ template "banner.tmpl" "Fish - Utilities Configuration" }}
+
+# --- Atuin (shell history)
+# -----------------------------------------------------------------------------
+if command -sq atuin
+  __fish_cache_init atuin atuin init fish
+end
+
+# --- Direnv (environment manager)
+# -----------------------------------------------------------------------------
+# NOTE: must be used before all, in order to manage custom environment
+# NOTE²: @pjeby (https://github.com/direnv/direnv/issues/583#issuecomment-626109571)
+if command -sq direnv
+  function __direnv_export_eval --on-event fish_prompt;
+    # Run on each prompt to update the state
+    direnv export fish | source;
+
+    # Handle cd history arrows between now and the next prompt
+    function __direnv_cd_hook --on-variable PWD;
+      # ensure any output overwrites the prompt instead of going after it
+      echo -ne '\r'
+      # run the outer function to apply any changes
+      __direnv_export_eval
+    end
+
+    function __direnv_disable_cd --on-event fish_preexec;
+      # Once we're running commands, stop monitoring cd changes
+      # until we get to the prompt again
+      functions --erase __direnv_cd_hook
+    end
+  end
+end
+
+# --- GitHub CLI
+# -----------------------------------------------------------------------------
+if command -sq gh
+  abbr --add --global !! gh copilot suggest -t shell
+  abbr --add --global git! gh copilot suggest -t git
+  abbr --add --global gh! gh copilot suggest -t gh
+end
+
+# --- Chezmoi (dotfiles manager)
+# -----------------------------------------------------------------------------
+if command -sq chezmoi
+  __fish_cache_init chezmoi chezmoi completion fish
+end
+
+# --- Zoxide (smart cd)
+# -----------------------------------------------------------------------------
+if command -sq zoxide
+  __fish_cache_init zoxide zoxide init fish
+end

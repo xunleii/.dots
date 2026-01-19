@@ -1,0 +1,9 @@
+{{ template "banner.tmpl" "Fish - Keybindings" }}
+
+# --- FZF Keybindings
+# -----------------------------------------------------------------------------
+if command -sq fzf_configure_bindings
+  fzf_configure_bindings --directory=\cf --git_log=\cg --git_status=\cs   # [Ctrl+F] Find file in directory
+                                                                          # [Ctrl+G] Find file in git history
+                                                                          # [Ctrl+S] Find file in git status
+end

@@ -1,0 +1,16 @@
+{{ template "banner.tmpl" "Fish - Bitwarden SSH Agent" }}
+
+{{- if eq .chezmoi.os "darwin" }}
+# Bitwarden SSH Agent integration for macOS
+# Reference: https://bitwarden.com/help/ssh-agent/
+
+set -l bw_ssh_socket {{ .chezmoi.homeDir }}/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
+set -l bw_legacy_socket {{ .chezmoi.homeDir }}/.bitwarden-ssh-agent.sock
+
+# Set SSH_AUTH_SOCK based on which socket exists
+if test -S "$bw_legacy_socket"
+    set -gx SSH_AUTH_SOCK "$bw_legacy_socket"
+else if test -S "$bw_ssh_socket"
+    set -gx SSH_AUTH_SOCK "$bw_ssh_socket"
+end
+{{- end }}
