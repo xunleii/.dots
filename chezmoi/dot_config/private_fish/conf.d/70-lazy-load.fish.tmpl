@@ -1,0 +1,16 @@
+{{ template "banner.tmpl" "Fish - Lazy Load Configuration" }}
+
+# --- Lazy Load .fish Files
+# -----------------------------------------------------------------------------
+# NOTE: this section is used to load dynamically fish files when we modify the
+#       fish_lazy_load variable (with `path_add fish_lazy_load ".direnv/fish.d"`
+#       for example)
+
+set --universal fish_lazy_load
+function __fish_lazy_load_files --description "Lazy load .fish files" --on-variable fish_lazy_load
+  for dir in (string split ':' $fish_lazy_load)
+    for file in (find $dir -name '*.fish' -type f)
+      source $file
+    end
+  end
+end

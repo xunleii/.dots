@@ -7,3 +7,6 @@ README.md
 
 # --- Scripts
 scripts/**
+
+# --- Workspace directories (managed by git only)
+.workspaces/**/.gitkeep

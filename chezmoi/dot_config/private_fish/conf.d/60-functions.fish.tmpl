@@ -1,0 +1,19 @@
+{{ template "banner.tmpl" "Fish - Custom Functions" }}
+
+# --- Bitwarden Functions
+# -----------------------------------------------------------------------------
+if command -sq bw
+  function bw_session --description "Open a new Bitwarden session"
+    set --global BW_SESSION (bw unlock --raw)
+  end
+end
+
+# --- Chezmoi Functions
+# -----------------------------------------------------------------------------
+if command -sq chezmoi
+  function chezmoi_banner --description "Generate personal file header"
+    chezmoi execute-template '{{ "{{" }} template "banner.tmpl" dict "Title" "'$argv[1]'" "Subtitle" "'$argv[2]'" }}';
+  end
+end
+
+abbr --add --global banner chezmoi_banner

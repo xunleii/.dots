@@ -1,0 +1,19 @@
+{{ template "banner.tmpl" "Fish - Prompt Configuration" }}
+
+# --- Starship Prompt
+# -----------------------------------------------------------------------------
+if command -sq starship
+  function starship_transient_prompt_func
+    starship module line_break
+    starship module sudo
+    starship module directory
+    starship module character
+  end
+
+  function starship_transient_rprompt_func
+    starship module time
+  end
+
+  __fish_cache_init starship starship init fish --print-full-init
+  enable_transience
+end

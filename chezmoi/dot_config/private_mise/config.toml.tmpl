@@ -1,12 +1,17 @@
 {{ template "banner.tmpl" "Mise - Configuration file" }}
 [settings]
 experimental = true
+idiomatic_version_file_enable_tools = ["terraform"]
 
 [tools]
+bitwarden = "latest"
+crane = "latest"
+doggo = "latest"
 eza = "latest"
-kubectl = "latest"
+gemini-cli = "latest"
+jqp = "latest"
+
 "npm:czg" = "latest"
-"ubi:cargo-bins/cargo-binstall" = "latest"
 "ubi:cli/cli" = { version = "latest", exe = "gh" }
 "ubi:junegunn/fzf" = "latest"
 "ubi:sharkdp/bat" = "latest"

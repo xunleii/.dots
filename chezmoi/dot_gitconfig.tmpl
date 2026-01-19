@@ -1,53 +1,79 @@
 {{ template "banner.tmpl" "Git - Global config" }}
 
-# ---
-# Sources:
+# ============================================================================
+# SOURCES & REFERENCES
+# ============================================================================
 #  - https://git-scm.com/docs/git-config
 #  - https://gist.github.com/tdd/470582
 #  - https://gist.github.com/pyrtsa/4148804
 
-# ---
+# ============================================================================
+# USER CONFIGURATION
+# ============================================================================
 [user]
   email = {{ .email }}
   name = {{ .name }}
+  # Sign all commits by default with GPG key
+  signingkey = {{ .email }}
 
+# ============================================================================
+# GPG/PGP CONFIGURATION - Commit and tag signing
+# ============================================================================
+[gpg]
+  {{ if lookPath "gpg" -}}
+  # Use Homebrew's gpg if available, otherwise system default
+  program = {{ lookPath "gpg" }}
+  {{- end }}
+
+[commit]
+  # Sign all commits by default
+  gpgsign = true
+
+# ============================================================================
+# COLOR CONFIGURATION
+# ============================================================================
 [color]
   # Enable colors in color-supporting terminals
   ui = auto
 
+# ============================================================================
+# ALIASES - Custom Git commands for productivity
+# ============================================================================
 [alias]
   # List available aliases
   aliases = "!git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'"
 
+  # ── Repository Information ────────────────────────────────────────────────
   # Show default branch
   default = branch --remotes --list "'*/HEAD'" --format "'%(symref:lstrip=3)'"
 
+  # ── Log & History ─────────────────────────────────────────────────────────
   # Display tree-like log, because default log is a pain…
   lg = log --graph --date=relative --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%an %ad)%Creset'
-
-  # Useful when you have to update your last commit
-  # with staged files without editing the commit message.
-  oops = commit --amend --no-edit
-
-  # Yoloooooooooooooo ?
-  yolo = !git add -A && git commit -m \"$(curl --silent --fail https://whatthecommit.com/index.txt)\"
-
   # List local commits that were not pushed to remote repository
   review-local = lg "@{push}.."
 
+  # ── Commit Utilities ──────────────────────────────────────────────────────
+  # Update last commit with staged files without editing the commit message
+  oops = commit --amend --no-edit
   # Edit last commit message
   reword = commit --amend
-
-  # Set the current branch upstream
-  set-upstream = branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
-
   # Undo last commit but keep changed files in stage
   uncommit = reset --soft HEAD~1
+  # Yoloooooooooooooo ?
+  yolo = !git add -A && git commit -m \"$(curl --silent --fail https://whatthecommit.com/index.txt)\"
 
+  # ── Branch Management ─────────────────────────────────────────────────────
+  # Set the current branch upstream
+  set-upstream = branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+  # Prune all local branches not available on remote
+  prune-all = "!git remote prune origin && git branch --merged | grep -v '^*' | xargs git branch -d"
+
+  # ── File Operations ───────────────────────────────────────────────────────
   # Remove file(s) from Git but not from disk
   untrack = rm --cache --
 
-  # List files aliases
+  # ── File Listing ──────────────────────────────────────────────────────────
   ls           = status -suno
   ls-modified  = status --porcelain -uno | awk 'match($1, /M/) {print $2}'
   ls-added     = status --porcelain -uno | awk 'match($1, /A/) {print $2}'
@@ -59,10 +85,9 @@
   ls-untracked = status --porcelain -uall | awk '$1 == \"??\" {print $2}'
   ls-ignored   = ls-files --others --ignored --exclude-standard
 
-  # Prune all local branches not available on remote
-  prune-all = "!git remote prune origin && git branch --merged | grep -v '^*' | xargs git branch -d"
-
-# ---
+# ============================================================================
+# CORE CONFIGURATION - Editor, pager, and file handling
+# ============================================================================
 [core]
   # editor = code --wait # TODO: check if vim can do that much better than vscode
   excludesfile = {{ .chezmoi.homeDir }}/.gitignore
@@ -72,7 +97,9 @@
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
-# ---
+# ============================================================================
+# REPOSITORY INITIALIZATION & BRANCH BEHAVIOR
+# ============================================================================
 [init]
   defaultBranch = main
 
@@ -84,6 +111,9 @@
   # be rebased upon `git pull`
   autoSetupRebase = always
 
+# ============================================================================
+# DIFF CONFIGURATION - How Git displays differences
+# ============================================================================
 [diff]
   # Use better, descriptive initials (c, i, w) instead of a/b.
   mnemonicPrefix = true
@@ -98,6 +128,9 @@
   external = difft
   {{- end }}
 
+# ============================================================================
+# FETCH, MERGE & REBASE BEHAVIOR
+# ============================================================================
 [fetch]
   # Auto-fetch submodule changes (sadly, won't auto-update)
   recurseSubmodules = on-demand
@@ -123,12 +156,6 @@
   # available from 2.18 onwards.
   rebase = merges
 
-[push]
-  # Default push should only push the current branch to its push target, regardless of its remote name
-  default = upstream
-  # When pushing, also push tags whose commit-ishs are now reachable upstream
-  followTags = true
-
 [rebase]
   # Rebase advanced usage.
   # Automagically reorder and prefix your commands while doing an interactive
@@ -140,7 +167,18 @@
   # after and before your rebase.
   autoStash = true
 
-# ---
+# ============================================================================
+# PUSH CONFIGURATION - Default push behavior
+# ============================================================================
+[push]
+  # Default push should only push the current branch to its push target, regardless of its remote name
+  default = upstream
+  # When pushing, also push tags whose commit-ishs are now reachable upstream
+  followTags = true
+
+# ============================================================================
+# OUTPUT & DISPLAY SETTINGS - Grep, log, status, and tag configuration
+# ============================================================================
 [grep]
   break = true
   heading = true
@@ -168,6 +206,8 @@
 [tag]
   # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
   sort = version:refname
+  # Sign all tags by default
+  gpgsign = true
 
 [versionsort]
   suffix = -pre
@@ -177,12 +217,17 @@
   suffix = -rc
   suffix = .rc
 
+# ============================================================================
+# GIT ABSORB - Auto-amend to the correct commit
+# ============================================================================
 [absorb]
   fixupTargetAlwaysSHA = true
 
-{{- $wkspaces := (joinPath .chezmoi.homeDir "Documents/Workspaces") }}
+# ============================================================================
+# WORKSPACE-SPECIFIC CONFIGURATIONS
+# ============================================================================
+{{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
 {{ if stat $wkspaces }}
-# ---
 {{-   range (output "ls" $wkspaces | trim | split "\n") }}
 [includeIf "gitdir:{{joinPath $wkspaces .}}"]
   path = {{ joinPath $wkspaces . ".gitconfig" }}
