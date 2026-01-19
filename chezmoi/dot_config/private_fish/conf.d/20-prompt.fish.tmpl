@@ -14,6 +14,6 @@ if command -sq starship
     starship module time
   end
 
-  __fish_cache_init starship starship init fish --print-full-init
+  starship init fish --print-full-init | source
   enable_transience
 end
