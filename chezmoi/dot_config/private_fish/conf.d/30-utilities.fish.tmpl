@@ -6,6 +6,12 @@ if command -sq atuin
   __fish_cache_init atuin atuin init fish
 end
 
+# --- Brewfile (Homebrew wrapper)
+# -----------------------------------------------------------------------------
+if command -sq brew && test -f (brew --prefix)/etc/brew-wrap.fish
+  source (brew --prefix)/etc/brew-wrap.fish
+end
+
 # --- Direnv (environment manager)
 # -----------------------------------------------------------------------------
 # NOTE: must be used before all, in order to manage custom environment
