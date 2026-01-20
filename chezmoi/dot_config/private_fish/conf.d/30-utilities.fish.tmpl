@@ -3,7 +3,7 @@
 # --- Atuin (shell history)
 # -----------------------------------------------------------------------------
 if command -sq atuin
-  __fish_cache_init atuin atuin init fish
+  atuin init fish | source
 end
 
 # --- Brewfile (Homebrew wrapper)
@@ -48,11 +48,11 @@ end
 # --- Chezmoi (dotfiles manager)
 # -----------------------------------------------------------------------------
 if command -sq chezmoi
-  __fish_cache_init chezmoi chezmoi completion fish
+  chezmoi completion fish | source
 end
 
 # --- Zoxide (smart cd)
 # -----------------------------------------------------------------------------
 if command -sq zoxide
-  __fish_cache_init zoxide zoxide init fish
+  zoxide init fish | source
 end
