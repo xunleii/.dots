@@ -48,3 +48,4 @@ data:
   email: {{ promptStringOnce . "email" "What is your GIT email" }}
   bitwarden:
     access_token: {{ promptStringOnce . "bitwarden.access_token" (printf "Get a Bitwarden access token for this machine (%s)" .chezmoi.fqdnHostname) }}
+  runtime_dir: {{ promptStringOnce . "runtime_dir" "Where all the langauge runtimes/cache/packages should be installed" }}
