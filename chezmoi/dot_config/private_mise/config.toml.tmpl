@@ -4,19 +4,64 @@ experimental = true
 idiomatic_version_file_enable_tools = ["terraform"]
 
 [tools]
-bitwarden = "latest"
+# --- Languages ---
+go = "1.25"
+node = "24"
+rust = "1.92"
+python = "3.14"
+
+# --- Tools ---
+"npm:czg" = "latest"
+"github:cli/cli" = { version = "latest", exe = "gh" }
+"github:junegunn/fzf" = "latest"
+"github:sharkdp/bat" = "latest"
+"github:sharkdp/fd" = "latest"
+"github:str4d/rage" = "latest"
 crane = "latest"
 doggo = "latest"
 eza = "latest"
 gemini-cli = "latest"
 jqp = "latest"
+uv = "latest"
 
-"npm:czg" = "latest"
-"ubi:cli/cli" = { version = "latest", exe = "gh" }
-"ubi:junegunn/fzf" = "latest"
-"ubi:sharkdp/bat" = "latest"
-"ubi:sharkdp/fd" = "latest"
-"ubi:starship/starship" = "latest"
-"ubi:str4d/rage" = "latest"
-"ubi:tummychow/git-absorb" = "latest"
-"ubi:Wilfred/difftastic" = { version = "latest", exe = "difft" }
+[env]
+MISE_DATA_DIR = "{{ .runtime_dir }}/mise"
+
+# Node
+npm_config_cache = "{{ .runtime_dir }}/node/npm/cache"
+npm_config_prefix = "{{ .runtime_dir }}/node/npm"
+
+# Go
+GOPATH = "{{ .runtime_dir }}/go"
+GOCACHE = "{{ .runtime_dir }}/go/cache"
+GOMODCACHE = "{{ .runtime_dir }}/go/mod"
+
+# Rust
+CARGO_HOME = "{{ .runtime_dir }}/rust/cargo"
+CARGO_TARGET_DIR = "{{ .runtime_dir }}/rust/cargo/target"
+
+# Python
+PIP_CACHE_DIR = "{{ .runtime_dir }}/python/pip"
+POETRY_CACHE_DIR = "{{ .runtime_dir }}/python/pypoetry"
+UV_CACHE_DIR = "{{ .runtime_dir }}/python/uv"
+
+# Elixir
+MIX_HOME = "{{ .runtime_dir }}/elixir/mix"
+HEX_HOME = "{{ .runtime_dir }}/elixir/hex"
+
+# Java
+GRADLE_USER_HOME = "{{ .runtime_dir }}/java/gradle"
+MAVEN_OPTS = "-Dmaven.repo.local={{ .runtime_dir }}/java/maven/repository"
+
+# Ruby
+BUNDLE_USER_CACHE = "{{ .runtime_dir }}/ruby/bundler"
+GEM_SPEC_CACHE = "{{ .runtime_dir }}/ruby/gem"
+
+# PATH definition using mise's env._.path
+# This handles prepending to PATH automatically
+_.path = [
+    "{{ .runtime_dir }}/node/npm/bin",
+    "{{ .runtime_dir }}/go/bin",
+    "{{ .runtime_dir }}/rust/cargo/bin",
+    "{{ .chezmoi.homeDir }}/.local/bin"
+]
