@@ -1,0 +1,28 @@
+# Ghostty Configuration
+
+# Shell configuration
+command = /opt/homebrew/bin/fish
+shell-integration = fish
+
+# Theme
+theme = Xcode Dark hc
+
+# Font
+font-family = IosevkaTerm Nerd Font Mono
+font-size = 14
+
+# Window
+background-opacity = 0.9
+background-blur = true
+window-decoration = true
+
+# Cursor
+cursor-style = block
+
+# macOS specific
+macos-option-as-alt = left
+macos-titlebar-style = tabs
+
+# Performance & Rendering
+font-thicken = true
+copy-on-select = true
