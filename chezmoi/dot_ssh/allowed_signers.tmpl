@@ -1,3 +1,8 @@
 {{- if .signingkey -}}
 {{ .email }} {{ .signingkey }}
+{{- end }}
+{{- if .trusted_signers -}}
+{{ range .trusted_signers -}}
+{{ .email }} {{ .key }}
+{{- end }}
 {{- end -}}
