@@ -13,25 +13,48 @@
 [user]
   email = {{ .email }}
   name = {{ .name }}
-  # Sign all commits by default with GPG key
-  signingkey = {{ .email }}
+  {{- if .signingkey }}
+  # Sign all commits by default
+  signingkey = {{ .signingkey }}
+  {{- end }}
 
 # ============================================================================
-# GPG/PGP CONFIGURATION - Commit and tag signing
+# SIGNING CONFIGURATION - Commit and tag signing
 # ============================================================================
+{{- if .signingkey }}
 [gpg]
+  {{- if hasPrefix "ssh-" .signingkey }}
+  format = ssh
+  {{- else }}
   {{ if lookPath "gpg" -}}
   # Use Homebrew's gpg if available, otherwise system default
   program = {{ lookPath "gpg" }}
+  {{- end }}
   {{- end }}
 
 [commit]
   # Sign all commits by default
   gpgsign = true
 
+[tag]
+  # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
+  sort = version:refname
+  # Sign all tags by default
+  gpgsign = true
+{{- else }}
+[commit]
+  gpgsign = false
+
+[tag]
+  # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
+  sort = version:refname
+  gpgsign = false
+{{- end }}
+
 # ============================================================================
-# COLOR CONFIGURATION
+# COLOR CONFIGURATION - Enable colors in Git output
 # ============================================================================
+
 [color]
   # Enable colors in color-supporting terminals
   ui = auto
@@ -202,12 +225,6 @@
   submoduleSummary = true
   # Recursively traverse untracked directories to display all contents
   showUntrackedFiles = all
-
-[tag]
-  # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
-  sort = version:refname
-  # Sign all tags by default
-  gpgsign = true
 
 [versionsort]
   suffix = -pre
