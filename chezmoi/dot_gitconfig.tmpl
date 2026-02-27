@@ -25,6 +25,7 @@
 [gpg]
   {{- if hasPrefix "ssh-" .signingkey }}
   format = ssh
+  allowedSignersFile = {{ .chezmoi.homeDir }}/.ssh/allowed_signers
   {{- else }}
   {{ if lookPath "gpg" -}}
   # Use Homebrew's gpg if available, otherwise system default
