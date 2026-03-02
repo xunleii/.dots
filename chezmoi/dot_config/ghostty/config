@@ -20,6 +20,10 @@ font-size = 14
 adjust-cell-width = 10%
 
 # --- Window & Interface ---
+# Inherit the working directory for new windows, tabs, and splits
+working-directory = inherit
+# Specifically ensure new tabs/splits in the same window inherit the CWD
+window-inherit-working-directory = true
 # Background opacity (0.95 = 95%)
 background-opacity = 0.95
 # Enable background blur (glass effect)
