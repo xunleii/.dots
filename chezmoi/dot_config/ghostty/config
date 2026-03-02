@@ -1,28 +1,44 @@
 # Ghostty Configuration
+# Documentation: https://ghostty.org/docs/config/reference
 
-# Shell configuration
+# --- Shell & Integration ---
+# Default shell to use
 command = /opt/homebrew/bin/fish
+# Enable native Ghostty shell integration for fish
 shell-integration = fish
 
-# Theme
+# --- Theme ---
+# Theme inspired by Apple's Xcode IDE (High Contrast version)
 theme = Xcode Dark hc
 
-# Font
+# --- Typography ---
+# Font family (Iosevka is known for its narrow design)
 font-family = IosevkaTerm Nerd Font Mono
+# Default text size
 font-size = 14
+# Increase character width by 10% to compensate for Iosevka's natural narrowness
+adjust-cell-width = 10%
 
-# Window
-background-opacity = 0.9
+# --- Window & Interface ---
+# Background opacity (0.95 = 95%)
+background-opacity = 0.95
+# Enable background blur (glass effect)
 background-blur = true
+# Show standard window decorations and controls
 window-decoration = true
 
-# Cursor
+# --- Cursor ---
+# Cursor style (block is a solid square)
 cursor-style = block
 
-# macOS specific
+# --- macOS Specific ---
+# Map Left Option key to Alt (essential for shell shortcuts)
 macos-option-as-alt = left
+# Use native macOS tabs in the title bar
 macos-titlebar-style = tabs
 
-# Performance & Rendering
+# --- Performance & Rendering ---
+# Slightly thicken font strokes for better readability
 font-thicken = true
+# Automatically copy selected text to the clipboard
 copy-on-select = true
