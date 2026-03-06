@@ -27,7 +27,7 @@
     "theme": {
         "mode": "dark",
         "light": "One Light",
-        "dark": "One Dark"
+        "dark": "Zedokai Darker (Filter Spectrum)"
     },
     "icon_theme": "Zed (Default)",
     // The name of a base set of key bindings to use.
@@ -53,7 +53,7 @@
         // "calt": false
     },
     // The default font size for text in the editor
-    "buffer_font_size": 15,
+    "buffer_font_size": 13,
     // The weight of the editor font in standard CSS units from 100 to 900.
     "buffer_font_weight": 400,
     // Set the buffer's line height.
@@ -66,7 +66,7 @@
     //         "buffer_line_height": {
     //           "custom": 2
     //         },
-    "buffer_line_height": "comfortable",
+    "buffer_line_height": "standard",
     // The name of a font to use for rendering text in the UI
     // You can set this to ".SystemUIFont" to use the system font
     "ui_font_family": "Zed Plex Sans",
@@ -81,7 +81,7 @@
     // The weight of the UI font in standard CSS units from 100 to 900.
     "ui_font_weight": 400,
     // The default font size for text in the UI
-    "ui_font_size": 16,
+    "ui_font_size": 15,
     // How much to fade out unused code.
     "unnecessary_code_fade": 0.3,
     // Active pane styling settings.
@@ -1087,7 +1087,7 @@
         },
         // Set the terminal's font size. If this option is not included,
         // the terminal will default to matching the buffer's font size.
-        "font_size": 14,
+        "font_size": 13,
         // Set the terminal's font family. If this option is not included,
         // the terminal will default to matching the buffer's font family.
         "font_family": "IosevkaTerm Nerd Font Mono"
