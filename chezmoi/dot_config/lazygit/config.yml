@@ -2,6 +2,8 @@ git:
   commit:
     signOff: true
   overrideGpg: true
+  pagers:
+    - externalDiffCommand: difft --color=always
   parseEmoji: true
 
 customCommands:
