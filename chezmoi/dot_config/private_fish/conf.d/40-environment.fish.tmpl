@@ -10,6 +10,15 @@ set --global --export GIT_EDITOR $EDITOR
 # -----------------------------------------------------------------------------
 set --global --export TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
 
+# --- GitHub CLI
+# -----------------------------------------------------------------------------
+if type -q gh
+    set -l token (gh auth token 2>/dev/null)
+    if test -n "$token"
+        set --global --export GITHUB_TOKEN "$token"
+    end
+end
+
 {{ if eq .chezmoi.os "darwin" }}
 # --- MacOS-specific Locale Configuration
 # -----------------------------------------------------------------------------
