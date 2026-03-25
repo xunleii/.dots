@@ -1,0 +1,320 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "InquirerPy",
+#   "pygit2",
+#   "rich",
+# ]
+# ///
+
+"""
+Git Worktree Wizard
+------------------
+A CLI tool to simplify the creation of multiple Git worktrees across various repositories.
+Useful for large projects with many dependencies or sub-projects.
+
+Prerequisites:
+- `uv` (for script execution and dependency management)
+- `git` (and `pygit2` library)
+
+Configuration:
+- Set `ORIGINS_DIR` environment variable to the root directory containing your Git repositories.
+- If not set, it will attempt to find an 'origins' directory in the current or parent folders.
+
+Usage:
+    add-wktree
+"""
+
+import os
+import sys
+import secrets
+import pygit2
+import argparse
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Any
+
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.separator import Separator
+from InquirerPy.utils import get_style
+from InquirerPy.validator import EmptyInputValidator
+
+from rich.console import Console
+from rich.table import Table
+from rich.text import Text
+from rich.theme import Theme
+
+def get_current_branch_name(repo: pygit2.Repository) -> Optional[str]:
+    """Returns the shorthand name of the current branch, or 'HEAD' if detached."""
+    try:
+        if repo.head_is_detached:
+            return "HEAD"
+        return repo.head.shorthand
+    except pygit2.GitError:
+        return None
+
+def get_default_branch_name(repo: pygit2.Repository) -> str:
+    """Attempts to determine the default branch name (e.g., main, master)."""
+    try:
+        head_ref = repo.references.get('refs/remotes/origin/HEAD')
+        if head_ref:
+            return head_ref.target.split('/')[-1]
+        for name in ['main', 'master', 'develop']:
+            if name in repo.branches.local:
+                return name
+            if f'origin/{name}' in repo.branches.remote:
+                return name
+    except (pygit2.GitError, Exception):
+        pass
+    return "main"
+
+def get_repo_worktrees_info(repo: pygit2.Repository) -> List[Dict[str, Any]]:
+    """Retrieves information about existing worktrees for a given repository."""
+    worktrees = []
+    try:
+        for wt_name in repo.worktrees:
+            wt = repo.worktrees[wt_name]
+            try:
+                wt_repo = pygit2.Repository(wt.path)
+                branch = get_current_branch_name(wt_repo)
+            except (pygit2.GitError, Exception):
+                branch = "unknown"
+            worktrees.append({
+                'name': wt_name,
+                'path': Path(wt.path),
+                'branch': branch
+            })
+    except (pygit2.GitError, AttributeError):
+        pass
+    return worktrees
+
+def main():
+    """Main execution flow for the Git Worktree Wizard."""
+    # Command line argument parsing
+    parser = argparse.ArgumentParser(description="Interactive wizard to create multiple Git worktrees.")
+    args = parser.parse_args()
+
+    # Theme for Rich console output
+    custom_theme = Theme({
+        "info": "cyan",
+        "warning": "orange3",
+        "error": "red",
+        "success": "green",
+        "path": "grey50",
+        "section": "bold blue",
+        "hash": "bold magenta",
+        "title": "bold blue",
+    })
+    console = Console(theme=custom_theme)
+
+    # Style configuration for InquirerPy prompts
+    style = get_style({
+        "questionmark": "#e5c07b",
+        "pointer": "#61afef bold",
+        "marker": "#e5c07b",
+        "answered": "#98c379",
+        "input": "#98c379",
+        "question": "bold",
+    }, style_override=False)
+
+    cwd = Path.cwd()
+    console.print(f"\n[title]─── Git Worktree Wizard ───[/title]\n")
+
+    # Resolve 'origins' directory
+    env_origins = os.environ.get("ORIGINS_DIR")
+    origins_dir = Path(env_origins).expanduser().resolve() if env_origins else None
+    if not origins_dir or not origins_dir.exists():
+        curr = cwd
+        while curr != curr.parent:
+            if (curr / "origins").exists():
+                origins_dir = (curr / "origins").resolve()
+                break
+            curr = curr.parent
+
+    if not origins_dir:
+        console.print(f"[red]❌ Error: 'origins' directory not found.[/red]")
+        console.print("Please set ORIGINS_DIR or run from a folder containing an 'origins' directory.")
+        sys.exit(1)
+
+    # =========================================================================
+    # SECTION 1: SOURCE SELECTION
+    # =========================================================================
+    console.print(f"[section]1. Source Selection[/section]")
+
+    repo_map = {}
+    for root, dirs, files in os.walk(origins_dir):
+        if '.git' in dirs:
+            root_path = Path(root)
+            rel_name = str(root_path.relative_to(origins_dir))
+            try:
+                repo_map[rel_name] = pygit2.Repository(root)
+                dirs[:] = []  # Don't recurse into subdirectories of a repo
+            except pygit2.GitError:
+                pass
+
+    selected_repo_names = inquirer.fuzzy(
+        message="Repositories to clone (TAB to toggle):",
+        choices=sorted(repo_map.keys()),
+        multiselect=True,
+        pointer=">",
+        marker=" ● ",
+        marker_pl=" ○ ",
+        amark="✔",
+        max_height="70%",
+        border=True,
+        validate=lambda result: len(result) >= 1,
+        invalid_message="Please select at least one repository.",
+        style=style,
+    ).execute()
+
+    if not selected_repo_names:
+        sys.exit(0)
+
+    repo_refs = {}
+    for name in selected_repo_names:
+        repo = repo_map[name]
+        default_b = get_default_branch_name(repo)
+        ref = inquirer.text(
+            message=f"   ● Reference for '{name}':",
+            default=default_b,
+            amark="✔",
+            style=style,
+        ).execute()
+        repo_refs[name] = ref or default_b
+
+    # =========================================================================
+    # SECTION 2: TARGET CONFIGURATION
+    # =========================================================================
+    console.print(f"\n[section]2. Target Configuration[/section]")
+
+    # Gather existing branches from current directory (worktree contexts)
+    existing_branches = set()
+    for item in cwd.iterdir():
+        if item.is_dir() and item.resolve() != origins_dir:
+            try:
+                r = pygit2.Repository(str(item))
+                b = get_current_branch_name(r)
+                if b and b != "HEAD":
+                    existing_branches.add(b)
+            except pygit2.GitError:
+                pass
+
+    branch_choices = sorted(list(existing_branches))
+    if branch_choices:
+        branch_choices.append(Separator())
+    branch_choices.append(Choice(value="__new__", name="[ Manual entry ]"))
+
+    wt_branch_selection = inquirer.select(
+        message="Target branch:",
+        choices=branch_choices,
+        default=branch_choices[0] if existing_branches else branch_choices[-1],
+        pointer="●",
+        amark="✔",
+        style=style,
+    ).execute()
+
+    if wt_branch_selection == "__new__":
+        wt_branch = inquirer.text(
+            message=f"   ● Branch name:",
+            validate=EmptyInputValidator(),
+            amark="✔",
+            style=style
+        ).execute()
+    else:
+        wt_branch = wt_branch_selection
+
+    target_base_dir = inquirer.filepath(
+        message="Destination folder:",
+        default=str(cwd),
+        only_directories=True,
+        amark="✔",
+        style=style
+    ).execute()
+    target_base_path = Path(target_base_dir).resolve()
+
+    # =========================================================================
+    # SECTION 3: REPORT & CONFIRMATION
+    # =========================================================================
+    console.print(f"\n[section]3. Report & Confirmation[/section]\n")
+
+    wt_hash = secrets.token_hex(4)
+    tasks = []
+
+    table = Table(box=None, header_style="bold blue", show_edge=False, padding=(0, 2))
+    table.add_column("", justify="center", width=5)
+    table.add_column("Repository")
+    table.add_column("Ref")
+    table.add_column("", style="path")
+
+    for name in selected_repo_names:
+        repo = repo_map[name]
+        target_path = target_base_path / wt_hash / name
+        actual_ref = repo_refs[name]
+
+        worktrees = get_repo_worktrees_info(repo)
+        conflict_wt = next((wt for wt in worktrees if wt['branch'] == wt_branch), None)
+
+        if conflict_wt:
+            table.add_row(
+                Text("[?]", style="warning"),
+                Text(name, style="warning"),
+                Text(actual_ref, style="warning"),
+                Text(f"already exists at: {conflict_wt['path']}")
+            )
+        else:
+            table.add_row(
+                Text("[+]", style="success"),
+                Text(name, style="success"),
+                Text(actual_ref, style="success"),
+                Text("ready to be created", style="success")
+            )
+            tasks.append((name, repo, target_path, actual_ref))
+
+    console.print(table)
+
+    if not tasks:
+        console.print(f"\n[warning]⚠️ No actions to perform.[/warning]")
+        sys.exit(0)
+
+    summary = Text.assemble(
+        ("\n Session ID: ", "bold"), (wt_hash, "hash"),
+        ("  Branch: ", "bold"), (wt_branch, "magenta"),
+        ("  Path: ", "bold"), (str(target_base_path), "path"), "\n"
+    )
+    console.print(summary)
+
+    if not inquirer.confirm(message="Confirm this action plan?", default=True, amark="✔", style=style).execute():
+        sys.exit(0)
+
+    # =========================================================================
+    # EXECUTION
+    # =========================================================================
+    success_count = 0
+    for name, repo, dst, ref_name in tasks:
+        console.print(f"\n🚀 [bold]Creating '{name}'...[/bold]")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            target_obj = repo.revparse_single(ref_name)
+            # Create branch if it doesn't exist
+            branch = repo.branches.local.get(wt_branch) or repo.branches.create(wt_branch, target_obj)
+
+            wt_id = f"{wt_hash}-{name.split('/')[-1]}"
+            repo.worktrees.add(wt_id, str(dst), branch)
+
+            console.print(f"   [success]✔ Success[/success]")
+            success_count += 1
+        except Exception as e:
+            console.print(f"   [error]✘ Error: {e}[/error]")
+
+    console.print(f"\n[success]✨ Operation completed! {success_count} worktree(s) created.[/success]\n")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        # Graceful exit on Ctrl+C (English only)
+        # Use Rich Console instead of raw ANSI escape codes for consistent styling
+        from rich.console import Console
+        Console().print("\n\n[bold red]Operation aborted by user.[/bold red]")
+        sys.exit(130)
