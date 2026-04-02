@@ -31,9 +31,21 @@ background-blur = true
 # Show standard window decorations and controls
 window-decoration = true
 
-# --- Cursor ---
+# --- Cursor & Shaders ---
 # Cursor style (block is a solid square)
 cursor-style = block
+
+# --- Ghostty Cursor Shaders (https://github.com/sahaj-b/ghostty-cursor-shaders) ---
+# Available shaders:
+# shaders/cursor_warp.glsl (Neovide-like trail)
+# shaders/cursor_sweep.glsl (Animated trail)
+# shaders/cursor_tail.glsl (Kitty-like comet trail)
+# shaders/ripple_cursor.glsl (Pulse effect)
+# shaders/sonic_boom_cursor.glsl (Pulse effect)
+# shaders/ripple_rectangle_cursor.glsl (Pulse effect)
+# shaders/rectangle_boom_cursor.glsl (Pulse effect)
+
+custom-shader = shaders/cursor_sweep.glsl
 
 # --- macOS Specific ---
 # Map Left Option key to Alt (essential for shell shortcuts)
