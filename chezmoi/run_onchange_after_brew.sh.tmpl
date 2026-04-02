@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 {{ template "banner.tmpl" "Homebrew - Bundle installation" -}}
 
-# Brewfile hash: {{ include "dot_Brewfile.tmpl" | sha256sum }}
+# Brewfile hash: {{ include "dot_Brewfile" | sha256sum }}
 
 if command -v brew >/dev/null 2>&1; then
     echo "Installing/Updating Homebrew packages from Brewfile..."

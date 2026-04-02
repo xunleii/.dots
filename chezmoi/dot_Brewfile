@@ -16,17 +16,26 @@ cask "zed"
 # --- System Utilities
 brew "atuin"
 brew "btop"
+brew "procs"
 cask "raycast"
 
 # --- File Management
+brew "broot"
 brew "eza"
 cask "rar"
 cask "rsyncui"
 
 # --- Text Utilities
+brew "bat"
 brew "difftastic"
+brew "fd"
 brew "grep"
+brew "hexyl"
 brew "lnav"
+brew "ripgrep"
+
+# --- Graphics
+brew "chafa"
 
 # --- Cleanup
 cask "appcleaner"

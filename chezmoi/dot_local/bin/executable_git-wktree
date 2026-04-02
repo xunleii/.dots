@@ -72,8 +72,8 @@ def get_repo_worktrees_info(repo: pygit2.Repository) -> List[Dict[str, Any]]:
     """Retrieves information about existing worktrees for a given repository."""
     worktrees = []
     try:
-        for wt_name in repo.worktrees:
-            wt = repo.worktrees[wt_name]
+        for wt_name in repo.list_worktrees():
+            wt = repo.lookup_worktree(wt_name)
             try:
                 wt_repo = pygit2.Repository(wt.path)
                 branch = get_current_branch_name(wt_repo)
@@ -295,12 +295,12 @@ def main():
         dst.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            target_obj = repo.revparse_single(ref_name)
+            target_obj = repo.revparse_single(ref_name).peel(pygit2.Commit)
             # Create branch if it doesn't exist
             branch = repo.branches.local.get(wt_branch) or repo.branches.create(wt_branch, target_obj)
 
             wt_id = f"{wt_hash}-{name.split('/')[-1]}"
-            repo.worktrees.add(wt_id, str(dst), branch)
+            repo.add_worktree(wt_id, str(dst), branch)
 
             console.print(f"   [success]✔ Success[/success]")
             success_count += 1
