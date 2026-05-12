@@ -14,71 +14,6 @@ executable = true
 {{- end }}
 {{- end }}
 
-# --- BAT installation
-[".local/config/fish/completions/bat.fish"]
-type = "file"
-url = "https://raw.githubusercontent.com/sharkdp/bat/master/assets/completions/bat.fish.in"
-
-{{ with .packages.btop -}}
-{{ if has $os_arch (keys .release_names) -}}
-# --- BTOP installation
-[".local/bin/btop"]
-type = "archive-file"
-{{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "aristocratos/btop" (get .release_names $os_arch) }}"
-{{- else -}}
-url = "{{ gitHubReleaseAssetURL "aristocratos/btop" .version (get .release_names $os_arch) }}"
-{{- end }}
-path = "./btop/bin/btop"
-executable = true
-
-[".config/btop/themes"]
-type = "archive"
-{{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "aristocratos/btop" (get .release_names $os_arch) }}"
-{{- else -}}
-url = "{{ gitHubReleaseAssetURL "aristocratos/btop" .version (get .release_names $os_arch) }}"
-{{- end }}
-include = ["./btop/themes/*"]
-stripComponents = 3
-{{- else -}}
-# --- BTOP not available for {{ $os_arch }}
-{{- end }}
-{{- end }}
-
-{{ with .packages.direnv -}}
-{{ if has $os_arch (keys .release_names) -}}
-# --- Direnv installation
-[".local/bin/direnv"]
-type = "file"
-{{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "direnv/direnv" (get .release_names $os_arch) }}"
-{{- else -}}
-url = "{{ gitHubReleaseAssetURL "direnv/direnv" .version (get .release_names $os_arch) }}"
-{{- end }}
-executable = true
-{{- else -}}
-# --- Mise not available for {{ $os_arch }}
-{{- end }}
-{{- end }}
-
-{{ with .packages.lazygit -}}
-{{ if has $os_arch (keys .release_names) -}}
-# --- Lazygit installation
-[".local/bin/lazygit"]
-type = "archive-file"
-{{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" (get .release_names $os_arch) }}"
-{{- else -}}
-url = "{{ gitHubReleaseAssetURL "jesseduffield/lazygit" .version (get .release_names $os_arch) }}"
-{{- end }}
-path = "lazygit"
-executable = true
-{{- else -}}
-# --- Lazygit not available for {{ $os_arch }}
-{{- end }}
-{{- end }}
-
 {{ with .packages.mise -}}
 {{ if has $os_arch (keys .release_names) -}}
 # --- Mise installation
@@ -112,29 +47,19 @@ executable = true
 {{- end }}
 {{- end }}
 
-{{ with .packages.zoxide -}}
+{{/* ocx: installed from GitHub release assets (not via Homebrew) */}}
+{{ with .packages.ocx -}}
 {{ if has $os_arch (keys .release_names) -}}
-# --- Zoxide installation
-[".local/bin/zoxide"]
-type = "archive-file"
+# --- ocx installation
+[".local/bin/ocx"]
+type = "file"
 {{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (get .release_names $os_arch) }}"
+url = "{{ gitHubLatestReleaseAssetURL "kdcokenny/ocx" (get .release_names $os_arch) }}"
 {{- else -}}
-url = "{{ gitHubReleaseAssetURL "ajeetdsouza/zoxide" .version (get .release_names $os_arch) }}"
+url = "{{ gitHubReleaseAssetURL "kdcokenny/ocx" .version (get .release_names $os_arch) }}"
 {{- end }}
-path = "zoxide"
-executable = true
-
-[".config/fish/conf.d/zoxide.fish"]
-type = "archive-file"
-{{ if eq .version "latest" -}}
-url = "{{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (get .release_names $os_arch) }}"
-{{- else -}}
-url = "{{ gitHubReleaseAssetURL "ajeetdsouza/zoxide" .version (get .release_names $os_arch) }}"
-{{- end }}
-path = "completions/zoxide.fish"
 executable = true
 {{- else -}}
-# --- Usage not available for {{ $os_arch }}
+# --- ocx not available for {{ $os_arch }}
 {{- end }}
 {{- end }}

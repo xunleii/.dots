@@ -5,7 +5,9 @@ cask "font-iosevka-term-nerd-font"
 brew "bash"
 brew "fish"
 brew "gh"
+brew "manaflow-ai/cmux/cmux" # Terminal multiplexer
 brew "neovim"
+brew "lazygit"
 brew "nushell"
 brew "opencode"
 brew "starship"
@@ -27,6 +29,7 @@ cask "rsyncui"
 
 # --- Text Utilities
 brew "bat"
+brew "zoxide"
 brew "difftastic"
 brew "fd"
 brew "grep"
