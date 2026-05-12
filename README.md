@@ -61,7 +61,7 @@ This repository uses multiple package managers and installation methods:
 
 - **Homebrew** - Primary package manager for macOS (formulas and casks)
 - **Mac App Store** - Via `mas` CLI for App Store apps
-- **chezmoi externals** - For specific CLI tools (direnv, lazygit, mise, usage, zoxide, bws)
+- **chezmoi externals** - For specific CLI tools (lazygit, mise, usage, zoxide, bws)
 - **mise** - Polyglot runtime manager for development tools
 - **Manual downloads** - For apps not available in package managers
 
@@ -102,12 +102,9 @@ Current mise-managed tools include:
 - Development tools (just, sops, vault)
 - CLI utilities (bat, eza, fzf, gh, starship)
 
-### [direnv](https://direnv.net) - unclutter your .profile
+### Environment manager
 
-> [!NOTE]
-> `direnv` is automatically installed on bootstrap, using `chezmoi` externals
-
-Manages environment variables and project layouts per directory. Automatically loads/unloads environment variables when entering/leaving directories, making it perfect for project-specific configurations.
+Environment and runtime management are handled via mise now.
 
 ## LICENSE
 

@@ -899,12 +899,7 @@
         //   "base_url": "https://code.big-corp.com"
         // }
     ],
-    // Configuration for how direnv configuration should be loaded. May take 2 values:
-    // 1. Load direnv configuration using `direnv export json` directly.
-    //      "load_direnv": "direct"
-    // 2. Load direnv configuration through the shell hook, works for POSIX shells and fish.
-    //      "load_direnv": "shell_hook"
-    "load_direnv": "direct",
+    // direnv configuration removed — environment handling is performed via mise
     "edit_predictions": {
         // A list of globs representing files that edit predictions should be disabled for.
         // There's a sensible default list of globs already included.

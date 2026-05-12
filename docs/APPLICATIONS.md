@@ -59,11 +59,7 @@ This document lists all applications currently installed on the system, categori
   # Managed by mise: mise use -g ubi:sharkdp/bat@latest
   # OR by chezmoi: defined in .chezmoiexternal.toml (fish completion only)
   ```
-- **direnv** (🏠) - Environment variable manager per directory
-  ```bash
-  # Managed by chezmoi: defined in .chezmoiexternal.toml
-  # Downloads from https://github.com/direnv/direnv/releases
-  ```
+  # direnv removed — managed by mise
 - **lazygit** (🏠) - Terminal UI for git commands
   ```bash
   # Managed by chezmoi: defined in .chezmoiexternal.toml
