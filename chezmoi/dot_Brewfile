@@ -9,7 +9,7 @@ brew "manaflow-ai/cmux/cmux" # Terminal multiplexer
 brew "neovim"
 brew "lazygit"
 brew "nushell"
-brew "opencode"
+brew "anomalyco/tap/opencode"
 brew "starship"
 cask "antigravity"
 cask "ghostty"
