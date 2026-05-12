@@ -2,17 +2,17 @@
 cask "font-iosevka-term-nerd-font"
 
 # --- Development Tools
+brew "anomalyco/tap/opencode"
 brew "bash"
 brew "fish"
 brew "gh"
-brew "manaflow-ai/cmux/cmux" # Terminal multiplexer
-brew "neovim"
 brew "lazygit"
+brew "neovim"
 brew "nushell"
-brew "anomalyco/tap/opencode"
 brew "starship"
 cask "antigravity"
 cask "ghostty"
+cask "manaflow-ai/cmux/cmux" # Terminal multiplexer
 cask "zed"
 
 # --- System Utilities
