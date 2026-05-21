@@ -1,0 +1,80 @@
+#!/usr/bin/env sh
+set -eu
+
+# Wrapper macOS Keychain -> Claude (Z.ai / Anthropic)
+# Récupère la clé Z.ai dans le trousseau macOS (security) et exporte :
+#   ANTHROPIC_AUTH_TOKEN, ANTHROPIC_BASE_URL, API_TIMEOUT_MS
+#
+# Configuration via variables d'environnement :
+# - ZAI_KEYCHAIN_SERVICE (nom du service dans Keychain, défaut "zai")
+# - ZAI_KEYCHAIN_ACCOUNT (compte dans Keychain, optionnel)
+# - API_TIMEOUT_MS (défaut 3000000)
+#
+# Exemples :
+#  ZAI_KEYCHAIN_SERVICE="zai" ZAI_KEYCHAIN_ACCOUNT="default" ./claude-zai-keychain.sh chat
+
+# Defaults
+ZAI_KEYCHAIN_SERVICE="${ZAI_KEYCHAIN_SERVICE:-zai}"
+ZAI_KEYCHAIN_ACCOUNT="${ZAI_KEYCHAIN_ACCOUNT:-}"
+API_TIMEOUT_MS="${API_TIMEOUT_MS:-3000000}"
+ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
+
+ANTHROPIC_DEFAULT_HAIKU_MODEL="glm-4.5-air"
+ANTHROPIC_DEFAULT_SONNET_MODEL="glm-5-turbo"
+ANTHROPIC_DEFAULT_OPUS_MODEL="glm-5.1"
+
+err() { printf "%s\n" "$*" >&2; }
+
+# Basic checks
+if [ "$(uname -s)" != "Darwin" ]; then
+  err "Ce script fonctionne uniquement sur macOS (Darwin)."
+  exit 1
+fi
+
+if ! command -v security >/dev/null 2>&1; then
+  err "L'outil 'security' est introuvable."
+  exit 1
+fi
+
+if ! command -v claude >/dev/null 2>&1; then
+  err "Le binaire 'claude' est introuvable dans le PATH."
+  exit 1
+fi
+
+# Build security args
+sec_args="-s \"$ZAI_KEYCHAIN_SERVICE\""
+if [ -n "$ZAI_KEYCHAIN_ACCOUNT" ]; then
+  sec_args="$sec_args -a \"$ZAI_KEYCHAIN_ACCOUNT\""
+fi
+
+# Retrieve password (the API key)
+# Use -w to print only the password (no extra text).
+# Use sh -c to allow the arg string expansion.
+if ANTHROPIC_AUTH_TOKEN="$(sh -c "security find-generic-password $sec_args -w" 2>/dev/null)"; then
+  if [ -z "${ANTHROPIC_AUTH_TOKEN:-}" ]; then
+    err "Clé récupérée vide depuis Keychain (service=$ZAI_KEYCHAIN_SERVICE account=$ZAI_KEYCHAIN_ACCOUNT)."
+    exit 1
+  fi
+else
+  err "Entrée Keychain introuvable ou accès refusé."
+  err "Pour ajouter la clé dans le trousseau (exemple) :"
+  err "  security add-generic-password -s \"$ZAI_KEYCHAIN_SERVICE\" -a \"$ZAI_KEYCHAIN_ACCOUNT\" -w \"TA_CLE_ZAI\" -U"
+  err "Note: l'accès peut déclencher une fenêtre de confirmation macOS pour autoriser ce script."
+  exit 1
+fi
+
+# Export expected env vars
+export ANTHROPIC_AUTH_TOKEN
+export ANTHROPIC_BASE_URL
+export API_TIMEOUT_MS
+export ANTHROPIC_DEFAULT_HAIKU_MODEL
+export ANTHROPIC_DEFAULT_SONNET_MODEL
+export ANTHROPIC_DEFAULT_OPUS_MODEL
+
+# Optional notification (can set QUIET=1 to silence)
+if [ -z "${QUIET:-}" ]; then
+  printf "Keychain service: %s\n" "$ZAI_KEYCHAIN_SERVICE"
+fi
+
+# Exec claude with passed arguments
+exec claude "$@"
