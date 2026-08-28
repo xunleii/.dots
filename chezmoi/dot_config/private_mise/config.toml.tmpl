@@ -5,23 +5,26 @@ idiomatic_version_file_enable_tools = ["terraform"]
 
 [tools]
 # --- Languages ---
-go = "1.25"
-node = "24"
-rust = "1.92"
+go = "1.27"
+node = "26"
+rust = "1.98"
 python = "3.14"
 
 # --- Tools ---
+# CLI tools live in the Brewfile now (bat, fd, eza, fzf, uv); mise keeps
+# language runtimes + tools brew doesn't carry well.
 "npm:czg" = "latest"
-"github:junegunn/fzf" = "latest"
-"github:sharkdp/bat" = "latest"
-"github:sharkdp/fd" = "latest"
 "github:str4d/rage" = "latest"
 crane = "latest"
 doggo = "latest"
-eza = "latest"
 gemini-cli = "latest"
 jqp = "latest"
-uv = "latest"
+
+# Headroom — context-compression proxy for Claude Code. Runs as the
+# `com.headroom.proxy` LaunchAgent (see Library/LaunchAgents/); fish exports
+# ANTHROPIC_BASE_URL only while it answers on :8787. Pinned to py3.13 (no 3.14
+# wheels). pipx backend uses uvx since uv is installed.
+"pipx:headroom-ai" = { version = "latest", extras = "proxy,mcp,code,ml,memory,relevance,reports", uvx_args = "--python 3.13" }
 
 [env]
 MISE_DATA_DIR = "{{ .runtime_dir }}/mise"

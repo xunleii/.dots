@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Managed by chezmoi. Reloaded by run_onchange_after_mise.sh.tmpl.
+     Points straight at the mise/uv venv entrypoint (`latest` symlink follows
+     mise upgrades) — a real executable, so it needs no PATH / mise / uv in the
+     launchd environment.
+     ponytail: if {{ .runtime_dir }} is unmounted this throttle-loops in the
+     log — acceptable, that volume being down breaks everything anyway. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.headroom.proxy</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ .runtime_dir }}/mise/installs/pipx-headroom-ai/latest/bin/headroom</string>
+        <string>proxy</string>
+        <string>--port</string>
+        <string>8787</string>
+        <string>--no-telemetry</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>{{ .chezmoi.homeDir }}</string>
+        <key>HEADROOM_TELEMETRY</key>
+        <string>off</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>StandardOutPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/headroom/proxy.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/headroom/proxy.log</string>
+</dict>
+</plist>
