@@ -2,7 +2,10 @@
 {{ template "banner.tmpl" "Fish - Post-install script (fisher)" -}}
 # hashlock: {{ include "dot_config/private_fish/fish_plugins" | sha256sum }}
 
+echo "==> [chezmoi] Fish: fish_plugins changed — updating fisher plugins…"
+
 if ! command -sq fisher
     curl -sL https://git.io/fisher | source
 end
 fisher update
+echo "==> [chezmoi] Fish: plugins up to date."
