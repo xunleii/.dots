@@ -66,10 +66,28 @@ alias ls "ls --color=auto"
 abbr --add --global ll ls -lh
 abbr --add --global la ls -lah
 
-# --- Exa (modern ls replacement)
+# --- Eza (modern ls replacement)
 # -----------------------------------------------------------------------------
-if command -sq exa
-  abbr --add --global exa "exa --icons --grid"
+if command -sq eza
+  abbr --add --global eza "eza --icons --grid"
+end
+
+# --- Procs (modern ps)
+# -----------------------------------------------------------------------------
+if command -sq procs
+  alias ps procs
+end
+
+# --- Hexyl (hex viewer)
+# -----------------------------------------------------------------------------
+if command -sq hexyl
+  alias hex hexyl
+end
+
+# --- Nono (sandboxed `claude`)
+# -----------------------------------------------------------------------------
+if command -sq nono; and command -sq claude
+  alias claude "nono run --profile nolabs-ai/claude -- claude"
 end
 
 # --- Vim/Neovim

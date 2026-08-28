@@ -10,6 +10,42 @@ set --global --export GIT_EDITOR $EDITOR
 # -----------------------------------------------------------------------------
 set --global --export TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
 
+# --- Headroom proxy (transparent context compression, per-project attribution)
+# Route Claude Code / Codex through the local proxy only when it is actually up,
+# otherwise a dead ANTHROPIC_BASE_URL breaks every LLM call. Liveness is checked
+# once per shell (network call); the /p/<project> suffix is recomputed on every
+# `cd` (local git calls only, cheap) so headroom's per-project dashboard fills in.
+# ponytail: doesn't recheck liveness on cd — a proxy dying mid-session keeps
+# pointing at it until the next shell. Upgrade if that bites.
+if type -q curl; and curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1
+    function __headroom_project_url
+        set -l base http://127.0.0.1:8787
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1
+            set -l remotes (git remote)
+            if test (count $remotes) -gt 0
+                set -l remote origin
+                contains -- origin $remotes; or set remote $remotes[1]
+                set -l remote_url (git remote get-url $remote 2>/dev/null)
+                if test -n "$remote_url"
+                    # Normalize https://host/user/repo.git, ssh://user@host/user/repo.git
+                    # and user@host:user/repo.git down to the same "host-user-repo".
+                    set -l project (string replace -r '\.git$' '' -- $remote_url \
+                        | string replace -r '^\w+://' '' \
+                        | string replace -r '^[^@/]+@' '' \
+                        | string replace -ra '[:/]+' '-' \
+                        | string lower)
+                    set base "$base/p/$project"
+                end
+            end
+        end
+        set --global --export ANTHROPIC_BASE_URL $base
+    end
+    __headroom_project_url
+    function __headroom_on_cd --on-variable PWD
+        __headroom_project_url
+    end
+end
+
 # --- GitHub CLI
 # -----------------------------------------------------------------------------
 if type -q gh

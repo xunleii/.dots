@@ -10,6 +10,16 @@ export XDG_DATA_HOME="$HOME/.local/share"
 # -----------------------------------------------------------------------------
 fish_add_path $HOME/.local/bin
 
+{{ if eq .chezmoi.os "darwin" -}}
+# --- GNU userland ahead of BSD (coreutils, findutils, sed, awk, grep)
+# ponytail: deliberate — shadows BSD date/stat/sed/ls with GNU behaviour.
+# If a script needs BSD semantics, call it as `/usr/bin/<tool>`.
+for gnubin in coreutils findutils gnu-sed gawk grep
+    set -l dir /opt/homebrew/opt/$gnubin/libexec/gnubin
+    test -d $dir; and fish_add_path $dir
+end
+{{- end }}
+
 # --- Load Mise
 # -----------------------------------------------------------------------------
 if command -v mise &>/dev/null
