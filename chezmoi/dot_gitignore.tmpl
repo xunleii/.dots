@@ -4,8 +4,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,vim,c++,java,node,linux,emacs,cmake,windows,premake-gmake,jetbrains+all,visualstudiocode,git
 
 ### C++ ###
-# Prerequisites
+# Prerequisites (make dependency files) — files only, not dirs like conf.d/
 *.d
+!*.d/
 
 # Compiled Object files
 *.slo
@@ -461,3 +462,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/go,vim,c++,java,node,linux,emacs,cmake,windows,premake-gmake,jetbrains+all,visualstudiocode,git
+
+### Claude Code ###
+# Per-machine settings and scratch writes — never committed
+**/.claude/settings.local.json
+**/.claude/.cc-writes/

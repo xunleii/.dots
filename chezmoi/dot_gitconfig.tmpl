@@ -123,6 +123,16 @@
   # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
 
+{{- if eq .chezmoi.os "darwin" }}
+
+# ============================================================================
+# CREDENTIALS - macOS Keychain (git adds this to ~/.gitconfig on its own the
+# first time it saves a password; declare it here so chezmoi stops reverting it)
+# ============================================================================
+[credential]
+  helper = osxkeychain
+{{- end }}
+
 # ============================================================================
 # REPOSITORY INITIALIZATION & BRANCH BEHAVIOR
 # ============================================================================
