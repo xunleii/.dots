@@ -44,9 +44,13 @@ diff:
 
 # --- Template data ---
 data:
+  # Work machine? Gates machine-specific entries in dot_Brewfile.tmpl.
+  work: {{ promptBoolOnce . "work" "Is this a work machine" }}
   name: {{ promptStringOnce . "name" "What is your GIT name" }}
   email: {{ promptStringOnce . "email" "What is your GIT email" }}
   signingkey: {{ promptStringOnce . "signingkey" "What is your Git signing key (SSH or GPG)" }}
   bitwarden:
-    access_token: {{ promptStringOnce . "bitwarden.access_token" (printf "Get a Bitwarden access token for this machine (%s)" .chezmoi.fqdnHostname) }}
+    # nested path must be a list, not "a.b" — a dotted string is treated as a
+    # single flat key and re-prompts on every `chezmoi init`.
+    access_token: {{ promptStringOnce . (list "bitwarden" "access_token") (printf "Get a Bitwarden access token for this machine (%s)" .chezmoi.fqdnHostname) }}
   runtime_dir: {{ promptStringOnce . "runtime_dir" "Where all the langauge runtimes/cache/packages should be installed" }}

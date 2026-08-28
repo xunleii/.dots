@@ -1,11 +1,43 @@
 #!/usr/bin/env bash
 {{ template "banner.tmpl" "Homebrew - Bundle installation" -}}
 
-# Brewfile hash: {{ include "dot_Brewfile" | sha256sum }}
+# Brewfile hash: {{ includeTemplate "dot_Brewfile.tmpl" . | sha256sum }}
+
+echo "==> [chezmoi] Homebrew: Brewfile changed — syncing packages (install + cleanup)…"
+
+brewfile="${HOMEBREW_BUNDLE_FILE_GLOBAL:-$HOME/.Brewfile}"
+
+# Extract the quoted "user/repo/name" (or "name") from Brewfile lines whose
+# trailing comment carries the given @marker (portable ERE, no \b for BSD grep).
+marked() { grep -E "@$1([[:space:]]|\$)" "$brewfile" 2>/dev/null | grep -oE '"[^"]+"' | tr -d '"'; }
+
+# `-q` drops brew bundle's "Using <pkg>" line for every already-installed,
+# unchanged package. Color what's left ourselves — bundle's install/uninstall
+# messages aren't ANSI-colored on their own.
+colorize() {
+    sed -E \
+        -e $'s/^(Installing|Upgrading|Pouring) .*/\033[32m&\033[0m/' \
+        -e $'s/^(Uninstalling|Would uninstall|Uninstalled) .*/\033[31m&\033[0m/'
+}
 
 if command -v brew >/dev/null 2>&1; then
-    echo "Installing/Updating Homebrew packages from Brewfile..."
-    brew bundle --global
+    # @trust — non-official taps must be trusted or `brew bundle` refuses their
+    # formulae and aborts the whole run.
+    marked trust | while read -r ref; do
+        case "$ref" in */*/*) brew trust --tap "${ref%/*}" >/dev/null 2>&1 || true ;; esac
+    done
+
+    brew bundle --global -q | colorize
+
+    # Uninstall anything no longer listed in the Brewfile
+    brew bundle cleanup --global --force -q | colorize
+
+    # @link — formulae that self-update in place and leave brew's symlink stale.
+    marked link | while read -r ref; do
+        brew link --overwrite "${ref##*/}" >/dev/null 2>&1 || true
+    done
+
+    echo "==> [chezmoi] Homebrew: done."
 else
-    echo "Homebrew not found. Skipping brew bundle."
+    echo "==> [chezmoi] Homebrew: brew not found — skipped."
 fi

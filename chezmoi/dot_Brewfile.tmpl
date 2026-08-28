@@ -1,0 +1,120 @@
+{{- $work := get . "work" -}}
+# vim: set ft=ruby :
+# Templated Brewfile — rendered to ~/.Brewfile by chezmoi.
+# `run_onchange_after_brew.sh.tmpl` runs `brew bundle --global` then
+# `brew bundle cleanup --global --force`, so anything NOT listed here is
+# uninstalled on the next `chezmoi apply`. Machine-specific entries below are
+# gated on `.work` (prompted once by `chezmoi init`); this render targets
+# {{ if $work }}a WORK machine{{ else }}a PERSONAL machine{{ end }}.
+#
+# Trailing markers consumed by run_onchange_after_brew.sh.tmpl:
+#   # @trust  -> `brew trust --tap <user/repo>` before `brew bundle`
+#   # @link   -> `brew link --overwrite <formula>` after `brew bundle`
+
+# --- Fonts
+cask "font-iosevka-term-nerd-font"
+
+# --- Shells & prompt
+brew "bash"          # system bash is 3.2, unusable
+brew "fish"
+brew "starship"
+
+# --- GNU userland (prefer GNU over BSD; gnubin dirs added to PATH in fish 00-base)
+brew "coreutils"
+brew "findutils"
+brew "gawk"
+brew "gnu-sed"
+brew "grep"
+
+# --- Dotfiles / secrets
+brew "chezmoi"
+brew "bitwarden-cli"
+brew "gnupg"
+brew "pinentry-mac"
+
+# --- Development Tools
+brew "cmake"
+brew "colordiff"
+brew "difftastic"
+brew "fzf"
+brew "gh"
+brew "git-absorb"
+brew "git-lfs"
+brew "lazygit"
+brew "neovim"
+brew "uv"
+brew "wget"
+cask "antigravity"
+cask "ghostty"
+cask "zed"
+
+# --- AI / coding agents
+brew "llmfit"
+brew "nono"  # sandboxes `claude` (see 50-aliases.fish) — kernel-level tool isolation
+cask "claude"
+cask "claude-code"
+cask "codexbar"
+cask "lm-studio"
+
+# --- System Utilities
+brew "atuin"
+brew "btop"
+brew "procs"
+brew "tree"
+brew "zoxide"
+cask "orbstack"
+cask "raycast"
+
+# --- File Management
+brew "bat"
+brew "eza"
+brew "fd"
+brew "ripgrep"
+cask "appcleaner"
+cask "rar"
+cask "rsyncui"
+
+# --- Text / binary utilities
+brew "hexyl"
+brew "flock"
+brew "sponge"
+
+# --- Graphics
+brew "graphviz"
+
+# --- Network
+brew "ipcalc"
+brew "hanshuaikang/nbping/nbping"  # @trust
+
+# --- Security
+cask "bitwarden"
+cask "little-snitch"
+cask "toolhive-studio"
+
+# --- Communication
+cask "slack"
+
+# --- Internet & network
+cask "google-chrome"
+cask "orion"
+cask "tailscale-app"
+cask "zen"
+
+# --- Notes
+cask "octarine"
+
+# --- Media
+cask "deezer"
+cask "vlc"
+
+{{ if not $work -}}
+# --- Personal machine only
+cask "steam"
+{{- end }}
+
+{{ if $work -}}
+# --- Work machine only
+cask "gcloud-cli"
+cask "microsoft-teams"
+cask "wifiman"
+{{- end }}
