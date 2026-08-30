@@ -13,12 +13,12 @@ python = "3.14"
 # --- Tools ---
 # CLI tools live in the Brewfile now (bat, fd, eza, fzf, uv); mise keeps
 # language runtimes + tools brew doesn't carry well.
-"npm:czg" = "latest"
-"github:str4d/rage" = "latest"
+jqp = "latest"
 crane = "latest"
 doggo = "latest"
-gemini-cli = "latest"
-jqp = "latest"
+"npm:czg" = "latest"
+"pipx:claude-swap" = "latest"
+"github:str4d/rage" = "latest"
 
 # Headroom lives outside mise now — installed via `uv tool` in
 # run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
