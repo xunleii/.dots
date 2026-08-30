@@ -1,0 +1,50 @@
+{{ template "banner.tmpl" "Fish - Homebrew" }}
+
+# --- Auto-sync install/uninstall into the chezmoi Brewfile
+# -----------------------------------------------------------------------------
+# ~/.Brewfile is chezmoi-managed and gets overwritten/pruned on the next
+# `chezmoi apply` — read/write the source template instead, or a manual
+# install gets silently uninstalled by run_onchange_after_brew.sh.tmpl's
+# cleanup (and a manual uninstall gets silently reinstalled the same way).
+if command -sq brew
+  function brew --wraps=brew --description 'brew, but install/uninstall sync the chezmoi Brewfile'
+    command brew $argv
+    set --local brew_status $status
+    set --local subcmd $argv[1]
+    if test $brew_status -ne 0; or not contains -- $subcmd install uninstall remove rm
+      return $brew_status
+    end
+
+    set --local brewfile (chezmoi source-path ~/.Brewfile 2>/dev/null)
+    if test -z "$brewfile"
+      return 0
+    end
+
+    set --local is_cask 0
+    set --local changed 0
+    for arg in $argv[2..-1]
+      switch $arg
+        case '--cask'
+          set is_cask 1
+        case '-*'
+          continue
+        case '*'
+          if test "$subcmd" = install
+            set --local line "brew \"$arg\""
+            test $is_cask -eq 1; and set line "cask \"$arg\""
+            if not grep -qF -- "$line" $brewfile
+              echo "$line" >> $brewfile
+              echo "==> [brewfile] added $line"
+              set changed 1
+            end
+          else if grep -qE "^(brew|cask) \"$arg\"(\$|[[:space:]#])" $brewfile
+            sed -i -E "/^(brew|cask) \"$arg\"(\$|[[:space:]#])/d" $brewfile
+            echo "==> [brewfile] removed $arg"
+            set changed 1
+          end
+      end
+    end
+
+    test $changed -eq 1; and chezmoi apply
+  end
+end
