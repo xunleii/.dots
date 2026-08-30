@@ -18,8 +18,20 @@ mise install --yes
 mise prune || true
 echo "==> [chezmoi] mise: done."
 
-# --- Headroom proxy LaunchAgent (macOS) — headroom is a mise tool, so (re)load
-#     its service here, after `mise install` has provisioned it.
+# --- Headroom — context-compression proxy for Claude Code. Installed via
+#     `uv tool` (not mise): it runs headless as the com.headroom.proxy
+#     LaunchAgent, and launchd has no TCC grant for the external
+#     {{ .runtime_dir }} volume where mise puts its venvs — Python can't even
+#     read its own pyvenv.cfg there and the agent throttle-loops. `uv tool`
+#     installs to ~/.local (internal disk) with a standalone py3.13, and drops
+#     the `headroom` shim on PATH.
+echo "==> [chezmoi] headroom: installing/updating via uv tool…"
+uv tool install --python 3.13 \
+    'headroom-ai[proxy,mcp,code,ml,memory,relevance,reports]'
+uv tool upgrade headroom-ai || true
+
+# --- Headroom proxy LaunchAgent (macOS) — (re)load the service after the
+#     `uv tool install` above has provisioned the binary.
 {{- if eq .chezmoi.os "darwin" }}
 plist="$HOME/Library/LaunchAgents/com.headroom.proxy.plist"
 if [ -f "$plist" ]; then

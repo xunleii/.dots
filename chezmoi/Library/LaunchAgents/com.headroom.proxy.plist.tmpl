@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Managed by chezmoi. Reloaded by run_onchange_after_mise.sh.tmpl.
-     Points straight at the mise/uv venv entrypoint (`latest` symlink follows
-     mise upgrades) — a real executable, so it needs no PATH / mise / uv in the
-     launchd environment.
-     ponytail: if {{ .runtime_dir }} is unmounted this throttle-loops in the
-     log — acceptable, that volume being down breaks everything anyway. -->
+     The `uv tool` shim (~/.local/bin/headroom) lives on the INTERNAL disk — it
+     must not sit on the external {{ .runtime_dir }} volume, where a launchd
+     agent has no TCC access and Python can't read its own pyvenv.cfg (EPERM).
+     arg0 is /bin/sh, not the shim directly: launchd's xpcproxy wedges when it
+     has to exec an ad-hoc-signed venv interpreter itself (job stuck in state
+     "xpcproxy", never binds). A signed system binary execs cleanly, then its
+     own exec of the shim runs under the normal (permissive) exec path. -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -13,11 +15,9 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>{{ .runtime_dir }}/mise/installs/pipx-headroom-ai/latest/bin/headroom</string>
-        <string>proxy</string>
-        <string>--port</string>
-        <string>8787</string>
-        <string>--no-telemetry</string>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <string>exec "{{ .chezmoi.homeDir }}/.local/bin/headroom" proxy --port 8787 --no-telemetry</string>
     </array>
 
     <key>EnvironmentVariables</key>
@@ -26,6 +26,11 @@
         <string>{{ .chezmoi.homeDir }}</string>
         <key>HEADROOM_TELEMETRY</key>
         <string>off</string>
+        <!-- launchd redirects stdout to a file, so Python block-buffers it and
+             the log stays empty while the process is alive. Force line-buffered
+             so proxy.log actually shows startup progress / where it stalls. -->
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
     </dict>
 
     <key>RunAtLoad</key>

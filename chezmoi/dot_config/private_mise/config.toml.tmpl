@@ -20,11 +20,10 @@ doggo = "latest"
 gemini-cli = "latest"
 jqp = "latest"
 
-# Headroom — context-compression proxy for Claude Code. Runs as the
-# `com.headroom.proxy` LaunchAgent (see Library/LaunchAgents/); fish exports
-# ANTHROPIC_BASE_URL only while it answers on :8787. Pinned to py3.13 (no 3.14
-# wheels). pipx backend uses uvx since uv is installed.
-"pipx:headroom-ai" = { version = "latest", extras = "proxy,mcp,code,ml,memory,relevance,reports", uvx_args = "--python 3.13" }
+# Headroom lives outside mise now — installed via `uv tool` in
+# run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
+# launchd has no TCC access to the external {{ .runtime_dir }} volume where
+# mise puts its venvs, so the venv must sit on the internal disk.
 
 [env]
 MISE_DATA_DIR = "{{ .runtime_dir }}/mise"
