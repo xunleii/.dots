@@ -44,7 +44,6 @@ brew "lazygit"
 brew "neovim"
 brew "uv"
 brew "wget"
-cask "antigravity"
 cask "ghostty"
 cask "zed"
 
@@ -53,7 +52,7 @@ brew "llmfit"
 brew "nono"  # sandboxes `claude` (see 50-aliases.fish) — kernel-level tool isolation
 cask "claude"
 cask "claude-code"
-cask "codexbar"
+cask "steipete/tap/codexbar"  # @trust
 cask "lm-studio"
 
 # --- System Utilities
@@ -107,6 +106,11 @@ cask "octarine"
 cask "deezer"
 cask "vlc"
 
+# --- Misc
+cask "bambu-studio"
+cask "hermes-desktop"
+cask "istat-menus"
+
 {{ if not $work -}}
 # --- Personal machine only
 cask "steam"
@@ -117,4 +121,11 @@ cask "steam"
 cask "gcloud-cli"
 cask "microsoft-teams"
 cask "wifiman"
+{{- end }}
+
+{{ if eq .chezmoi.hostname "Mac-Mini-M4" -}}
+# --- Mac-Mini-M4 only
+cask "autodesk-fusion"
+cask "betterdisplay"
+cask "tinymediamanager"
 {{- end }}
