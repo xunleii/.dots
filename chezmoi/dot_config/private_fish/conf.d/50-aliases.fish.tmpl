@@ -84,11 +84,7 @@ if command -sq hexyl
   alias hex hexyl
 end
 
-# --- Nono (sandboxed `claude`)
-# -----------------------------------------------------------------------------
-if command -sq nono; and command -sq claude
-  alias claude "nono run --profile nolabs-ai/claude -- claude"
-end
+# --- Nono (sandboxed `claude`) → see functions/claude.fish (per-repo profile picker)
 
 # --- Vim/Neovim
 # -----------------------------------------------------------------------------
