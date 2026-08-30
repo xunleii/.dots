@@ -17,26 +17,38 @@ set --global --export TF_PLUGIN_CACHE_DIR "$HOME/.terraform.d/plugin-cache"
 # `cd` (local git calls only, cheap) so headroom's per-project dashboard fills in.
 # ponytail: doesn't recheck liveness on cd — a proxy dying mid-session keeps
 # pointing at it until the next shell. Upgrade if that bites.
+# Caches the computed base URL per git toplevel so cd-ing within the same repo
+# (the common case) costs 1 git spawn instead of 3 — was showing up as a
+# multi-second stall on every `cd` in large/slow-disk repos.
 if type -q curl; and curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1
     function __headroom_project_url
         set -l base http://127.0.0.1:8787
-        if git rev-parse --is-inside-work-tree >/dev/null 2>&1
-            set -l remotes (git remote)
-            if test (count $remotes) -gt 0
-                set -l remote origin
-                contains -- origin $remotes; or set remote $remotes[1]
-                set -l remote_url (git remote get-url $remote 2>/dev/null)
-                if test -n "$remote_url"
-                    # Normalize https://host/user/repo.git, ssh://user@host/user/repo.git
-                    # and user@host:user/repo.git down to the same "host-user-repo".
-                    set -l project (string replace -r '\.git$' '' -- $remote_url \
-                        | string replace -r '^\w+://' '' \
-                        | string replace -r '^[^@/]+@' '' \
-                        | string replace -ra '[:/]+' '-' \
-                        | string lower)
-                    set base "$base/p/$project"
+        set -l toplevel (git rev-parse --show-toplevel 2>/dev/null)
+        if test -n "$toplevel"
+            if test "$toplevel" = "$__headroom_last_toplevel"
+                set base $__headroom_last_base
+            else
+                set -l remotes (git remote)
+                if test (count $remotes) -gt 0
+                    set -l remote origin
+                    contains -- origin $remotes; or set remote $remotes[1]
+                    set -l remote_url (git remote get-url $remote 2>/dev/null)
+                    if test -n "$remote_url"
+                        # Normalize https://host/user/repo.git, ssh://user@host/user/repo.git
+                        # and user@host:user/repo.git down to the same "host-user-repo".
+                        set -l project (string replace -r '\.git$' '' -- $remote_url \
+                            | string replace -r '^\w+://' '' \
+                            | string replace -r '^[^@/]+@' '' \
+                            | string replace -ra '[:/]+' '-' \
+                            | string lower)
+                        set base "$base/p/$project"
+                    end
                 end
+                set -g __headroom_last_toplevel $toplevel
+                set -g __headroom_last_base $base
             end
+        else
+            set -g __headroom_last_toplevel ''
         end
         set --global --export ANTHROPIC_BASE_URL $base
     end
@@ -48,8 +60,10 @@ end
 
 # --- GitHub CLI
 # -----------------------------------------------------------------------------
-if type -q gh
-    set -l token (gh auth token 2>/dev/null)
+# ponytail: timeout guards against a stuck macOS Keychain prompt silently
+# stalling every new shell — was the other source of a slow first prompt.
+if type -q gh; and type -q timeout
+    set -l token (timeout 1 gh auth token 2>/dev/null)
     if test -n "$token"
         set --global --export GITHUB_TOKEN "$token"
     end
