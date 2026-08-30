@@ -196,5 +196,5 @@ function claude --description "Launch Claude Code in the nono sandbox, per-repo 
     set_color -d
     echo "nono → $profile"(test -n "$repo"; and echo "  ["(basename $repo)"]")
     set_color normal
-    command nono run --profile $profile -- claude $argv
+    command nono run --profile $profile --allow-cwd -- claude $argv
 end
