@@ -107,9 +107,7 @@ cask "deezer"
 cask "vlc"
 
 # --- Misc
-cask "bambu-studio"
 cask "hermes-desktop"
-cask "istat-menus"
 
 {{ if not $work -}}
 # --- Personal machine only
@@ -126,6 +124,8 @@ cask "wifiman"
 {{ if eq .chezmoi.hostname "Mac-Mini-M4" -}}
 # --- Mac-Mini-M4 only
 cask "autodesk-fusion"
+cask "bambu-studio"
 cask "betterdisplay"
+cask "istat-menus"
 cask "tinymediamanager"
 {{- end }}
