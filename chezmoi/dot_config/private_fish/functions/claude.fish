@@ -117,22 +117,10 @@ function claude --description "Launch Claude Code in the nono sandbox, per-repo 
         return
     end
 
-    argparse -i pick forget p/profile= -- $argv
+    argparse -i pick p/profile= -- $argv
     or return 1
 
     set -l repo (command git rev-parse --show-toplevel 2>/dev/null)
-
-    if set -q _flag_forget
-        test -n "$repo"; or return 0
-        set -l kept
-        for entry in $claude_profile_map
-            string match -q -- "$repo=*" $entry
-            or set -a kept $entry
-        end
-        set -U claude_profile_map $kept
-        echo "nono: unpinned "(basename $repo)
-        return 0
-    end
 
     # --- Resolve profile: -p flag > map (repo entry, then `*`) > picker > default
     set -l profile
