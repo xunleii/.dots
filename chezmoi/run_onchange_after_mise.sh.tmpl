@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 {{ template "banner.tmpl" "Mise - Post-install/Post-upgrade script" }}
 # hashlock: {{ include "dot_config/private_mise/config.toml.tmpl" | sha256sum }}
-# hashlock: {{ includeTemplate "Library/LaunchAgents/com.headroom.proxy.plist.tmpl" . | sha256sum }}
 
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -29,26 +28,5 @@ echo "==> [chezmoi] headroom: installing/updating via uv tool…"
 uv tool install --python 3.13 \
     'headroom-ai[proxy,mcp,code,ml,memory,relevance,reports]'
 uv tool upgrade headroom-ai || true
-
-# --- Headroom proxy LaunchAgent (macOS) — (re)load the service after the
-#     `uv tool install` above has provisioned the binary.
-{{- if eq .chezmoi.os "darwin" }}
-plist="$HOME/Library/LaunchAgents/com.headroom.proxy.plist"
-if [ -f "$plist" ]; then
-    echo "==> [chezmoi] headroom: reloading proxy LaunchAgent…"
-    mkdir -p "$HOME/.local/state/headroom"
-    svc="gui/$(id -u)/com.headroom.proxy"
-
-    if launchctl print "$svc" >/dev/null 2>&1; then
-        launchctl bootout "$svc" 2>/dev/null || true
-        # bootout is async — bootstrapping before teardown finishes silently
-        # leaves the agent unloaded. Wait it out.
-        for _ in $(seq 1 25); do
-            launchctl print "$svc" >/dev/null 2>&1 || break
-            sleep 0.2
-        done
-    fi
-    # RunAtLoad in the plist starts it; no kickstart needed.
-    launchctl bootstrap "gui/$(id -u)" "$plist" 2>/dev/null || true
-fi
-{{- end }}
+# The com.headroom.proxy LaunchAgent is (re)loaded by
+# run_onchange_after_launchagents.sh whenever its plist changes.

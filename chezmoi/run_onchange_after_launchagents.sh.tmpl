@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "LaunchAgents - reload changed plists" }}
+# Re-runs whenever ANY file under chezmoi/Library/LaunchAgents/ changes (content
+# or the set of files). Add a new plist there and it gets picked up for free.
+{{ range (glob (joinPath .chezmoi.sourceDir "Library/LaunchAgents/*")) -}}
+# hashlock {{ base . }}: {{ include . | sha256sum }}
+{{ end -}}
+{{ if eq .chezmoi.os "darwin" -}}
+set -euo pipefail
+
+dom="gui/$(id -u)"
+mkdir -p "$HOME/.local/state/headroom"
+
+reload() {
+    local plist="$1" label
+    label="$(basename "$plist" .plist)"
+    echo "==> [chezmoi] launchd: reloading $label"
+    # bootout (label form, then path form), then wait for launchd to release the
+    # label — a bootstrap that races the teardown returns EIO ("5: Input/output
+    # error").
+    launchctl bootout "$dom/$label" 2>/dev/null \
+        || launchctl bootout "$dom" "$plist" 2>/dev/null || true
+    for _ in $(seq 1 50); do
+        launchctl print "$dom/$label" >/dev/null 2>&1 || break
+        sleep 0.2
+    done
+    # bootstrap, retrying ~15s through the post-bootout EIO window. RunAtLoad in
+    # the plist starts the job; no kickstart needed.
+    for _ in $(seq 1 30); do
+        launchctl bootstrap "$dom" "$plist" 2>/dev/null && return 0
+        sleep 0.5
+    done
+    echo "!! [chezmoi] launchd: bootstrap failed for $label — try 'sudo launchctl bootstrap $dom $plist'" >&2
+    return 1
+}
+
+rc=0
+for name in {{ range (glob (joinPath .chezmoi.sourceDir "Library/LaunchAgents/*")) }}{{ base . | trimSuffix ".tmpl" | quote }} {{ end }}""; do
+    [ -n "$name" ] || continue
+    plist="$HOME/Library/LaunchAgents/$name"
+    [ -f "$plist" ] || continue
+    reload "$plist" || rc=1
+done
+exit $rc
+{{ end -}}
