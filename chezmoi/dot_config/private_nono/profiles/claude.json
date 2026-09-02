@@ -25,7 +25,14 @@
     },
     "filesystem": {
         "allow": [],
-        "read": ["~/.agents/", "~/.config/gh"],
+        "read": [
+            "~/.agents/",
+            "~/.config/gh",
+            "~/.ssh/config",
+            "~/.ssh/config.d/",
+            "~/.ssh/known_hosts",
+            "~/.ssh/allowed_signers"
+        ],
         "write": ["~/.local/share/claude/versions"],
         "allow_file": [],
         "read_file": [],
