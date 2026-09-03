@@ -29,6 +29,7 @@
             "~/.agents/",
             "~/.config/gh",
             "~/.config/mise/",
+            "~/.gitignore",
             "~/.ssh/allowed_signers",
             "~/.ssh/config",
             "~/.ssh/config.d/",
