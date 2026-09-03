@@ -24,14 +24,15 @@
         "deny": []
     },
     "filesystem": {
-        "allow": [],
+        "allow": ["~/.local/state/mise/"],
         "read": [
             "~/.agents/",
             "~/.config/gh",
+            "~/.config/mise/",
+            "~/.ssh/allowed_signers",
             "~/.ssh/config",
             "~/.ssh/config.d/",
-            "~/.ssh/known_hosts",
-            "~/.ssh/allowed_signers"
+            "~/.ssh/known_hosts"
         ],
         "write": ["~/.local/share/claude/versions"],
         "allow_file": [],
