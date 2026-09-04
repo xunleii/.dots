@@ -89,5 +89,12 @@
     "skipdirs": [],
     "packs": [],
     "command_args": [],
-    "unsafe_macos_seatbelt_rules": []
+    "unsafe_macos_seatbelt_rules": [],
+    "platform_overrides": {
+        "macos": {
+            "filesystem": {
+                "write": ["/Volumes/Runtimes/"]
+            }
+        }
+    }
 }
