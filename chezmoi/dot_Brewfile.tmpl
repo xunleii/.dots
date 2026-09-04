@@ -12,121 +12,121 @@
 #   # @link   -> `brew link --overwrite <formula>` after `brew bundle`
 
 # --- Fonts
-cask "font-iosevka-term-nerd-font"
+cask "font-iosevka-term-nerd-font"  # Iosevka Term patched with Nerd Font icons
 
 # --- Shells & prompt
-brew "bash"          # system bash is 3.2, unusable
-brew "fish"
-brew "starship"
+brew "bash"      # system bash is 3.2, unusable
+brew "fish"      # interactive shell
+brew "starship"  # cross-shell prompt
 
 # --- GNU userland (prefer GNU over BSD; gnubin dirs added to PATH in fish 00-base)
-brew "coreutils"
-brew "findutils"
-brew "gawk"
-brew "gnu-sed"
-brew "grep"
+brew "coreutils"  # GNU file/shell/text utils
+brew "findutils"  # GNU find, xargs, locate
+brew "gawk"       # GNU awk
+brew "gnu-sed"    # GNU sed
+brew "grep"       # GNU grep/egrep/fgrep
 
 # --- Dotfiles / secrets
-brew "chezmoi"
-brew "bitwarden-cli"
-brew "gnupg"
-brew "pinentry-mac"
+brew "chezmoi"        # dotfiles manager
+brew "bitwarden-cli"  # password manager CLI
+brew "gnupg"          # OpenPGP implementation
+brew "pinentry-mac"   # macOS-native GPG passphrase prompt
 
 # --- Development Tools
-brew "cmake"
-brew "colordiff"
-brew "difftastic"
-brew "fzf"
-brew "gh"
-brew "git-absorb"
-brew "git-lfs"
-brew "lazygit"
-brew "neovim"
-brew "uv"
-brew "wget"
-cask "ghostty"
-cask "zed"
+brew "cmake"       # cross-platform build system generator
+brew "colordiff"   # colorized diff output
+brew "difftastic"  # syntax-aware structural diff
+brew "fzf"         # fuzzy finder
+brew "gh"          # GitHub CLI
+brew "git-absorb"  # auto-fixup commits into git history
+brew "git-lfs"     # git large file storage
+brew "lazygit"     # terminal UI for git
+brew "neovim"      # Vim-fork text editor
+brew "uv"          # Python package/project manager
+brew "wget"        # HTTP(S)/FTP file retriever
+cask "ghostty"     # GPU-accelerated, platform-native terminal
+cask "zed"         # multiplayer code editor
 
 # --- AI / coding agents
-brew "llmfit"
-brew "nono"  # sandboxes `claude` (see 50-aliases.fish) — kernel-level tool isolation
-brew "rtk"  # CLI proxy, trims noisy command output before it hits context
-cask "claude"
-cask "claude-code"
-cask "steipete/tap/codexbar"  # @trust
-cask "lm-studio"
+brew "llmfit"                 # check what LLMs fit your hardware
+brew "nono"                   # sandboxes `claude` (see 50-aliases.fish) — kernel-level tool isolation
+brew "rtk"                    # CLI proxy, trims noisy command output before it hits context
+cask "claude"                 # Anthropic's Claude desktop app
+cask "claude-code"            # terminal-based AI coding assistant
+cask "steipete/tap/codexbar"  # menu bar usage/status CLI for Codex @trust
+cask "lm-studio"              # run local LLMs
 
 # --- System Utilities
-brew "atuin"
-brew "btop"
-brew "procs"
-brew "tree"
-brew "zoxide"
-cask "orbstack"
-cask "raycast"
+brew "atuin"     # shell history sync/search
+brew "btop"      # resource monitor (TUI)
+brew "procs"     # modern `ps` replacement
+brew "tree"      # directory tree listing
+brew "zoxide"    # frecency-based `cd` replacement
+cask "orbstack"  # lightweight Docker Desktop replacement
+cask "raycast"   # launcher / productivity toolbox
 
 # --- File Management
-brew "bat"
-brew "eza"
-brew "fd"
-brew "ripgrep"
-cask "appcleaner"
-cask "rar"
-cask "rsyncui"
+brew "bat"         # `cat` with syntax highlighting
+brew "eza"         # modern `ls` replacement
+brew "fd"          # fast `find` alternative
+brew "ripgrep"     # fast recursive grep
+cask "appcleaner"  # thorough application uninstaller
+cask "rar"         # RAR archive tool
+cask "rsyncui"     # GUI for rsync
 
 # --- Text / binary utilities
-brew "hexyl"
-brew "flock"
-brew "sponge"
+brew "hexyl"   # hex viewer
+brew "flock"   # lock a file for the duration of a command
+brew "sponge"  # soak up stdin, write to a file (moreutils)
 
 # --- Graphics
-brew "graphviz"
+brew "graphviz"  # graph/diagram rendering (`dot`)
 
 # --- Network
-brew "ipcalc"
-brew "hanshuaikang/nbping/nbping"  # @trust
+brew "ipcalc"                      # IP subnet calculator
+brew "hanshuaikang/nbping/nbping"  # Rust ping tool with real-time visualizations @trust
 
 # --- Security
-cask "bitwarden"
-cask "little-snitch"
-cask "toolhive-studio"
+cask "bitwarden"        # password/login vault
+cask "little-snitch"    # outbound application firewall
+cask "toolhive-studio"  # install/manage/run MCP servers
 
 # --- Communication
-cask "slack"
+cask "slack"  # team chat
 
 # --- Internet & network
-cask "google-chrome"
-cask "orion"
-cask "tailscale-app"
-cask "zen"
+cask "google-chrome"  # web browser
+cask "orion"          # WebKit-based privacy browser
+cask "tailscale-app"  # WireGuard-based mesh VPN
+cask "zen"            # Gecko-based browser
 
 # --- Notes
-cask "octarine"
+cask "octarine"  # markdown note-taking app
 
 # --- Media
-cask "deezer"
-cask "vlc"
+cask "deezer"  # music streaming
+cask "vlc"     # media player
 
 # --- Misc
-cask "hermes-desktop"
+cask "hermes-desktop"  # open-source desktop AI agent
 
 {{ if not $work -}}
 # --- Personal machine only
-cask "steam"
+cask "steam"  # game distribution platform
 {{- end }}
 
 {{ if $work -}}
 # --- Work machine only
-cask "gcloud-cli"
-cask "microsoft-teams"
-cask "wifiman"
+cask "gcloud-cli"       # Google Cloud SDK
+cask "microsoft-teams"  # chat/video meetings
+cask "wifiman"          # wifi network diagnostics
 {{- end }}
 
 {{ if eq .chezmoi.hostname "Mac-Mini-M4" -}}
 # --- Mac-Mini-M4 only
-cask "autodesk-fusion"
-cask "bambu-studio"
-cask "betterdisplay"
-cask "istat-menus"
-cask "tinymediamanager"
+cask "autodesk-fusion"   # CAD/CAM/CAE + PCB software
+cask "bambu-studio"      # 3D-printer slicer
+cask "betterdisplay"     # external display management
+cask "istat-menus"       # system monitor menu bar
+cask "tinymediamanager"  # media library organizer
 {{- end }}
