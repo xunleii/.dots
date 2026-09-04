@@ -6,40 +6,41 @@
 # hashlock {{ base . }}: {{ include . | sha256sum }}
 {{ end -}}
 {{ if eq .chezmoi.os "darwin" -}}
-set -euo pipefail
+# No `set -e` and no non-zero exit: a launchctl hiccup here used to make chezmoi
+# re-run this script (and bounce the proxy) on *every* apply.
+set -uo pipefail
 
 dom="gui/$(id -u)"
 mkdir -p "$HOME/.local/state/headroom"
 
+# Already loaded → kickstart -k (~1s blip). Not loaded yet → bootstrap. Never
+# bootout: that opened a ~30s window with the proxy down, and any shell started
+# in it skips ANTHROPIC_BASE_URL for its whole life (40-environment.fish checks
+# /livez once, never again).
 reload() {
     local plist="$1" label
     label="$(basename "$plist" .plist)"
-    echo "==> [chezmoi] launchd: reloading $label"
-    # bootout (label form, then path form), then wait for launchd to release the
-    # label — a bootstrap that races the teardown returns EIO ("5: Input/output
-    # error").
-    launchctl bootout "$dom/$label" 2>/dev/null \
-        || launchctl bootout "$dom" "$plist" 2>/dev/null || true
-    for _ in $(seq 1 50); do
-        launchctl print "$dom/$label" >/dev/null 2>&1 || break
-        sleep 0.2
-    done
-    # bootstrap, retrying ~15s through the post-bootout EIO window. RunAtLoad in
-    # the plist starts the job; no kickstart needed.
-    for _ in $(seq 1 30); do
-        launchctl bootstrap "$dom" "$plist" 2>/dev/null && return 0
-        sleep 0.5
-    done
-    echo "!! [chezmoi] launchd: bootstrap failed for $label — try 'sudo launchctl bootstrap $dom $plist'" >&2
-    return 1
+    if launchctl print "$dom/$label" >/dev/null 2>&1; then
+        echo "==> [chezmoi] launchd: kickstart -k $label"
+        launchctl kickstart -k "$dom/$label" || true
+    else
+        echo "==> [chezmoi] launchd: bootstrap $label"
+        launchctl bootstrap "$dom" "$plist" || true
+    fi
 }
 
-rc=0
 for name in {{ range (glob (joinPath .chezmoi.sourceDir "Library/LaunchAgents/*")) }}{{ base . | trimSuffix ".tmpl" | quote }} {{ end }}""; do
     [ -n "$name" ] || continue
     plist="$HOME/Library/LaunchAgents/$name"
     [ -f "$plist" ] || continue
-    reload "$plist" || rc=1
+    reload "$plist"
 done
-exit $rc
+
+# Don't let `chezmoi apply` return until the proxy answers again — otherwise the
+# next shell races a still-booting proxy and skips the base URL.
+# ponytail: hard-coded :8787, must match com.headroom.proxy.plist. Bump together.
+for _ in $(seq 1 50); do
+    curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1 && break
+    sleep 0.2
+done
 {{ end -}}

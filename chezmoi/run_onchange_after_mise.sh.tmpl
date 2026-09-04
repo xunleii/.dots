@@ -28,5 +28,7 @@ echo "==> [chezmoi] headroom: installing/updating via uv tool…"
 uv tool install --python 3.13 \
     'headroom-ai[proxy,mcp,code,ml,memory,relevance,reports]'
 uv tool upgrade headroom-ai || true
-# The com.headroom.proxy LaunchAgent is (re)loaded by
-# run_onchange_after_launchagents.sh whenever its plist changes.
+# run_onchange_after_launchagents.sh sorts BEFORE this script, so it already
+# reloaded the proxy onto the *old* venv. Kick it once more onto the venv we
+# just upgraded. (The launchagents script also handles plist-only changes.)
+launchctl kickstart -k "gui/$(id -u)/com.headroom.proxy" 2>/dev/null || true
