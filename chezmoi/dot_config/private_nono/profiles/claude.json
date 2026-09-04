@@ -24,7 +24,10 @@
         "deny": []
     },
     "filesystem": {
-        "allow": ["~/.local/state/mise/"],
+        "allow": [
+            "~/.local/state/mise/",
+            "~/.ssh/known_hosts"
+        ],
         "read": [
             "~/.agents/",
             "~/.config/gh",
@@ -32,8 +35,7 @@
             "~/.gitignore",
             "~/.ssh/allowed_signers",
             "~/.ssh/config",
-            "~/.ssh/config.d/",
-            "~/.ssh/known_hosts"
+            "~/.ssh/config.d/"
         ],
         "write": ["~/.local/share/claude/versions"],
         "allow_file": [],
