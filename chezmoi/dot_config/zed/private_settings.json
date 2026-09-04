@@ -14,16 +14,28 @@
     // - "light": Use the theme indicated by the "light" field
     // - "dark": Use the theme indicated by the "dark" field
     /* Duplicated key auto-commented: "agent": {
-        "favorite_models": [],
-        "model_parameters": [],
-        "tool_permissions": {
-            "tools": {
-                "create_directory": {
-                    "default": "allow"
-                }
-            }
-        }
-    }, */
+	    "favorite_models": [],
+	    "model_parameters": [],
+	    "tool_permissions": {
+	        "tools": {
+	            "create_directory": {
+	                "default": "allow"
+	            }
+	        }
+	    }
+	}, */
+    "cli_default_open_behavior": "existing_window",
+    "document_symbols": "on",
+    "document_folding_ranges": "on",
+    "semantic_tokens": "combined",
+    "agent_servers": {
+        "claude-acp": {
+            "default_config_options": {
+                "model": "sonnet",
+            },
+            "type": "registry",
+        },
+    },
     "minimap": {
         "thumb": "always",
         "show": "auto",
@@ -48,7 +60,7 @@
     "base_keymap": "VSCode",
     // Features that can be globally enabled or disabled
     // The name of a font to use for rendering text in the editor
-    "buffer_font_family": "Zed Plex Mono",
+    "buffer_font_family": ".ZedMono",
     // Set the buffer text's font fallbacks, this will be merged with
     // the platform's default fallbacks.
     "buffer_font_fallbacks": null,
@@ -74,7 +86,7 @@
     "buffer_line_height": "standard",
     // The name of a font to use for rendering text in the UI
     // You can set this to ".SystemUIFont" to use the system font
-    "ui_font_family": "Zed Plex Sans",
+    "ui_font_family": ".ZedSans",
     // Set the UI's font fallbacks, this will be merged with the platform's
     // default font fallbacks.
     "ui_font_fallbacks": null,
@@ -91,9 +103,6 @@
     "unnecessary_code_fade": 0.3,
     // Active pane styling settings.
     "active_pane_modifiers": {
-        // The factor to grow the active pane by. Defaults to 1.0
-        // which gives the same size as all other panes.
-        "magnification": 1.0,
         // Inset border size of the active pane, in pixels.
         "border_size": 0.0,
         // Opacity of the inactive panes. 0 means transparent, 1 means opaque.
@@ -176,7 +185,7 @@
     // Default: not set, defaults to "bar"
     "cursor_shape": null,
     // Determines whether the mouse cursor is hidden when typing in an editor or input box.
-    "hide_mouse": "on_typing_and_movement",
+    "hide_mouse": "on_typing_and_action",
     // How to highlight the current line in the editor.
     //
     // 1. Don't highlight the current line:
@@ -190,8 +199,6 @@
     "current_line_highlight": "all",
     // Whether to highlight all occurrences of the selected text in an editor.
     "selection_highlight": true,
-    // The debounce delay before querying highlights based on the selected text.
-    "selection_highlight_debounce": 50,
     // The debounce delay before querying highlights from the language
     // server based on the current cursor location.
     "lsp_highlight_debounce": 75,
@@ -347,8 +354,6 @@
     "gutter": {
         // Whether to show line numbers in the gutter.
         "line_numbers": true,
-        // Whether to show code action buttons in the gutter.
-        "code_actions": true,
         // Whether to show runnables buttons in the gutter.
         "runnables": true,
         // Whether to show breakpoints in the gutter.
@@ -563,16 +568,6 @@
         // Default width of the collaboration panel.
         "default_width": 240,
     },
-    "chat_panel": {
-        // When to show the chat panel button in the status bar.
-        // Can be 'never', 'always', or 'when_in_call',
-        // or a boolean (interpreted as 'never'/'always').
-        "button": "when_in_call",
-        // Where to the chat panel. Can be 'left' or 'right'.
-        "dock": "right",
-        // Default width of the chat panel.
-        "default_width": 240,
-    },
     "git_panel": {
         // Whether to show the git panel button in the status bar.
         "button": true,
@@ -597,22 +592,51 @@
             "show": null,
         },
     },
-    "message_editor": {
-        // Whether to automatically replace emoji shortcodes with emoji characters.
-        // For example: typing `:wave:` gets replaced with `👋`.
-        "auto_replace_emoji_shortcode": true,
-    },
-    "notification_panel": {
-        // Whether to show the notification panel button in the status bar.
-        "button": true,
-        // Where to dock the notification panel. Can be 'left' or 'right'.
-        "dock": "right",
-        // Default width of the notification panel.
-        "default_width": 380,
-    },
     "agent": {
         // Version of this setting.
         // Whether the assistant is enabled.
+        "favorite_models": [
+            {
+                "provider": "copilot_chat",
+                "model": "gpt-5-mini",
+                "enable_thinking": false,
+            },
+            {
+                "provider": "lmstudio",
+                "model": "google/gemma-4-26b-a4b",
+                "enable_thinking": false,
+            },
+            {
+                "provider": "lmstudio",
+                "model": "qwen/qwen3-30b-a3b-2507",
+                "enable_thinking": false,
+            },
+        ],
+        "inline_assistant_model": {
+            "provider": "copilot_chat",
+            "model": "gpt-5-mini",
+            "enable_thinking": false,
+        },
+        "tool_permissions": {
+            "tools": {
+                "terminal": {
+                    "default": "allow",
+                },
+                "edit_file": {
+                    "default": "allow",
+                },
+                "fetch": {
+                    "always_allow": [
+                        {
+                            "pattern": "^https?://github\\.com",
+                        },
+                        {
+                            "pattern": "^https?://raw\\.githubusercontent\\.com",
+                        },
+                    ],
+                },
+            },
+        },
         "default_profile": "write",
         "enabled": true,
         // Whether to show the assistant panel button in the status bar.
@@ -631,26 +655,6 @@
             "provider": "copilot_chat",
             // The model to use.
             "model": "gpt-5-mini",
-        },
-        // The model to use when applying edits from the assistant.
-        "editor_model": {
-            // The provider to use.
-            "provider": "zed.dev",
-            // The model to use.
-            "model": "claude-3-5-sonnet-latest",
-        },
-    },
-    // The settings for slash commands.
-    "slash_commands": {
-        // Settings for the `/docs` slash command.
-        "docs": {
-            // Whether `/docs` is enabled.
-            "enabled": false,
-        },
-        // Settings for the `/project` slash command.
-        "project": {
-            // Whether `/project` is enabled.
-            "enabled": false,
         },
     },
     // Whether the screen sharing icon is shown in the os status bar.
@@ -803,7 +807,7 @@
     "soft_wrap": "editor_width",
     // The column at which to soft-wrap lines, for buffers where soft-wrap
     // is enabled.
-    "preferred_line_length": 120,
+    "preferred_line_length": 512,
     // Whether to indent lines using tab characters, as opposed to multiple
     // spaces.
     "hard_tabs": false,
@@ -844,17 +848,7 @@
     },
     // Files or globs of files that will be excluded by Zed entirely. They will be skipped during file
     // scans, file searches, and not be displayed in the project file tree. Takes precedence over `file_scan_inclusions`.
-    "file_scan_exclusions": [
-        "**/.git",
-        "**/.svn",
-        "**/.hg",
-        "**/.jj",
-        "**/CVS",
-        "**/.DS_Store",
-        "**/Thumbs.db",
-        "**/.classpath",
-        "**/.settings",
-    ],
+    "file_scan_exclusions": ["**/.git", "**/.svn", "**/.hg", "**/.jj", "**/CVS", "**/.DS_Store", "**/Thumbs.db", "**/.classpath", "**/.settings"],
     // Files or globs of files that will be included by Zed, even when ignored by git. This is useful
     // for files that are not tracked by git, but are still important to your project. Note that globs
     // that are overly broad can slow down Zed's file scanning. `file_scan_exclusions` takes
@@ -899,33 +893,30 @@
         //   "base_url": "https://code.big-corp.com"
         // }
     ],
-    // direnv configuration removed — environment handling is performed via mise
+    // Configuration for how direnv configuration should be loaded. May take 2 values:
+    // 1. Load direnv configuration using `direnv export json` directly.
+    //      "load_direnv": "direct"
+    // 2. Load direnv configuration through the shell hook, works for POSIX shells and fish.
+    //      "load_direnv": "shell_hook"
+    "load_direnv": "direct",
     "edit_predictions": {
         // A list of globs representing files that edit predictions should be disabled for.
         // There's a sensible default list of globs already included.
         // Any addition to this list will be merged with the default list.
         // Globs are matched relative to the worktree root,
         // except when starting with a slash (/) or equivalent in Windows.
+        "copilot": {
+            "enable_next_edit_suggestions": true,
+        },
         "provider": "copilot",
-        "disabled_globs": [
-            "**/.env*",
-            "**/*.pem",
-            "**/*.key",
-            "**/*.cert",
-            "**/*.crt",
-            "**/.dev.vars",
-            "**/secrets.yml",
-        ],
+        "disabled_globs": ["**/.env*", "**/*.pem", "**/*.key", "**/*.cert", "**/*.crt", "**/.dev.vars", "**/secrets.yml"],
         // When to show edit predictions previews in buffer.
         // This setting takes two possible values:
         // 1. Display predictions inline when there are no language server completions available.
         //     "mode": "eager"
         // 2. Display predictions inline only when holding a modifier key (alt by default).
         //     "mode": "subtle"
-        "mode": "eager",
-        // Whether edit predictions are enabled in the assistant panel.
-        // This setting has no effect if globally disabled.
-        "enabled_in_text_threads": true,
+        "mode": "subtle",
     },
     // Settings specific to journaling
     "journal": {
@@ -1085,7 +1076,7 @@
         "font_size": 13,
         // Set the terminal's font family. If this option is not included,
         // the terminal will default to matching the buffer's font family.
-        "font_family": "IosevkaTerm Nerd Font Mono",
+        "font_family": "IosevkaTerm Nerd Font",
         // Set the terminal's font fallbacks. If this option is not included,
         // the terminal will default to matching the buffer's font fallbacks.
         // This will be merged with the platform's default font fallbacks
@@ -1224,7 +1215,7 @@
                 "allowed": true,
             },
         },
-        "HEEX": {
+        "HEEx": {
             "language_servers": ["elixir-ls", "!next-ls", "!lexical", "..."],
         },
         "HTML": {
@@ -1364,21 +1355,16 @@
     // Allows to enable/disable formatting with Prettier
     // and configure default Prettier, used when no project-level Prettier installation is found.
     "prettier": {
-        // // Whether to consider prettier formatter or not when attempting to format a file.
+        // Whether to consider prettier formatter or not when attempting to format a file.
         // "allowed": false,
-        //
-        // // Use regular Prettier json configuration.
-        // // If Prettier is allowed, Zed will use this for its Prettier instance for any applicable file, if
-        // // the project has no other Prettier installed.
+        //// Use regular Prettier json configuration.// If Prettier is allowed, Zed will use this for its Prettier instance for any applicable file, if// the project has no other Prettier installed.
         // "plugins": [],
-        //
-        // // Use regular Prettier json configuration.
-        // // If Prettier is allowed, Zed will use this for its Prettier instance for any applicable file, if
-        // // the project has no other Prettier installed.
+        //// Use regular Prettier json configuration.// If Prettier is allowed, Zed will use this for its Prettier instance for any applicable file, if// the project has no other Prettier installed.
         // "trailingComma": "es5",
         // "tabWidth": 4,
         // "semi": false,
         // "singleQuote": true
+        "allowed": true,
     },
     // Settings for auto-closing of JSX tags.
     "jsx_tag_auto_close": {
@@ -1387,14 +1373,27 @@
     // LSP Specific settings.
     "lsp": {
         // Specify the LSP name as a key here.
-        // "rust-analyzer": {
-        //     // These initialization options are merged into Zed's defaults
+        // "rust-analyzer": {// These initialization options are merged into Zed's defaults
         //     "initialization_options": {
-        //         "check": {
-        //             "command": "clippy" // rust-analyzer.check.command (default: "check")
+        //         "check": {// rust-analyzer.check.command (default: "check")
         //         }
         //     }
         // }
+        "vtsls": {
+            "settings": {
+                "typescript": {
+                    "updateImportsOnFileMove": {
+                        "enabled": "always",
+                    },
+                },
+                "javascript": {
+                    "updateImportsOnFileMove": {
+                        "enabled": "always",
+                    },
+                },
+            },
+            "enable_lsp_tasks": true,
+        },
     },
     // Jupyter settings
     "jupyter": {
@@ -1410,7 +1409,6 @@
         "default_mode": "normal",
         "toggle_relative_line_numbers": false,
         "use_system_clipboard": "always",
-        "use_multiline_find": false,
         "use_smartcase_find": false,
         "highlight_on_yank_duration": 200,
         "custom_digraphs": {},
@@ -1437,11 +1435,6 @@
     // Mostly useful for developers who are managing multiple instances of Zed.
     "dev": {
         // "theme": "Andromeda"
-    },
-    // Task-related settings.
-    "task": {
-        // Whether to show task status indicator in the status bar. Default: true
-        "show_status_indicator": true,
     },
     // Whether to show full labels in line indicator or short ones
     //
@@ -1470,8 +1463,6 @@
     //   "W": "workspace::Save"
     // }
     "command_aliases": {},
-    // Whether to show user picture in titlebar.
-    "show_user_picture": true,
     // ssh_connections is an array of ssh connections.
     // You can configure these from `project: Open Remote` in the command palette.
     // Zed's ssh support will pull configuration from your ~/.ssh too.
@@ -1490,7 +1481,11 @@
     "ssh_connections": [],
 
     // Configures context servers for use in the Assistant.
-    "context_servers": {},
+    "context_servers": {
+        "gitlab-default": {
+            "url": "http://localhost:37581/mcp",
+        },
+    },
     "debugger": {
         "stepping_granularity": "line",
         "save_breakpoints": true,
