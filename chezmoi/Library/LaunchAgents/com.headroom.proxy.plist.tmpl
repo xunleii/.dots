@@ -26,6 +26,10 @@
         <string>{{ .chezmoi.homeDir }}</string>
         <key>HEADROOM_TELEMETRY</key>
         <string>off</string>
+        <key>HEADROOM_ROLLOUT_CHANNEL</key>
+        <string>beta</string>
+        <key>HEADROOM_OUTPUT_SHAPER</key>
+        <string>1</string>
         <!-- launchd redirects stdout to a file, so Python block-buffers it and
              the log stays empty while the process is alive. Force line-buffered
              so proxy.log actually shows startup progress / where it stalls. -->
