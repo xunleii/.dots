@@ -26,6 +26,7 @@
     "filesystem": {
         "allow": [
             "~/.local/state/mise/",
+            "~/.plannotator/",
             "~/.ssh/known_hosts"
         ],
         "read": [
