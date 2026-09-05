@@ -132,6 +132,17 @@
 [credential]
   helper = osxkeychain
 {{- end }}
+{{- if lookPath "gh" }}
+
+# Use the GitHub CLI's credential helper for GitHub hosts specifically —
+# it handles token refresh, whereas a keychain-stored PAT can silently expire.
+[credential "https://github.com"]
+  helper =
+  helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+  helper =
+  helper = !gh auth git-credential
+{{- end }}
 
 # ============================================================================
 # REPOSITORY INITIALIZATION & BRANCH BEHAVIOR
