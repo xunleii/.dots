@@ -42,6 +42,11 @@ diff:
   format: git
   {{- end }}
 
+{{ if lookPath "fish" -}}
+cd:
+  command: fish
+{{- end }}
+
 # --- Template data ---
 data:
   # Work machine? Gates machine-specific entries in dot_Brewfile.tmpl.
