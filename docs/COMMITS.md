@@ -46,7 +46,7 @@ yet.
 
 `chezmoi`, `fish`, `nono`, `brew`, `git`, `mise`, `headroom`, `ghostty`,
 `kitty`, `lazygit`, `atuin`, `starship`, `zed`, `opencode`, `macOS`, `ci`,
-`docs`
+`docs`, `claude`
 
 ## Examples
 
