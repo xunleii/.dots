@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Headroom - uv tool install/upgrade" }}
+# Installed via `uv tool` (not mise): headroom runs headless as the
+# com.headroom.proxy LaunchAgent, and launchd has no TCC grant for the
+# external {{ .runtime_dir }} volume where mise puts its venvs — Python can't
+# even read its own pyvenv.cfg there and the agent throttle-loops. `uv tool`
+# installs to ~/.local (internal disk) with a standalone py3.13, and drops
+# the `headroom` shim on PATH.
+
+export PATH="$HOME/.local/bin:$PATH"
+
+echo "==> [chezmoi] headroom: installing/updating via uv tool…"
+uv tool install --python 3.13 \
+    'headroom-ai[proxy,mcp,code,ml,memory,relevance,reports]'
+uv tool upgrade headroom-ai || true
+
+# run_onchange_after_launchagents.sh sorts BEFORE this script (alphabetical:
+# "launchagents" < "uv-headroom"), so it already reloaded the proxy onto the
+# *old* venv. Kick it once more onto the venv we just upgraded.
+launchctl kickstart -k "gui/$(id -u)/com.headroom.proxy" 2>/dev/null || true

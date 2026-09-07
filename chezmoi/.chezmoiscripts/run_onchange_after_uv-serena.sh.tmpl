@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Serena - uv tool install/upgrade" }}
+# Semantic code tools MCP server (see CLAUDE.md). Installed via `uv tool`,
+# pinned to the same standalone py3.13 as headroom.
+
+export PATH="$HOME/.local/bin:$PATH"
+
+echo "==> [chezmoi] serena: installing/updating via uv tool…"
+uv tool install --python 3.13 serena-agent
+uv tool upgrade serena-agent || true
