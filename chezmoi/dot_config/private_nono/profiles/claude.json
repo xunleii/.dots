@@ -31,12 +31,14 @@
         ],
         "read": [
             "~/.agents/",
+            "~/.claude.json",
             "~/.config/gh",
             "~/.config/mise/",
             "~/.gitignore",
             "~/.ssh/allowed_signers",
             "~/.ssh/config",
-            "~/.ssh/config.d/"
+            "~/.ssh/config.d/",
+            "~/.toolhive/"
         ],
         "write": ["~/.local/share/claude/versions"],
         "allow_file": [],
