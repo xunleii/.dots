@@ -1,6 +1,28 @@
 function nono-profile --description "inspect or change the nono sandbox profile for the current repo"
-    argparse 'use=' 'default' 'new=' 'from=' -- $argv
+    argparse 'h/help' 'use=' 'default' 'new=' 'from=' -- $argv
     or return 1
+
+    if set -q _flag_help
+        printf '%s\n' \
+            'nono-profile — inspect or change the nono sandbox profile pinned to the current repo' \
+            '' \
+            'Usage: nono-profile [FLAG]' \
+            '' \
+            '  (no flags)         show the current repo'"'"'s resolved profile (pinned or default) and why' \
+            '  --use NAME         pin an existing profile to this repo' \
+            '  --new NAME [--from BASE]' \
+            '                     scaffold a profile (extends BASE, default: the default profile)' \
+            '                     and pin it to this repo' \
+            '  --default          unpin this repo, fall back to $claude_default_profile' \
+            '  -h, --help         show this help and exit' \
+            '' \
+            'Examples:' \
+            '  nono-profile' \
+            '  nono-profile --use claude-restricted' \
+            '  nono-profile --new my-project --from claude' \
+            '  nono-profile --default'
+        return 0
+    end
 
     set -l repo (command git rev-parse --show-toplevel 2>/dev/null)
 
