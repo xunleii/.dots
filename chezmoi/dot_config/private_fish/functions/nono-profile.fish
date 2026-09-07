@@ -1,5 +1,5 @@
 function nono-profile --description "inspect or change the nono sandbox profile for the current repo"
-    argparse 'h/help' 'use=' 'default' 'new=' 'from=' -- $argv
+    argparse 'h/help' 'use=' 'default' 'new=' 'from=' 'rm=' -- $argv
     or return 1
 
     if set -q _flag_help
@@ -14,13 +14,15 @@ function nono-profile --description "inspect or change the nono sandbox profile 
             '                     scaffold a profile (extends BASE, default: the default profile)' \
             '                     and pin it to this repo' \
             '  --default          unpin this repo, fall back to $claude_default_profile' \
+            '  --rm NAME          delete a profile (unpins any repo using it)' \
             '  -h, --help         show this help and exit' \
             '' \
             'Examples:' \
             '  nono-profile' \
             '  nono-profile --use claude-restricted' \
             '  nono-profile --new my-project --from claude' \
-            '  nono-profile --default'
+            '  nono-profile --default' \
+            '  nono-profile --rm my-project'
         return 0
     end
 
@@ -49,6 +51,48 @@ function nono-profile --description "inspect or change the nono sandbox profile 
             __claude_pin "$repo" $name
             echo "nono-profile: "(basename $repo)" → $name"
         end
+        return 0
+    end
+
+    # --rm NAME: delete a profile, unpinning any repo that uses it.
+    if set -q _flag_rm
+        set -l name $_flag_rm
+        set -l file ~/.config/nono/profiles/$name.json
+        if not test -f $file
+            if nono profile list 2>/dev/null | string match -qr "^\s+$name\s"
+                echo "nono-profile: $name is a built-in or package profile, not a user profile — refusing to delete" >&2
+            else
+                echo "nono-profile: $file does not exist" >&2
+            end
+            return 1
+        end
+        if test "$name" = (__claude_default_profile)
+            echo "nono-profile: $name is the default profile, set another default first (nono-profile --default after pinning elsewhere, or edit \$claude_default_profile)" >&2
+            return 1
+        end
+        set -l dependents
+        for other in ~/.config/nono/profiles/*.json
+            test (basename $other) = "$name.json"; and continue
+            grep -q '"extends"[[:space:]]*:[[:space:]]*"'$name'"' $other 2>/dev/null
+            and set -a dependents (basename $other .json)
+        end
+        if test -n "$dependents"
+            echo "nono-profile: $name is extended by: $dependents — delete or repoint those first" >&2
+            return 1
+        end
+        set -l unpinned
+        for entry in $claude_profile_map
+            set -l kv (string split -m1 = -- $entry)
+            if test "$kv[2]" = "$name"
+                __claude_unpin "$kv[1]"
+                set -a unpinned (basename $kv[1])
+            end
+        end
+        rm $file
+        if test -n "$unpinned"
+            echo "nono-profile: unpinned $unpinned (was using $name)"
+        end
+        echo "nono-profile: removed $file"
         return 0
     end
 
