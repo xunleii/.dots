@@ -7,6 +7,8 @@
 #   --raw            skip the sandbox entirely (plain `command claude $argv`)
 #   --nono 'FLAGS'    extra flags forwarded to `nono run`, e.g.
 #                     clawd --nono '--allow ~/.toolhive'
+#   --rollback       force nono's atomic rollback snapshots on (always on
+#                     automatically outside a git repo, see __clawd_run)
 #   --onboard        set up this project (nono profile, MCPs, Serena), see
 #                     __clawd_onboard
 #
@@ -25,6 +27,8 @@ function clawd --description "Launch Claude Code in the nono sandbox, per-repo p
             '  --raw             skip the sandbox entirely: `command claude $argv`' \
             '  --nono '"'"'FLAGS'"'"'    extra flags forwarded to `nono run`' \
             '                    e.g. clawd --nono '"'"'--allow ~/.toolhive'"'"'' \
+            '  --rollback        force nono'"'"'s atomic rollback snapshots on' \
+            '                    (automatic already when not in a git repo)' \
             '  --onboard         set up this project: pick/create its nono profile,' \
             '                    propose MCP servers, offer Serena (with onboarding)' \
             '' \
@@ -33,6 +37,7 @@ function clawd --description "Launch Claude Code in the nono sandbox, per-repo p
             'Examples:' \
             '  clawd' \
             '  clawd --nono '"'"'--allow ~/.toolhive --allow ~/.claude.json'"'"'' \
+            '  clawd --rollback' \
             '  clawd --onboard'
         return 0
     end
