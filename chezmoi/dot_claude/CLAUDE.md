@@ -51,3 +51,4 @@ I will provide the problem, the context, and a clear objective—whether it's fo
 This section offers a glimpse into your working memory. It is where you will record the facts, rules, and preferences I deem important. Consider it your mind palace—less Victorian and significantly more functional.
 
 @RTK.md
+@NONO.md
