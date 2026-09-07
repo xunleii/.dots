@@ -1,0 +1,143 @@
+{
+  "version": 4,
+  "lines": [
+    [
+      {
+        "id": "3",
+        "type": "session-name",
+        "color": "white",
+        "rawValue": true
+      },
+      {
+        "id": "8f2c4d02-439f-4b5f-a924-99b239c6419c",
+        "type": "current-working-dir",
+        "backgroundColor": "bgBrightBlue",
+        "rawValue": true,
+        "metadata": {
+          "fishStyle": "true"
+        }
+      },
+      {
+        "id": "9",
+        "type": "git-worktree",
+        "color": "blue"
+      },
+      {
+        "id": "4c921828-a891-444b-b500-6ecb26b79fc1",
+        "type": "flex-separator",
+        "backgroundColor": "bgWhite"
+      },
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "c207c454-d411-4f10-a115-616cdfb32e88",
+        "type": "custom-text",
+        "backgroundColor": "bgYellow",
+        "customText": " (",
+        "merge": "no-padding"
+      },
+      {
+        "id": "32325e11-d550-4382-8adb-962b7c938934",
+        "type": "thinking-effort",
+        "backgroundColor": "bgCyan",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "3c804d4d-3b26-4e56-a9ae-fbf51d2401e7",
+        "type": "custom-text",
+        "backgroundColor": "bgYellow",
+        "customText": ")"
+      },
+      {
+        "id": "0e887fd8-747b-4bda-b95b-d446d59301ee",
+        "type": "custom-text",
+        "backgroundColor": "bgBrightYellow",
+        "customText": "[ctx] ",
+        "merge": "no-padding"
+      },
+      {
+        "id": "11",
+        "type": "context-percentage-usable",
+        "color": "green",
+        "rawValue": true,
+        "merge": "no-padding",
+        "metadata": {
+          "display": "slider",
+          "inverse": "false"
+        }
+      },
+      {
+        "id": "84ba0eb2-4574-495a-bcb3-4b8efd28fed8",
+        "type": "custom-text",
+        "backgroundColor": "bgBrightGreen",
+        "customText": " (",
+        "merge": "no-padding"
+      },
+      {
+        "id": "13",
+        "type": "session-cost",
+        "color": "brightBlack",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "b1ecb397-6590-4757-a87e-e45286956f30",
+        "type": "custom-text",
+        "backgroundColor": "bgGreen",
+        "customText": ")"
+      },
+      {
+        "id": "17",
+        "type": "remote-control-status",
+        "color": "brightBlack",
+        "metadata": {
+          "format": "word"
+        }
+      },
+      {
+        "id": "6b3f7bc5-8d63-486b-8a96-66b00c7a2ef8",
+        "type": "skills",
+        "backgroundColor": "bgGreen",
+        "metadata": {
+          "mode": "list",
+          "hide": "empty"
+        }
+      }
+    ],
+    [],
+    []
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "defaultPadding": " ",
+  "defaultPaddingSide": "both",
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 60,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": true,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      true
+    ],
+    "startCaps": [
+      ""
+    ],
+    "endCaps": [
+      ""
+    ],
+    "theme": "minimal",
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  }
+}
