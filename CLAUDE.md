@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # Commit messages
 
 Use the symbol-based convention in [docs/COMMITS.md](docs/COMMITS.md):
