@@ -24,23 +24,8 @@
         "deny": []
     },
     "filesystem": {
-        "allow": [
-            "~/.local/state/mise/",
-            "~/.plannotator/",
-            "~/.serena/",
-            "~/.ssh/known_hosts"
-        ],
-        "read": [
-            "~/.agents/",
-            "~/.claude.json",
-            "~/.config/gh",
-            "~/.config/mise/",
-            "~/.gitignore",
-            "~/.ssh/allowed_signers",
-            "~/.ssh/config",
-            "~/.ssh/config.d/",
-            "~/.toolhive/"
-        ],
+        "allow": ["~/.local/state/mise/", "~/.plannotator/", "~/.serena/", "~/.ssh/known_hosts"],
+        "read": ["~/.agents/", "~/.claude.json", "~/.config/gh", "~/.config/mise/", "~/.gitignore", "~/.ssh/allowed_signers", "~/.ssh/config", "~/.ssh/config.d/", "~/.toolhive/"],
         "write": ["~/.local/share/claude/versions", "~/.local/share/uv"],
         "allow_file": [],
         "read_file": [],
@@ -99,7 +84,7 @@
     "platform_overrides": {
         "macos": {
             "filesystem": {
-                "write": ["/Volumes/Runtimes/"]
+                "allow": ["/Volumes/Runtimes/"]
             }
         }
     }
