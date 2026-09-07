@@ -1,15 +1,4 @@
-# $claude_profile_map — list of `repo-root=profile` entries pinning a repo to
-# a nono profile. $claude_default_profile is the fallback when a repo has no
-# entry. Both are managed by `nono-profile`; inspect/edit by hand with
-# `set -U claude_profile_map` / `set -U claude_default_profile` if needed.
-
-function claude --description "Launch Claude Code in the nono sandbox, per-repo profile aware"
-    # No nono, or --raw → run the real binary untouched.
-    if not command -sq nono; or contains -- --raw $argv
-        command claude (string match -v -- --raw $argv)
-        return
-    end
-
+function __clawd_run --description "clawd's default path: resolve the nono profile and launch claude under it"
     # --nono 'extra flags' → forwarded to `nono run` (e.g. --nono '--allow ~/.toolhive')
     set -l nono_flags
     set -l rest
