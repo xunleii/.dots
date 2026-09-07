@@ -43,6 +43,15 @@
             "command": "$HOME/.claude/hooks/per-command/prevent-sleep.sh"
           }
         ]
+      },
+      {
+        "_tag": "ccstatusline-managed",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx -y ccstatusline@latest --hook"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -54,6 +63,16 @@
             "command": "rtk hook claude"
           }
         ]
+      },
+      {
+        "_tag": "ccstatusline-managed",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx -y ccstatusline@latest --hook"
+          }
+        ],
+        "matcher": "Skill"
       }
     ]
   },
