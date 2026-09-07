@@ -7,11 +7,11 @@
 #   --raw            skip the sandbox entirely (plain `command claude $argv`)
 #   --nono 'FLAGS'    extra flags forwarded to `nono run`, e.g.
 #                     clawd --nono '--allow ~/.toolhive'
-#   --init           bootstrap this project's local Claude config, see
-#                     __clawd_init
+#   --onboard        set up this project (nono profile, MCPs, Serena), see
+#                     __clawd_onboard
 #
-# Logic lives in __clawd_run (sandbox launch) and __clawd_init (--init), kept
-# separate so each stays a one-screen, one-job function.
+# Logic lives in __clawd_run (sandbox launch) and __clawd_onboard (--onboard),
+# kept separate so each stays a one-screen, one-job function.
 
 function clawd --description "Launch Claude Code in the nono sandbox, per-repo profile aware"
     if contains -- -h $argv; or contains -- --help $argv
@@ -25,16 +25,15 @@ function clawd --description "Launch Claude Code in the nono sandbox, per-repo p
             '  --raw             skip the sandbox entirely: `command claude $argv`' \
             '  --nono '"'"'FLAGS'"'"'    extra flags forwarded to `nono run`' \
             '                    e.g. clawd --nono '"'"'--allow ~/.toolhive'"'"'' \
-            '  --init            bootstrap this project'"'"'s local Claude config' \
-            '                    (MCP servers, Serena for code repos, AGENTS.local.md,' \
-            '                    .claude/settings.local.json) via a dedicated prompt' \
+            '  --onboard         set up this project: pick/create its nono profile,' \
+            '                    propose MCP servers, offer Serena (with onboarding)' \
             '' \
             'Anything else is passed straight through to claude.' \
             '' \
             'Examples:' \
             '  clawd' \
             '  clawd --nono '"'"'--allow ~/.toolhive --allow ~/.claude.json'"'"'' \
-            '  clawd --init'
+            '  clawd --onboard'
         return 0
     end
 
@@ -43,8 +42,8 @@ function clawd --description "Launch Claude Code in the nono sandbox, per-repo p
         return
     end
 
-    if contains -- --init $argv
-        __clawd_init (string match -v -- --init $argv)
+    if contains -- --onboard $argv
+        __clawd_onboard (string match -v -- --onboard $argv)
         return
     end
 
