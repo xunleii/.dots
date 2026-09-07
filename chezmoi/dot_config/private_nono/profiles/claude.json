@@ -27,6 +27,7 @@
         "allow": [
             "~/.local/state/mise/",
             "~/.plannotator/",
+            "~/.serena/",
             "~/.ssh/known_hosts"
         ],
         "read": [
@@ -40,7 +41,7 @@
             "~/.ssh/config.d/",
             "~/.toolhive/"
         ],
-        "write": ["~/.local/share/claude/versions"],
+        "write": ["~/.local/share/claude/versions", "~/.local/share/uv"],
         "allow_file": [],
         "read_file": [],
         "write_file": [],
