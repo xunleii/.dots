@@ -3,6 +3,7 @@
 # managed by `nono-profile`), plus the extras below.
 #
 # Flags clawd understands, all optional and stripped before reaching claude:
+#   -h, --help       show usage and exit, no nono/claude launch
 #   --raw            skip the sandbox entirely (plain `command claude $argv`)
 #   --nono 'FLAGS'    extra flags forwarded to `nono run`, e.g.
 #                     clawd --nono '--allow ~/.toolhive'
@@ -13,6 +14,30 @@
 # separate so each stays a one-screen, one-job function.
 
 function clawd --description "Launch Claude Code in the nono sandbox, per-repo profile aware"
+    if contains -- -h $argv; or contains -- --help $argv
+        printf '%s\n' \
+            'clawd — claude, sandboxed (nono run --profile <per-repo profile> --allow-cwd -- claude)' \
+            '' \
+            'Usage: clawd [FLAGS] [CLAUDE ARGS...]' \
+            '' \
+            'Flags (all optional, stripped before reaching claude):' \
+            '  -h, --help        show this help and exit' \
+            '  --raw             skip the sandbox entirely: `command claude $argv`' \
+            '  --nono '"'"'FLAGS'"'"'    extra flags forwarded to `nono run`' \
+            '                    e.g. clawd --nono '"'"'--allow ~/.toolhive'"'"'' \
+            '  --init            bootstrap this project'"'"'s local Claude config' \
+            '                    (MCP servers, Serena for code repos, AGENTS.local.md,' \
+            '                    .claude/settings.local.json) via a dedicated prompt' \
+            '' \
+            'Anything else is passed straight through to claude.' \
+            '' \
+            'Examples:' \
+            '  clawd' \
+            '  clawd --nono '"'"'--allow ~/.toolhive --allow ~/.claude.json'"'"'' \
+            '  clawd --init'
+        return 0
+    end
+
     if not command -sq nono; or contains -- --raw $argv
         command claude (string match -v -- --raw $argv)
         return
