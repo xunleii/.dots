@@ -1,6 +1,6 @@
 function __clawd_run --description "clawd's default path: resolve the nono profile and launch claude under it"
     # --nono 'extra flags' → forwarded to `nono run` (e.g. --nono '--allow ~/.toolhive')
-    # --rollback           → force nono's atomic rollback snapshots on (see `nono run --help`)
+    # --rollback           → enable nono's atomic rollback snapshots (see `nono run --help`)
     set -l nono_flags
     set -l want_rollback 0
     set -l rest
@@ -24,10 +24,8 @@ function __clawd_run --description "clawd's default path: resolve the nono profi
     set -l profile (test -n "$repo"; and __claude_profile_for "$repo")
     test -z "$profile"; and set profile (__claude_default_profile)
 
-    # No git repo → no version-control safety net, so fall back to nono's own
-    # rollback snapshots unless the caller already asked for them explicitly.
     set -l rollback_banner
-    if test -z "$repo"; or test $want_rollback -eq 1
+    if test $want_rollback -eq 1
         set -a extra --rollback
         set rollback_banner "  [rollback]"
     end
