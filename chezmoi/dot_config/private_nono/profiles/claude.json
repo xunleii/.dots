@@ -27,7 +27,7 @@
         "allow": ["~/.local/state/mise/", "~/.plannotator/", "~/.serena/", "~/.ssh/known_hosts"],
         "read": ["~/.agents/", "~/.claude.json", "~/.config/ccstatusline", "~/.config/gh", "~/.config/mise/", "~/.gitignore", "~/.ssh/allowed_signers", "~/.ssh/config", "~/.ssh/config.d/", "~/.toolhive/"],
         "write": ["~/.local/share/claude/versions", "~/.local/share/uv"],
-        "allow_file": [],
+        "allow_file": ["$SSH_AUTH_SOCK"],
         "read_file": [],
         "write_file": [],
         "unix_socket": [],
