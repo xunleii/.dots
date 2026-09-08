@@ -9,28 +9,6 @@
     ]
   },
   "hooks": {
-    "SessionEnd": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session/allow-sleep.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session/prevent-sleep.sh"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "matcher": ".*",
@@ -57,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx -y ccstatusline@latest --hook"
+            "command": "ccstatusline --hook"
           }
         ]
       }
@@ -77,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx -y ccstatusline@latest --hook"
+            "command": "ccstatusline --hook"
           }
         ],
         "matcher": "Skill"
@@ -108,7 +86,7 @@
   "agentPushNotifEnabled": true,
   "statusLine": {
     "type": "command",
-    "command": "npx -y ccstatusline@latest",
+    "command": "ccstatusline",
     "padding": 0,
     "refreshInterval": 10
   }

@@ -20,6 +20,11 @@ doggo = "latest"
 "pipx:claude-swap" = "latest"
 "github:str4d/rage" = "latest"
 
+# Claude Code status line + hook renderer (see dot_claude/private_settings.json).
+# Not on Homebrew; mise installs it once and puts `ccstatusline` on PATH, so no
+# hook or status-line refresh has to resolve a package at call time.
+"npm:ccstatusline" = "latest"
+
 # Headroom lives outside mise now — installed via `uv tool` in
 # run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
 # launchd has no TCC access to the external {{ .runtimes_root }} volume where
