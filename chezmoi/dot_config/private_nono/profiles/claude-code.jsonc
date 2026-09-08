@@ -1,0 +1,12 @@
+{
+    // Default Claude Code sandbox profile — `clawd` and nono-profile.fish
+    // resolve unpinned repos here (see __claude_default_profile). Composed
+    // from two focused overlays instead of one monolithic file: extend just
+    // claude-ssh-signing (not this file) for a profile that only needs
+    // git/ssh access without the rest of the dev-tool surface.
+    "extends": ["nolabs-ai/claude", "claude-dev-tools", "claude-ssh-signing"],
+    "meta": {
+        "name": "claude-code",
+        "description": "Default Claude Code sandbox profile: nono base pack + dev tools + ssh/signing",
+    },
+}

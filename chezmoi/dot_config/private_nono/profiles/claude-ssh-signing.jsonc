@@ -1,0 +1,41 @@
+{
+    // Everything git/ssh need from inside the sandbox: reading ~/.ssh's
+    // *config* (never keys), writing known_hosts, and reaching whichever
+    // ssh-agent is active for commit signing / host auth — Secretive by
+    // default, or Bitwarden for the duration of one command via the
+    // bwssh/bwansible*/bwansible-playbook wrappers (see functions/bwssh.fish).
+    //
+    // IMPORTANT: the base pack's `deny_credentials` group blanket-denies
+    // ~/.ssh (it's a required group — can't be excluded), so every path below
+    // MUST also be listed in `bypass_protection`, or the allow/read grant is
+    // silently inert: the previous single-file profile carved these paths out
+    // in allow/read only, never bypass_protection, and they were still denied
+    // in practice (`nono why --path ~/.ssh/known_hosts` -> DENIED,
+    // filesystem_deny on the parent ~/.ssh) — this is what broke `git push`
+    // with a "locked" known_hosts.
+    "meta": {
+        "name": "claude-ssh-signing",
+        "description": "SSH config/known_hosts/signing access, carved out of deny_credentials",
+    },
+    "groups": { "include": [], "exclude": [] },
+    "filesystem": {
+        "allow": [
+            "~/.ssh/known_hosts", // git/ssh must add new host keys on push/pull (TOFU)
+        ],
+        "read": [
+            "~/.ssh/config", // Host-specific ssh settings, incl. the nono UpdateHostKeys drop-in (config.d/nono)
+            "~/.ssh/config.d/", // Include'd config fragments
+            "~/.ssh/allowed_signers", // lets `git log --show-signature` verify SSH-format commit signatures
+            // ~/.ssh/config Include's this (OrbStack's `orb` SSH host) — without it ssh emits a
+            // sandbox denial trying to read the include on every connection (found by testing).
+            "~/.orbstack/ssh/config",
+        ],
+        "allow_file": [
+            "$SSH_AUTH_SOCK", // whichever ssh-agent is active for this run
+            // Secretive's agent, explicit path per nono's own docs (belt-and-suspenders
+            // alongside $SSH_AUTH_SOCK — not swept by any deny group, so no bypass_protection needed)
+            "~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh",
+        ],
+        "bypass_protection": ["~/.ssh/allowed_signers", "~/.ssh/config", "~/.ssh/config.d/", "~/.ssh/known_hosts"],
+    },
+}

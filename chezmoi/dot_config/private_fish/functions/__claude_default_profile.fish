@@ -10,7 +10,7 @@ function __claude_default_profile --description "print \$claude_default_profile,
             end
         end
         set -U claude_profile_map $kept
-        set -U claude_default_profile (test -n "$legacy"; and echo $legacy; or echo claude)
+        set -U claude_default_profile (test -n "$legacy"; and echo $legacy; or echo claude-code)
     end
     echo $claude_default_profile
 end

@@ -1,0 +1,42 @@
+{
+    // Dev-tool and Claude Code state paths that any repo's sandbox needs —
+    // runtime/version managers, MCP tooling, Claude's own config/cache. No
+    // SSH or credential paths here: those live in claude-ssh-signing.jsonc so
+    // the ~/.ssh carve-outs (which need bypass_protection, see that file) can
+    // be read, audited, and reused on their own.
+    "meta": {
+        "name": "claude-dev-tools",
+        "description": "Dev-tool and Claude Code state paths",
+    },
+    "groups": { "include": [], "exclude": [] },
+    "workdir": { "access": "readwrite" },
+    "filesystem": {
+        "allow": [
+            "~/.local/state/mise/", // mise (runtime version manager) state
+            "~/.plannotator/", // Plannotator skill data (plannotator-* skills)
+            "~/.serena/", // Serena MCP semantic-code-tool state (CLAUDE.md: prefer Serena when available)
+        ],
+        "read": [
+            "~/.agents/", // shared cross-project AGENTS.md/agent config
+            "~/.claude.json", // Claude Code's own session/account config
+            "~/.config/ccstatusline", // ccstatusline status-line config (see settings.json hooks)
+            "~/.config/gh", // gh CLI auth/config, for PR/issue operations
+            "~/.config/mise/", // mise tool-version pins
+            "~/.gitignore", // global gitignore (git core.excludesfile)
+            "~/.toolhive/", // ToolHive MCP server manager state
+        ],
+        "write": [
+            "~/.local/share/claude/versions", // Claude Code self-update storage
+            "~/.local/share/uv", // uv (Python package manager) cache/data
+        ],
+        "suppress_save_prompt": ["~/", "~/Library/Application Support/"],
+    },
+    "platform_overrides": {
+        "macos": {
+            "filesystem": {
+                // external volume hosting mise-installed runtimes (node/go/rust/python, see PATH)
+                "allow": ["/Volumes/Runtimes/"],
+            },
+        },
+    },
+}
