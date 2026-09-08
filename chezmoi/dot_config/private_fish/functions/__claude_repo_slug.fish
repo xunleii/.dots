@@ -1,17 +1,12 @@
 function __claude_repo_slug --description "repo -> repo-<host-user-name> from the git remote"
-    set -l url (command git remote get-url origin 2>/dev/null)
-    or set url (command git remote get-url (command git remote 2>/dev/null)[1] 2>/dev/null)
-    test -n "$url"; or return 1
-    # Same normalization as conf.d/40-environment.fish.tmpl: strip .git + scheme +
-    # user@, collapse :/ to -, lowercase -> github.com-user-name. nono profile
-    # names must be alphanumeric-with-hyphens only, so anything else (host
-    # dots, dotfile repos like ".dots", …) becomes a hyphen too, not just the
-    # :/ separators — collapse the resulting runs so it stays readable.
-    echo repo-(string replace -r '\.git$' '' -- $url \
-        | string replace -r '^\w+://' '' \
-        | string replace -r '^[^@/]+@' '' \
-        | string replace -ra '[:/]+' '-' \
-        | string replace -ra '[^a-zA-Z0-9-]' '-' \
+    set -l slug (__git_remote_slug)
+    or return 1
+
+    # nono profile names must be alphanumeric-with-hyphens only, so every
+    # separator the slug still carries (the `/`s, host dots, dotfile repos like
+    # ".dots", …) becomes a hyphen too — then runs of hyphens collapse so the
+    # name stays readable: github.com/user/.dots -> repo-github-com-user-dots
+    echo repo-(string replace -ra '[^a-zA-Z0-9-]' '-' -- $slug \
         | string replace -ra -- '-+' '-' \
-        | string lower | string trim -c -)
+        | string trim -c -)
 end
