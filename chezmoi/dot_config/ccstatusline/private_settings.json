@@ -23,11 +23,6 @@
         "color": "blue"
       },
       {
-        "id": "4c921828-a891-444b-b500-6ecb26b79fc1",
-        "type": "flex-separator",
-        "backgroundColor": "bgWhite"
-      },
-      {
         "id": "1",
         "type": "model",
         "color": "cyan",
@@ -125,28 +120,18 @@
   "powerline": {
     "enabled": true,
     "separators": [
-      "",
-      "",
-      "",
-      "",
-      ""
+      ""
     ],
     "separatorInvertBackground": [
-      false,
-      false,
-      true,
-      true,
-      true
+      false
     ],
     "startCaps": [
-      "",
-      ""
+      ""
     ],
     "endCaps": [
-      "",
-      ""
+      ""
     ],
-    "theme": "minimal",
+    "theme": "catppuccin",
     "autoAlign": false,
     "continueThemeAcrossLines": false
   }
