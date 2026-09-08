@@ -125,15 +125,17 @@
   "powerline": {
     "enabled": true,
     "separators": [
-      ""
+      ""
     ],
     "separatorInvertBackground": [
-      true
+      false
     ],
     "startCaps": [
-      ""
+      "",
+      ""
     ],
     "endCaps": [
+      "",
       ""
     ],
     "theme": "minimal",
