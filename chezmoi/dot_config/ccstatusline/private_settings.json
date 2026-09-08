@@ -120,16 +120,16 @@
   "powerline": {
     "enabled": true,
     "separators": [
-      ""
+      ""
     ],
     "separatorInvertBackground": [
       false
     ],
     "startCaps": [
-      ""
+      ""
     ],
     "endCaps": [
-      ""
+      ""
     ],
     "theme": "catppuccin",
     "autoAlign": false,
