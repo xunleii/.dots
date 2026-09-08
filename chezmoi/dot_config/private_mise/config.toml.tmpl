@@ -25,6 +25,15 @@ doggo = "latest"
 # hook or status-line refresh has to resolve a package at call time.
 "npm:ccstatusline" = "latest"
 
+# Plan/diff annotation UI (the plannotator-* skills drive it). Upstream only
+# ships a `curl | bash` installer and bare GitHub release binaries, so it goes
+# through ubi, which picks the darwin/arm64 asset from the release. Keeping it
+# here rather than as a chezmoi external puts the ~120 MB binary on
+# {{ .runtimes_root }} instead of the system volume.
+# NOTE: it can self-update in place; `mise install` is what decides the version
+# from now on, so re-run it after an in-place update to get back in sync.
+"ubi:backnotprop/plannotator" = "latest"
+
 # Headroom lives outside mise now — installed via `uv tool` in
 # run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
 # launchd has no TCC access to the external {{ .runtimes_root }} volume where
