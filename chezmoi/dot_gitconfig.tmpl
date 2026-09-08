@@ -7,6 +7,11 @@
 #  - https://gist.github.com/tdd/470582
 #  - https://gist.github.com/pyrtsa/4148804
 
+{{- /* SSH pubkey type prefixes: ssh-ed25519/ssh-rsa, ecdsa-sha2-* (Secure
+       Enclave keys, e.g. Secretive, are ECDSA — no "ssh-" prefix), and the
+       sk-* FIDO/security-key variants. Anything else is treated as a GPG key ID. */}}
+{{- $isSSHKey := and .signingkey (regexMatch "^(ssh-|ecdsa-sha2-|sk-ssh-|sk-ecdsa-sha2-)" .signingkey) }}
+
 # ============================================================================
 # USER CONFIGURATION
 # ============================================================================
@@ -15,7 +20,9 @@
   name = {{ .name }}
   {{- if .signingkey }}
   # Sign all commits by default
-  signingkey = {{ .signingkey }}
+  {{- /* gpg.format=ssh takes either a file path or a literal pubkey prefixed
+         "key::" — without the prefix git tries to open the value as a file. */}}
+  signingkey = {{ if $isSSHKey }}key::{{ end }}{{ .signingkey }}
   {{- end }}
 
 # ============================================================================
@@ -23,7 +30,7 @@
 # ============================================================================
 {{- if .signingkey }}
 [gpg]
-  {{- if hasPrefix "ssh-" .signingkey }}
+  {{- if $isSSHKey }}
   format = ssh
 
 [gpg "ssh"]

@@ -53,7 +53,13 @@ data:
   work: {{ promptBoolOnce . "work" "Is this a work machine" }}
   name: {{ promptStringOnce . "name" "What is your GIT name" }}
   email: {{ promptStringOnce . "email" "What is your GIT email" }}
-  signingkey: {{ promptStringOnce . "signingkey" "What is your Git signing key (SSH or GPG)" }}
+  {{/* Secure-Enclave keys (Secretive) can't be exported/scripted into existence —
+       this only pre-fills the prompt from whatever's already loaded in the active
+       ssh-agent (empty on a brand new machine, before Secretive/its key exist),
+       so re-running `chezmoi init` after creating the key needs just Enter,
+       not a copy-pasted pubkey. */}}
+  {{ $sigDefault := output "sh" "-c" "ssh-add -L 2>/dev/null | head -1 || true" | trim -}}
+  signingkey: {{ promptStringOnce . "signingkey" "What is your Git signing key (SSH or GPG)" $sigDefault }}
   bitwarden:
     # nested path must be a list, not "a.b" — a dotted string is treated as a
     # single flat key and re-prompts on every `chezmoi init`.
