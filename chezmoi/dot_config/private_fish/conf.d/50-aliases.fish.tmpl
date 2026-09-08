@@ -10,16 +10,8 @@ end
 # --- Kubectl (Kubernetes CLI)
 # -----------------------------------------------------------------------------
 if command -sq kubectl
-
-  # ---- Download kubectl completion
-  set --local __kubectl_completion_path "$__fish_config_dir/completions/kubectl.fish"
-  if not test -e $__kubectl_completion_path
-    set --local __kubectl_completion_sha "ced676392575d618d8b80b3895cdc3159be3f628"
-    set --local __kubectl_completion_url "https://raw.githubusercontent.com/evanlucas/fish-kubectl-completions/$__kubectl_completion_sha/completions/kubectl.fish"
-
-    curl -fsSL "$__kubectl_completion_url" > "$__kubectl_completion_path"
-  end
-
+  # Completions are fetched by chezmoi, not curl'd here — see the
+  # `.config/fish/completions/kubectl.fish` entry in .chezmoiexternal.toml.tmpl.
   abbr --add --global k kubectl
   abbr --add --global kn kubectl config set-context --current --namespace
   abbr --add --global kx kubectl config use-context
@@ -73,7 +65,7 @@ if command -sq hexyl
   alias hex hexyl
 end
 
-# --- Nono (sandboxed `claude`) → see functions/claude.fish (per-repo profile picker)
+# --- Nono (sandboxed `claude`) → see functions/clawd.fish (per-repo profile picker)
 
 # --- Vim/Neovim
 # -----------------------------------------------------------------------------

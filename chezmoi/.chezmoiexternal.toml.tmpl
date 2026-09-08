@@ -1,5 +1,14 @@
 {{ $os_arch := printf "%s/%s" .chezmoi.os .chezmoi.arch -}}
 # This file has been generated for {{ $os_arch }} system
+# Only darwin/{amd64,arm64} assets exist in .chezmoidata.yaml — the `has`
+# guards below stay as a safety net for a Mac arch that isn't listed yet.
+
+# --- kubectl fish completions (kubectl ships none for fish)
+# Fetched and cached at apply time, so nothing hits the network from the shell
+# startup path. Pinned to a commit: bump the SHA to update.
+[".config/fish/completions/kubectl.fish"]
+type = "file"
+url = "https://raw.githubusercontent.com/evanlucas/fish-kubectl-completions/ced676392575d618d8b80b3895cdc3159be3f628/completions/kubectl.fish"
 
 {{ with .packages.mise -}}
 {{ if has $os_arch (keys .release_names) -}}
