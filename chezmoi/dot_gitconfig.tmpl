@@ -270,14 +270,3 @@
 # ============================================================================
 [absorb]
   fixupTargetAlwaysSHA = true
-
-# ============================================================================
-# WORKSPACE-SPECIFIC CONFIGURATIONS
-# ============================================================================
-{{- $wkspaces := (joinPath .chezmoi.homeDir "Workspaces") }}
-{{ if stat $wkspaces }}
-{{-   range (output "ls" $wkspaces | trim | split "\n") }}
-[includeIf "gitdir:{{joinPath $wkspaces .}}"]
-  path = {{ joinPath $wkspaces . ".gitconfig" }}
-{{   end }}
-{{- end }}

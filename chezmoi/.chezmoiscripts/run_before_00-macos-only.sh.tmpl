@@ -1,0 +1,22 @@
+{{- if ne .chezmoi.os "darwin" -}}
+{{-   fail (printf "this dotfiles repo is macOS-only — refusing to apply on %s/%s (see README.md)" .chezmoi.os .chezmoi.arch) -}}
+{{- end -}}
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Guard - macOS + required volumes" }}
+# `run_before_` with no `_once_`/`_onchange_` infix: this MUST run on every
+# apply, not just when its content changes.
+#
+# The OS check is the `fail` at the top of this template, not shell code: it
+# fires while chezmoi renders the target state, so a non-darwin machine aborts
+# before a single file is written. `.chezmoi.yaml.tmpl` carries the same guard
+# so `chezmoi init` refuses just as early.
+#
+# The volume checks below only warn. An unmounted volume is a transient state,
+# not a reason to refuse the whole apply — everything pointing at it recovers
+# on its own once it's back.
+set -uo pipefail
+
+for vol in {{ .runtimes_root | quote }} {{ .spaces_root | quote }}; do
+    [ -d "$vol" ] && continue
+    echo "==> [chezmoi] WARNING: $vol is not mounted — anything pointing at it (mise runtimes, Spaces) misbehaves until it is." >&2
+done

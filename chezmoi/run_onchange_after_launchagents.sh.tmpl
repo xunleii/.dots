@@ -5,7 +5,6 @@
 {{ range (glob (joinPath .chezmoi.sourceDir "Library/LaunchAgents/*")) -}}
 # hashlock {{ base . }}: {{ include . | sha256sum }}
 {{ end -}}
-{{ if eq .chezmoi.os "darwin" -}}
 # No `set -e` and no non-zero exit: a launchctl hiccup here used to make chezmoi
 # re-run this script (and bounce the proxy) on *every* apply.
 set -uo pipefail
@@ -43,4 +42,3 @@ for _ in $(seq 1 50); do
     curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1 && break
     sleep 0.2
 done
-{{ end -}}

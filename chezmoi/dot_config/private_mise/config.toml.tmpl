@@ -22,47 +22,37 @@ doggo = "latest"
 
 # Headroom lives outside mise now — installed via `uv tool` in
 # run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
-# launchd has no TCC access to the external {{ .runtime_dir }} volume where
+# launchd has no TCC access to the external {{ .runtimes_root }} volume where
 # mise puts its venvs, so the venv must sit on the internal disk.
 
 [env]
-MISE_DATA_DIR = "{{ .runtime_dir }}/mise"
+MISE_DATA_DIR = "{{ .runtimes_root }}/mise"
+
+# Redirects each toolchain's cache/install dir onto the external runtimes
+# volume. Only the languages declared in [tools] above belong here.
 
 # Node
-npm_config_cache = "{{ .runtime_dir }}/node/npm/cache"
-npm_config_prefix = "{{ .runtime_dir }}/node/npm"
+npm_config_cache = "{{ .runtimes_root }}/node/npm/cache"
+npm_config_prefix = "{{ .runtimes_root }}/node/npm"
 
 # Go
-GOPATH = "{{ .runtime_dir }}/go"
-GOCACHE = "{{ .runtime_dir }}/go/cache"
-GOMODCACHE = "{{ .runtime_dir }}/go/mod"
+GOPATH = "{{ .runtimes_root }}/go"
+GOCACHE = "{{ .runtimes_root }}/go/cache"
+GOMODCACHE = "{{ .runtimes_root }}/go/mod"
 
 # Rust
-CARGO_HOME = "{{ .runtime_dir }}/rust/cargo"
-CARGO_TARGET_DIR = "{{ .runtime_dir }}/rust/cargo/target"
+CARGO_HOME = "{{ .runtimes_root }}/rust/cargo"
+CARGO_TARGET_DIR = "{{ .runtimes_root }}/rust/cargo/target"
 
 # Python
-PIP_CACHE_DIR = "{{ .runtime_dir }}/python/pip"
-POETRY_CACHE_DIR = "{{ .runtime_dir }}/python/pypoetry"
-UV_CACHE_DIR = "{{ .runtime_dir }}/python/uv"
-
-# Elixir
-MIX_HOME = "{{ .runtime_dir }}/elixir/mix"
-HEX_HOME = "{{ .runtime_dir }}/elixir/hex"
-
-# Java
-GRADLE_USER_HOME = "{{ .runtime_dir }}/java/gradle"
-MAVEN_OPTS = "-Dmaven.repo.local={{ .runtime_dir }}/java/maven/repository"
-
-# Ruby
-BUNDLE_USER_CACHE = "{{ .runtime_dir }}/ruby/bundler"
-GEM_SPEC_CACHE = "{{ .runtime_dir }}/ruby/gem"
+PIP_CACHE_DIR = "{{ .runtimes_root }}/python/pip"
+UV_CACHE_DIR = "{{ .runtimes_root }}/python/uv"
 
 # PATH definition using mise's env._.path
 # This handles prepending to PATH automatically
 _.path = [
-    "{{ .runtime_dir }}/node/npm/bin",
-    "{{ .runtime_dir }}/go/bin",
-    "{{ .runtime_dir }}/rust/cargo/bin",
+    "{{ .runtimes_root }}/node/npm/bin",
+    "{{ .runtimes_root }}/go/bin",
+    "{{ .runtimes_root }}/rust/cargo/bin",
     "{{ .chezmoi.homeDir }}/.local/bin"
 ]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Managed by chezmoi. Reloaded by run_onchange_after_mise.sh.tmpl.
      The `uv tool` shim (~/.local/bin/headroom) lives on the INTERNAL disk — it
-     must not sit on the external {{ .runtime_dir }} volume, where a launchd
+     must not sit on the external {{ .runtimes_root }} volume, where a launchd
      agent has no TCC access and Python can't read its own pyvenv.cfg (EPERM).
      arg0 is /bin/sh, not the shim directly: launchd's xpcproxy wedges when it
      has to exec an ad-hoc-signed venv interpreter itself (job stuck in state

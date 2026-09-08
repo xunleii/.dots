@@ -1,20 +1,25 @@
-# --- application version
-packages:
-    btop:
-        # renovate: datasource=github-tags depName=aristocratos/btop
-        version: latest
-        release_names:
-            linux/amd64: btop-x86_64-linux-musl.tbz
-            linux/arm: btop-arm-linux-musleabi.tbz
-            linux/arm64: btop-aarch64-linux-musl.tbz
+# --- Machine layout
+# macOS-only repo (see the guard in .chezmoi.yaml.tmpl and
+# .chezmoiscripts/run_before_00-macos-only.sh.tmpl). Both roots live on
+# external volumes; `spaces` is the single source of truth for the Space names
+# — conf.d/40-environment.fish.tmpl exports it for clone(), so add a Space here
+# and nowhere else. Documented in docs/SPACES.md.
+runtimes_root: /Volumes/Runtimes
+spaces_root: /Volumes/Spaces
+spaces:
+    - Lab
+    - Work
+    - OSS
+    - Personal
 
+# --- application version
+# Only darwin/{amd64,arm64} release assets are listed: this repo does not
+# target any other OS.
+packages:
     mise:
         # renovate: datasource=github-tags depName=jdx/mise
         version: latest
         release_names:
-            linux/amd64: mise-*-linux-x64
-            linux/arm: mise-*-linux-armv7
-            linux/arm64: mise-*-linux-arm64
             darwin/amd64: mise-*-macos-x64
             darwin/arm64: mise-*-macos-arm64
 
@@ -22,8 +27,6 @@ packages:
         # renovate: datasource=github-tags depName=kdcokenny/ocx
         version: latest
         release_names:
-            linux/amd64: ocx-linux-x64
-            linux/arm64: ocx-linux-arm64
             darwin/amd64: ocx-darwin-x64
             darwin/arm64: ocx-darwin-arm64
 
@@ -31,7 +34,5 @@ packages:
         # renovate: datasource=github-tags depName=jdx/usage
         version: latest
         release_names:
-            linux/amd64: usage-x86_64-unknown-linux-gnu.tar.gz
-            linux/arm64: usage-aarch64-unknown-linux-gnu.tar.gz
             darwin/amd64: usage-universal-apple-darwin.tar.gz
             darwin/arm64: usage-universal-apple-darwin.tar.gz

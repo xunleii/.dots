@@ -1,3 +1,11 @@
+{{- /* macOS-only repo: refuse to install anywhere else. This runs during
+       `chezmoi init`, before any prompt or any file is written, so a wrong
+       machine gets a hard error instead of a half-applied config. The same
+       guard is repeated in .chezmoiscripts/run_before_00-macos-only.sh.tmpl
+       to cover every later `chezmoi apply`. */ -}}
+{{- if ne .chezmoi.os "darwin" -}}
+{{-   fail (printf "this dotfiles repo is macOS-only — refusing to install on %s/%s (see README.md)" .chezmoi.os .chezmoi.arch) -}}
+{{- end -}}
 sourceDir: {{ .chezmoi.sourceDir }}
 format: yaml
 
@@ -60,4 +68,3 @@ data:
        not a copy-pasted pubkey. */}}
   {{ $sigDefault := output "sh" "-c" "ssh-add -L 2>/dev/null | head -1 || true" | trim -}}
   signingkey: {{ promptStringOnce . "signingkey" "What is your Git signing key (SSH or GPG)" $sigDefault }}
-  runtime_dir: {{ promptStringOnce . "runtime_dir" "Where all the langauge runtimes/cache/packages should be installed" }}
