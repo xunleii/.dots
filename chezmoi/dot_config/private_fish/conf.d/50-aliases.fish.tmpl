@@ -1,16 +1,5 @@
 {{ template "banner.tmpl" "Fish - Aliases & Abbreviations" }}
 
-# --- Bitwarden Secrets (bws)
-# -----------------------------------------------------------------------------
-if command -sq bws
-  function bws!
-    BWS_SERVER_URL="https://vault.bitwarden.eu" \
-    BWS_ACCESS_TOKEN=(chezmoi execute-template "{{ "{{" }} .bitwarden.access_token }}") \
-    bws --output table $argv
-  end
-  abbr --add bws bws!
-end
-
 # --- K9s (Kubernetes CLI)
 # -----------------------------------------------------------------------------
 if command -sq k9s

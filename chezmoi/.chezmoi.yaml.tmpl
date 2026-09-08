@@ -60,8 +60,4 @@ data:
        not a copy-pasted pubkey. */}}
   {{ $sigDefault := output "sh" "-c" "ssh-add -L 2>/dev/null | head -1 || true" | trim -}}
   signingkey: {{ promptStringOnce . "signingkey" "What is your Git signing key (SSH or GPG)" $sigDefault }}
-  bitwarden:
-    # nested path must be a list, not "a.b" — a dotted string is treated as a
-    # single flat key and re-prompts on every `chezmoi init`.
-    access_token: {{ promptStringOnce . (list "bitwarden" "access_token") (printf "Get a Bitwarden access token for this machine (%s)" .chezmoi.fqdnHostname) }}
   runtime_dir: {{ promptStringOnce . "runtime_dir" "Where all the langauge runtimes/cache/packages should be installed" }}
