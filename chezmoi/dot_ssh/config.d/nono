@@ -1,0 +1,5 @@
+## Inside a nono sandbox, ~/.ssh is deny-listed except for specific carved-out
+## files (known_hosts, config, ...). UpdateHostKeys rewrites known_hosts via a
+## temp file + rename in the directory itself, which the sandbox denies.
+Match exec "test -n \"$NONO_CAP_FILE\""
+  UpdateHostKeys no
