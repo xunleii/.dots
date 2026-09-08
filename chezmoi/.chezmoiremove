@@ -1,2 +1,26 @@
+# Targets chezmoi deletes on apply. Deleting a source file does not remove the
+# target it already wrote, so anything retired has to be listed here once.
+
 .config/opencode
 .config/ghostty/shaders
+
+# --- Retired binaries and config
+.local/bin/fasd
+.local/bin/git-wktree
+.local/bin/zai
+.config/fish/conf.d/70-lazy-load.fish
+.config/fish/conf.d/keychain.fish
+.config/fish/conf.d/wsl.fish
+.claude/hooks/session
+
+# --- Unmanaged leftovers that every interactive shell still sourced
+# 30-utilities: duplicates the atuin/zoxide init in 25-tools, and sources
+#   brew-wrap, which fights the `brew` wrapper in 45-brew
+# 80-bitwarden-ssh: points $SSH_AUTH_SOCK at Bitwarden, overriding the
+#   Secretive default from 80-secretive-ssh. Bitwarden is opt-in per command,
+#   via bwssh
+# 80-fzf-tab-config: configures xxxbrian/fzf-tab.fish, which is not in
+#   fish_plugins (fifc is, configured in 10-keybindings)
+.config/fish/conf.d/30-utilities.fish
+.config/fish/conf.d/80-bitwarden-ssh.fish
+.config/fish/conf.d/80-fzf-tab-config.fish
