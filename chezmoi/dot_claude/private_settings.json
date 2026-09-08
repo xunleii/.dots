@@ -1,5 +1,13 @@
 {
   "model": "sonnet",
+  "permissions": {
+    "allow": [
+      "Bash(nono why *)",
+      "Bash(nono profile guide)",
+      "Bash(nono profile validate *)",
+      "Bash(nono profile show *)"
+    ]
+  },
   "hooks": {
     "SessionEnd": [
       {
