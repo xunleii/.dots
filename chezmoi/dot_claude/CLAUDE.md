@@ -56,3 +56,4 @@ This section offers a glimpse into your working memory. It is where you will rec
 
 @RTK.md
 @NONO.md
+@PERSONNALITY.md

@@ -8,5 +8,8 @@ README.md
 # --- Scripts
 scripts/**
 
+# --- Local-only, never synced (per-machine personality/tone)
+.claude/PERSONNALITY.md
+
 # --- Workspace directories (managed by git only)
 .workspaces/**/.gitkeep
