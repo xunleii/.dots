@@ -1,11 +1,13 @@
-> [!WARNING]  
+> [!WARNING]
 > This repo is intended to be used for myself... Use at your own risk
 
 # .dots
 
-## TLDR;
+**macOS only.** `chezmoi init` and `chezmoi apply` both hard-fail on any other
+OS — this is a deliberate, single-platform setup, not a portable one (see
+[AGENTS.md](AGENTS.md#macos-only)).
 
-### On macOS
+## TLDR;
 
 ```bash
 # Install Homebrew if not already installed
@@ -16,56 +18,47 @@ brew install chezmoi
 chezmoi init --apply https://github.com/xunleii/.dots
 ```
 
-See [docs/APPLICATIONS.md](docs/APPLICATIONS.md) for the complete list of installed applications with individual installation commands.
-
-### On Debian-based systems _(like Ubuntu)_
-
-```bash
-export PATH=$HOME/.local/bin:$PATH
-mkdir -p $HOME/.local/bin
-
-# Install fish
-sudo apt-add-repository ppa:fish-shell/release-3
-sudo apt upgrade
-sudo apt update
-sudo apt install build-essential fish git gzip keychain neovim unzip wslu
-
-# Install and configure chezmoi
-BINDIR=$HOME/.local/bin sh -c "$(curl -fsLS https://raw.githubusercontent.com/twpayne/chezmoi/master/assets/scripts/install.sh)" -- init --apply https://github.com/xunleii/.dots
-
-# Configure fish as default shell
-chsh -s $(which fish)
-```
+Then the manual steps that have no CLI (see
+[docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
+a Secure Enclave key, then re-run `chezmoi init` so `signingkey` picks it up.
 
 ## How to use this repository
 
-To be honest, I recommend NOT using this repository, but building your own fork with your own settings. 
-I created this repository to store my own configuration and settings for my computers; even if it works for me, I don't guarantee it will for you.
+To be honest, I recommend NOT using this repository, but building your own fork
+with your own settings. I created this repository to store my own configuration
+and settings for my computers; even if it works for me, I don't guarantee it
+will for you.
 
-Currently, it has been tested for these systems:
-- **macOS** (Sequoia 15.6+) - Primary system
-- ~~**Fedora 37 Workstation**~~ _(no more maintained)_
-- **WSL Ubuntu 23.04** on **Windows 11** _(to be tested on CI)_
+Tested on macOS (Sequoia 15.6+) only.
 
-## Troubleshoot and FAQ
+## Machine layout
 
-### How to load my SSH key to the keychain automatically on WSL?
+Everything that isn't config lives on two external volumes:
+`/Volumes/Runtimes` (toolchains and caches) and `/Volumes/Spaces` (all working
+copies, grouped into `Lab` / `Work` / `OSS` / `Personal`). Both are declared
+once in `chezmoi/.chezmoidata.yaml`.
 
-```fish
-keychain_add <path_to_your_ssh_key>
-```
+See [docs/SPACES.md](docs/SPACES.md) for the convention, the `clone` helper and
+how to add a Space.
 
-## Application Management (on macOS)
+## Application management
 
-This repository uses multiple package managers and installation methods:
+Where each thing is installed from — and therefore where to add a new one:
 
-- **Homebrew** - Primary package manager for macOS (formulas and casks)
-- **Mac App Store** - Via `mas` CLI for App Store apps
-- **chezmoi externals** - For specific CLI tools (lazygit, mise, usage, zoxide, bws)
-- **mise** - Polyglot runtime manager for development tools
-- **Manual downloads** - For apps not available in package managers
+| Method | Source of truth | For |
+| --- | --- | --- |
+| Homebrew | `chezmoi/dot_Brewfile.tmpl` | almost everything, formulae and casks |
+| chezmoi externals | `chezmoi/.chezmoiexternal.toml.tmpl` + `.chezmoidata.yaml` | GitHub-release binaries brew doesn't carry (mise, usage, ocx) |
+| mise | `chezmoi/dot_config/private_mise/config.toml.tmpl` | language runtimes, and CLIs only published to npm/pipx |
+| `uv tool` | `chezmoi/.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl` | Python tools that must live on the internal disk (headroom, serena) |
 
-See [docs/APPLICATIONS.md](docs/APPLICATIONS.md) for the complete inventory with installation commands for each application.
+`brew bundle cleanup` runs on every apply, so anything **not** in the Brewfile
+gets uninstalled. Installing or uninstalling by hand still works: the `brew`
+wrapper in `conf.d/45-brew.fish.tmpl` writes the change back into the source
+Brewfile for you.
+
+[docs/APPLICATIONS.md](docs/APPLICATIONS.md) covers only the apps that need a
+manual, GUI-only setup step after install.
 
 ## Core Dependencies
 
@@ -74,37 +67,28 @@ See [docs/APPLICATIONS.md](docs/APPLICATIONS.md) for the complete inventory with
 > [!Note]
 > `chezmoi` is automatically installed on bootstrap... by `chezmoi` itself
 
-`chezmoi` is a fantastic _dot files_ manager that I use to bootstrap and maintain all of my settings. It manages configuration files, external binaries, and templates across multiple machines.
+`chezmoi` is a fantastic _dot files_ manager that I use to bootstrap and
+maintain all of my settings. It manages configuration files, external binaries,
+and templates. See [docs/CHEZMOI.md](docs/CHEZMOI.md) for the cheat sheet used
+when editing this repo.
 
 ### [fish](https://fishshell.com) shell - a smart and user-friendly command line shell
 
-I use `fish` as my primary shell. It's installed via Homebrew on macOS or via the official PPA on Ubuntu.
+`fish` is my primary shell, installed via Homebrew. The configuration includes:
 
-The fish configuration includes:
-- **Starship** prompt - Fast, customizable prompt
-- **Atuin** - Magical shell history with sync
-- **Zoxide** - Smarter cd command with fuzzy directory jumping
-- Custom functions and abbreviations
+- **Starship** prompt - fast, customizable prompt
+- **Atuin** - shell history with sync, owns `Ctrl+R`
+- **Zoxide** - `z` / `zi`, frecency-based directory jumping
+- Custom functions and abbreviations (`clawd`, `clone`, `bwssh`, `nono-profile`)
 
-### [mise](https://mise.jdx.dev) (formerly rtx) - runtime versions manager
+### [mise](https://mise.jdx.dev) - runtime versions manager
 
 > [!NOTE]
 > `mise` is automatically installed on bootstrap, using `chezmoi` externals
 
-To manage development tools and runtimes _(`terraform`, `kubectl`, `python`, `node`, `golang`)_, I use `mise` (the modern successor to `asdf`). `mise` is a fast, polyglot runtime manager which can manage several versions on a single computer.
-
-Versions are managed in `~/.config/mise/config.toml` and allow each project to have different tool versions via `.mise.toml` or `.tool-versions` files.
-
-Current mise-managed tools include:
-- Runtime environments (Go, Node, Python)
-- Cloud CLIs (AWS, Azure, GCloud, Scaleway)
-- Kubernetes tools (kubectl, helm, k9s, argocd)
-- Development tools (just, sops, vault)
-- CLI utilities (bat, eza, fzf, gh, starship)
-
-### Environment manager
-
-Environment and runtime management are handled via mise now.
+`mise` manages language runtimes (Go, Node, Python, Rust) and the few CLIs that
+only ship via npm/pipx. Its `[env]` block redirects every toolchain cache onto
+`/Volumes/Runtimes`. Per-project overrides go in the project's own `.mise.toml`.
 
 ## LICENSE
 

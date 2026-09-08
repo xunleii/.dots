@@ -45,8 +45,8 @@ new tool/dir shows up — don't pre-invent scopes for things that don't exist
 yet.
 
 `chezmoi`, `fish`, `nono`, `brew`, `git`, `mise`, `headroom`, `ghostty`,
-`kitty`, `lazygit`, `atuin`, `starship`, `zed`, `opencode`, `macOS`, `ci`,
-`docs`, `claude`
+`kitty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`, `docs`,
+`claude`
 
 ## Examples
 

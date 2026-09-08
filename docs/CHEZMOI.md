@@ -45,9 +45,9 @@ Prefixes/suffixes can be combined (e.g. `private_dot_ssh/private_config`).
 | Path | Purpose |
 | --- | --- |
 | `.chezmoiroot` | points to the actual source dir (`chezmoi/` here) |
-| `.chezmoi.toml.tmpl` | generates `~/.config/chezmoi/chezmoi.toml` (prompts, `data`) |
-| `.chezmoiignore` | lines/patterns to skip; supports `{{ if }}` templating |
-| `.chezmoiexternal.toml[.tmpl]` | declares files/archives/git-repos to fetch and place (see `.chezmoiexternal.toml.tmpl` for the OS/arch-branched pattern used here) |
+| `.chezmoi.yaml.tmpl` | generates `~/.config/chezmoi/chezmoi.yaml` (prompts, `data`) — this repo uses the YAML form, not `.chezmoi.toml.tmpl` |
+| `.chezmoiignore` | lines/patterns to skip; supports `{{ if }}` templating. **Not present here** — patterns match *target* paths, so anything outside `chezmoi/` (`README.md`, `docs/`, `LICENSE`) is never a candidate and needs no entry |
+| `.chezmoiexternal.toml[.tmpl]` | declares files/archives/git-repos to fetch and place (see `.chezmoiexternal.toml.tmpl` for the arch-branched pattern used here) |
 | `.chezmoitemplates/` | partials includable from other templates via `template` |
 | `.chezmoiversion` | minimum chezmoi version required |
 | `.chezmoidata.{toml,yaml,json}` | static extra template data |
@@ -60,12 +60,25 @@ Available in any `.tmpl` (and in `.chezmoi.toml.tmpl`, `.chezmoiignore`,
 - `.chezmoi.os` — `darwin`, `linux`, `windows`
 - `.chezmoi.arch` — `amd64`, `arm64`, ...
 - `.chezmoi.hostname`, `.chezmoi.username`
-- `.chezmoi.kernel.osrelease` — useful to detect WSL (contains `microsoft`)
 - `.chezmoi.homeDir`
 
-This repo's rule: branch inside one `.tmpl` on `.chezmoi.os`/`.chezmoi.arch`
-rather than maintaining parallel per-OS files — see [AGENTS.md](../AGENTS.md)
-and the examples listed there.
+Plus this repo's own data from `.chezmoidata.yaml` (`.runtimes_root`,
+`.spaces_root`, `.spaces`, `.packages`) and from the `chezmoi init` prompts in
+`.chezmoi.yaml.tmpl` (`.work`, `.name`, `.email`, `.signingkey`). No secret is
+prompted for or stored there — see the note in `.chezmoi.yaml.tmpl`.
+
+This repo is macOS-only and guards against anything else with `{{ fail }}`, so
+`.chezmoi.os` should never be branched on — see
+[AGENTS.md](../AGENTS.md#macos-only). `.chezmoi.arch` still matters
+(Intel vs Apple Silicon release assets).
+
+## Failing on purpose
+
+`{{ fail "message" }}` aborts template rendering with that message. Used here
+for the macOS guard, in both `.chezmoi.yaml.tmpl` (blocks `chezmoi init`) and
+`.chezmoiscripts/run_before_00-macos-only.sh.tmpl` (blocks every `chezmoi
+apply`, before any file is written). Rendering-time failure is what makes it a
+real guard rather than a script that runs too late.
 
 ## Everyday commands
 
