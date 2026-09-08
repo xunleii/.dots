@@ -1,127 +1,30 @@
 {{ template "banner.tmpl" "Git - Global .gitignore" }}
 
-# Created by https://www.toptal.com/developers/gitignore/api/go,vim,c++,java,node,linux,emacs,cmake,windows,premake-gmake,jetbrains+all,visualstudiocode,git
-# Edit at https://www.toptal.com/developers/gitignore?templates=go,vim,c++,java,node,linux,emacs,cmake,windows,premake-gmake,jetbrains+all,visualstudiocode,git
+# Hand-maintained, macOS-only. This is the GLOBAL ignore file (git
+# `core.excludesfile`): only put things here that no repo would ever want
+# tracked, whatever the project. Anything project-specific belongs in that
+# project's own .gitignore.
+#
+# Careful with bare extension globs: a rule like `*.d` also swallows
+# directories such as `conf.d/`.
 
-### C++ ###
-# Prerequisites (make dependency files) — files only, not dirs like conf.d/
-*.d
-!*.d/
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-### CMake ###
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-CMakeUserPresets.json
-
-### CMake Patch ###
-# External projects
-*-prefix/
-
-
-
-### Emacs ###
-# -*- mode: gitignore; -*-
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Org-mode
-.org-id-locations
-*_archive
-ltximg/**
-
-# flymake-mode
-*_flymake.*
-
-# eshell files
-/eshell/history
-/eshell/lastdir
-
-# elpa packages
-/elpa/
-
-# reftex files
-*.rel
-
-# AUCTeX auto folder
-/auto/
-
-# cask packages
-.cask/
-dist/
-
-# Flycheck
-flycheck_*.el
-
-# server auth directory
-/server/
-
-# projectiles files
-.projectile
-
-# directory configuration
-.dir-locals.el
-
-# network security
-/network-security.data
-
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Icon?
 
 ### Git ###
-# Created by git for backups. To disable backups in Git:
-# $ git config --global mergetool.keepBackup false
+# Backups and conflict leftovers from merge tools
 *.orig
-
-# Created by git when using merge tools for conflicts
 *.BACKUP.*
 *.BASE.*
 *.LOCAL.*
@@ -131,337 +34,63 @@ flycheck_*.el
 *_LOCAL_*.txt
 *_REMOTE_*.txt
 
-### Go ###
-# Binaries for programs and plugins
-*.exe~
-
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-
-# Dependency directories (remove the comment below to include it)
-# vendor/
-
-### Go Patch ###
-/vendor/
-/Godeps/
-
-### Java ###
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-### JetBrains+all ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-# User-specific stuff
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
-
-# Generated files
-.idea/**/contentModel.xml
-
-# Sensitive or high-churn files
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
-
-# Gradle
-.idea/**/gradle.xml
-.idea/**/libraries
-
-# Gradle and Maven with auto-import
-# When using Gradle or Maven with auto-import, you should exclude module files,
-# since they will be recreated, and may cause churn.  Uncomment if using
-# auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
-# *.iml
-# *.ipr
-
-# CMake
-cmake-build-*/
-
-# Mongo Explorer plugin
-.idea/**/mongoSettings.xml
-
-# File-based project format
-*.iws
-
-# IntelliJ
-out/
-
-# mpeltonen/sbt-idea plugin
-.idea_modules/
-
-# JIRA plugin
-atlassian-ide-plugin.xml
-
-# Cursive Clojure plugin
-.idea/replstate.xml
-
-# Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-
-# Editor-based Rest Client
-.idea/httpRequests
-
-# Android studio 3.1+ serialized cache file
-.idea/caches/build_file_checksums.ser
-
-### JetBrains+all Patch ###
-# Ignores the whole .idea folder and all .iml files
-# See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
-
-.idea/
-
-# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
-
-*.iml
-modules.xml
-.idea/misc.xml
-*.ipr
-
-# Sonarlint plugin
-.idea/sonarlint
-
-### Linux ###
-
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
-
-### Node ###
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Directory for instrumented libs generated by jscoverage/JSCover
-lib-cov
-
-# Coverage directory used by tools like istanbul
-coverage
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
-
-# Bower dependency directory (https://bower.io/)
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# TypeScript v1 declaration files
-typings/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-.env.test
-.env*.local
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Storybook build outputs
-.out
-.storybook-out
-storybook-static
-
-# rollup.js default build output
-
-# Gatsby files
-.cache/
-# Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
-# public
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# Temporary folders
-tmp/
-temp/
-
-### premake-gmake ###
-*.make
-obj/
-
-### Vim ###
-# Swap
+### Editors ###
+# Vim / Neovim
 [._]*.s[a-v][a-z]
-!*.svg  # comment out if you don't need vector files
 [._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-
-# Session
+!*.svg
 Session.vim
 Sessionx.vim
-
-# Temporary
 .netrwhist
-# Auto-generated tag files
-tags
-# Persistent undo
 [._]*.un~
+tags
 
-### VisualStudioCode ###
+# Zed / VS Code — keep shared project config, drop the per-machine bits
+.zed/*
+!.zed/settings.json
+!.zed/tasks.json
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+.history/
 
-### VisualStudioCode Patch ###
-# Ignore all local history of files
-.history
-.ionide
+### Environments & runtimes (see .config/mise/config.toml) ###
+.direnv/
+.env.local
+.envrc.local
 
-### Windows ###
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
 
-# Dump file
-*.stackdump
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 
-# Folder config file
-[Dd]esktop.ini
+# Go
+*.test
+/vendor/
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# Rust — `target/` only at the repo root; a nested `target/` may be real source
+/target/
 
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# End of https://www.toptal.com/developers/gitignore/api/go,vim,c++,java,node,linux,emacs,cmake,windows,premake-gmake,jetbrains+all,visualstudiocode,git
+# C / C++ / CMake
+*.o
+*.so
+*.dylib
+*.a
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
 
 ### Claude Code ###
 # Per-machine settings and scratch writes — never committed
@@ -470,5 +99,5 @@ $RECYCLE.BIN/
 **/AGENTS.local.md
 
 ### Serena ###
-# Per-machine code-navigation index/config, set up by `clawd --init`
+# Per-machine code-navigation index/config, set up by `clawd --onboard`
 **/.serena/
