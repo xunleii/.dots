@@ -3,11 +3,77 @@
 
 # .dots
 
-**macOS only.** `chezmoi init` and `chezmoi apply` both hard-fail on any other
-OS — this is a deliberate, single-platform setup, not a portable one (see
+## Requirements
+
+### macOS
+
+**This repo is macOS-only.** Not "mostly tested on macOS" — it refuses to
+install anywhere else. `chezmoi init` and `chezmoi apply` both abort with an
+error on any other OS, before writing a single file. It is a deliberate
+single-platform setup, not a portable one, so there is nothing to disable if
+you are on Linux: fork it and strip the guards (see
 [AGENTS.md](AGENTS.md#macos-only)).
 
-## TLDR;
+### Two volumes
+
+Nothing but config lives in `$HOME`. Toolchains and working copies each get
+their own volume, so that wiping either never touches the system volume and
+never touches this repo:
+
+| Volume | Holds |
+| --- | --- |
+| `/Volumes/Runtimes` | every language toolchain, cache and package dir (mise, npm, Go, Cargo, pip/uv) |
+| `/Volumes/Spaces` | every working copy, grouped by Space — see [docs/SPACES.md](docs/SPACES.md) |
+
+Where they physically live depends on the machine. Only the **mount paths**
+matter to this repo, so either option below works, and you can mix them.
+
+#### On a desktop (Mac Mini, Mac Studio): an external drive
+
+Preferred when the machine is not going anywhere. Format the drive as
+**APFS (Case-sensitive)** and name the volumes `Runtimes` and `Spaces`.
+
+Use **Disk Utility** for this (`Erase`, then `+` to add the second volume):
+formatting a drive from the CLI means `diskutil eraseDisk`, which destroys
+everything on the target disk if you name the wrong one. Not worth it here.
+
+#### On a laptop (MacBook): a dedicated volume on the internal disk
+
+Add them to the APFS container that already holds the boot volume. They then
+share that container's free space: nothing is pre-allocated, no partition to
+resize, each grows on demand, and deleting one hands the space straight back.
+
+```bash
+# 1. Find the APFS container holding the boot volume (e.g. disk3)
+container=$(diskutil info / | awk -F': +' '/APFS Container:/{print $2; exit}')
+echo "$container"
+
+# 2. Add both volumes. APFSX = case-sensitive APFS
+diskutil apfs addVolume "$container" APFSX Runtimes
+diskutil apfs addVolume "$container" APFSX Spaces
+```
+
+This is additive — it does not erase or repartition anything. Prefix with
+`sudo` if `diskutil` refuses.
+
+#### Either way
+
+Then create the Spaces you want:
+
+```bash
+mkdir -p /Volumes/Spaces/{Lab,Work,OSS,Personal}
+```
+
+- Both mount themselves at `/Volumes/<Name>` at every boot. Nothing to add to
+  `/etc/fstab`.
+- `APFSX` (case-sensitive) is deliberate: it's what a checkout of a repo
+  developed on Linux expects. Swap it for `APFS` for the macOS default.
+- Different names or paths are fine — they're configurable in
+  `chezmoi/.chezmoidata.yaml` (`runtimes_root`, `spaces_root`).
+- `chezmoi apply` only *warns* when a volume is missing, it does not fail — so
+  an unplugged external drive degrades gracefully instead of blocking the apply.
+
+## Install
 
 ```bash
 # Install Homebrew if not already installed
@@ -18,9 +84,14 @@ brew install chezmoi
 chezmoi init --apply https://github.com/xunleii/.dots
 ```
 
+`chezmoi init` asks for your git name, email, whether this is a work machine
+(it gates a few Brewfile entries) and your commit signing key. No secret is
+ever prompted for or stored.
+
 Then the manual steps that have no CLI (see
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
-a Secure Enclave key, then re-run `chezmoi init` so `signingkey` picks it up.
+a Secure Enclave key, then re-run `chezmoi init` so `signingkey` picks it up —
+the prompt is pre-filled from the running ssh-agent, so it is just Enter.
 
 ## How to use this repository
 
@@ -33,13 +104,10 @@ Tested on macOS (Sequoia 15.6+) only.
 
 ## Machine layout
 
-Everything that isn't config lives on two external volumes:
-`/Volumes/Runtimes` (toolchains and caches) and `/Volumes/Spaces` (all working
-copies, grouped into `Lab` / `Work` / `OSS` / `Personal`). Both are declared
-once in `chezmoi/.chezmoidata.yaml`.
-
-See [docs/SPACES.md](docs/SPACES.md) for the convention, the `clone` helper and
-how to add a Space.
+Working copies are laid out as
+`/Volumes/Spaces/<Space>/<host>/<user>/<repo>`, with `Lab` / `Work` / `OSS` /
+`Personal` as Spaces. See [docs/SPACES.md](docs/SPACES.md) for the convention,
+the `clone` helper and how to add a Space.
 
 ## Application management
 

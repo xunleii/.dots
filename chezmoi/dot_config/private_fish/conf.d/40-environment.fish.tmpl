@@ -8,8 +8,8 @@ set --global --export GIT_EDITOR $EDITOR
 
 # --- Machine layout (see docs/SPACES.md)
 # -----------------------------------------------------------------------------
-# Both roots are external volumes. Names come from .chezmoidata.yaml so fish,
-# dot_gitconfig.tmpl and the docs can't drift apart — add a Space there.
+# Both roots are separate volumes. Names come from .chezmoidata.yaml, so fish
+# and the docs can't drift apart — add a Space there, not here.
 set --global --export RUNTIMES_ROOT {{ .runtimes_root | quote }}
 set --global --export SPACES_ROOT {{ .spaces_root | quote }}
 # Deliberately not exported: fish flattens a list into one colon-joined string

@@ -50,9 +50,11 @@ Concretely, when editing a template here:
 
 ## Machine layout: Runtimes and Spaces
 
-Two external volumes, declared once in `chezmoi/.chezmoidata.yaml` as
-`runtimes_root`, `spaces_root` and `spaces`. Read them from there; never
-hardcode `/Volumes/...` in a template, a fish function or a script.
+Two dedicated volumes — an external drive on desktop Macs, a dedicated APFS
+volume on the internal disk on laptops — declared once in
+`chezmoi/.chezmoidata.yaml` as `runtimes_root`, `spaces_root` and `spaces`.
+Read them from there; never hardcode `/Volumes/...` in a template, a fish
+function or a script. Neither is guaranteed to be mounted.
 
 - `/Volumes/Runtimes` — every toolchain, cache and package dir (mise's `[env]`
   block redirects them all there).

@@ -1,7 +1,8 @@
 # --- Machine layout
 # macOS-only repo (see the guard in .chezmoi.yaml.tmpl and
 # .chezmoiscripts/run_before_00-macos-only.sh.tmpl). Both roots live on
-# external volumes; `spaces` is the single source of truth for the Space names
+# volumes of their own (external drive or dedicated APFS volume, neither
+# guaranteed mounted); `spaces` is the single source of truth for the Space names
 # — conf.d/40-environment.fish.tmpl exports it for clone(), so add a Space here
 # and nowhere else. Documented in docs/SPACES.md.
 runtimes_root: /Volumes/Runtimes

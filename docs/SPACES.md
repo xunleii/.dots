@@ -1,7 +1,11 @@
 # Machine layout: Spaces and Runtimes
 
-This setup is macOS-only and keeps everything that isn't config on two
-external volumes. Both are declared once in
+This setup is macOS-only and keeps everything that isn't config on two volumes
+of their own — an external drive where the machine allows it (Mac Mini, Mac
+Studio), a dedicated APFS volume on the internal disk otherwise (MacBook). See
+[the README](../README.md#two-volumes) for how to create them.
+
+Both are declared once in
 [`chezmoi/.chezmoidata.yaml`](../chezmoi/.chezmoidata.yaml) and read from there
 by every template that needs them — never hardcode either path again.
 
