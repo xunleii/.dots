@@ -32,7 +32,7 @@ Follow the pattern already used here: a single template branches on
 `.chezmoi.os` / `.chezmoi.arch` rather than shipping separate per-OS files.
 See existing examples before adding a new one:
 - `chezmoi/dot_config/private_fish/conf.d/00-base.fish.tmpl`,
-  `40-environment.fish.tmpl`, `80-bitwarden-ssh.fish.tmpl`
+  `40-environment.fish.tmpl`, `80-secretive-ssh.fish.tmpl`
 - `chezmoi/dot_gitconfig.tmpl`
 - `chezmoi/run_onchange_after_launchagents.sh.tmpl`
 - `chezmoi/.chezmoiexternal.toml.tmpl` (branches on `os/arch` for external
@@ -47,6 +47,19 @@ one platform — otherwise keep it one file, one template.
 Supported systems today (see README.md): macOS (primary), Ubuntu/WSL
 (secondary, being CI-tested). Fedora is dropped — don't add Fedora-specific
 branches.
+
+## Brewfile changes need a manual follow-up step for GUI-only apps
+
+Adding a `brew`/`cask` line to `dot_Brewfile.tmpl` is enough to get it
+*installed*: `run_onchange_after_brew.sh.tmpl` re-runs `brew bundle --global`
+whenever the rendered Brewfile's content changes, so the next `chezmoi apply`
+picks it up automatically. But installing the app is not the same as
+configuring it — anything that only has a GUI setup flow (e.g. Secretive:
+open the app once and generate a Secure Enclave key yourself, there's no CLI
+for that) needs a manual step after `chezmoi apply`, and any config value
+that depends on it (e.g. `signingkey` in `~/.config/chezmoi/chezmoi.yaml`,
+sourced from the `promptStringOnce` in `.chezmoi.yaml.tmpl`) has to be
+updated by hand afterwards, then re-applied.
 
 ## Commit messages
 
