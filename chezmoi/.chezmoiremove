@@ -8,6 +8,7 @@
 .local/bin/fasd
 .local/bin/git-wktree
 .local/bin/zai
+.local/bin/bws
 .config/fish/conf.d/70-lazy-load.fish
 .config/fish/conf.d/keychain.fish
 .config/fish/conf.d/wsl.fish
@@ -24,3 +25,13 @@
 .config/fish/conf.d/30-utilities.fish
 .config/fish/conf.d/80-bitwarden-ssh.fish
 .config/fish/conf.d/80-fzf-tab-config.fish
+
+# --- Stale copies in ~/.local/bin that shadowed the real install
+# conf.d/00-base puts ~/.local/bin ahead of /opt/homebrew/bin, and mise's shims
+# ahead of both, so these old copies were the ones actually being run — not the
+# versions brew and mise manage.
+# plannotator: was a `curl | bash` install; it is a mise tool now, so removing
+# the binary and installing the shim happen in the same apply.
+.local/bin/lazygit
+.local/bin/zoxide
+.local/bin/plannotator
