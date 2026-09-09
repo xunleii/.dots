@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Graft - npm global install/upgrade" }}
+# Installed via a plain `npm install -g` (not mise's `npm:` tool backend):
+# graft and its tree-sitter language bindings ship install/postinstall
+# scripts that compile native bindings, and mise's `npm:` backend has no way
+# to pass npm flags. `npm_config_prefix`/PATH are already redirected onto
+# {{ .runtimes_root }}/node/npm by mise's [env] block, so this still lands off
+# the internal disk without any extra setup.
+#
+# npm >=11 blocks all install scripts by default (`allow-scripts` in
+# `npm config list`) as a supply-chain guard, so they're allowlisted
+# explicitly below rather than disabling the guard outright. If an upgrade
+# adds a new native dependency, npm prints a warning naming it — add it here.
+allow_scripts="@nanonets/graft,tree-sitter,tree-sitter-go,tree-sitter-java,tree-sitter-kotlin,tree-sitter-php,tree-sitter-python,@davisvaughan/tree-sitter-r,tree-sitter-swift,tree-sitter-typescript,tree-sitter-cli,tree-sitter-javascript"
+
+echo "==> [chezmoi] graft: installing/updating via npm..."
+mise exec node -- npm install -g "--allow-scripts=$allow_scripts" @nanonets/graft
