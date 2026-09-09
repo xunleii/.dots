@@ -40,6 +40,27 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
         echo "clawd --onboard: not in a git repo, skipping profile pinning (using "(__claude_default_profile)")"
     end
 
+    # Step 1.5: graft (code-graph MCP, see NONO.md-adjacent chezmoi/dot_claude
+    # notes) — only worth wiring in when the repo actually has source in a
+    # language its parsers cover; running it elsewhere just builds a 0-node
+    # graph. Extension list is graft's own supported set (`graft build -e
+    # .zzz` prints it) — keep it in sync if graft adds languages.
+    set -l graft_done 0
+    if test $in_repo -eq 1; and command -q graft
+        if git ls-files -z 2>/dev/null | grep -qzE '\.(bb|c|cc|cjs|clj|cljc|cljs|cpp|cs|cts|cxx|dart|ex|exs|go|h|hh|hpp|java|js|jsx|kt|kts|lua|mjs|ml|mli|mts|nix|php|py|pyi|r|rb|rs|sc|scala|sol|swift|ts|tsx|vue|zig)$'
+            if not test -d graft
+                echo "clawd --onboard: graft-compatible source found, wiring in graft (code graph MCP)…"
+                graft init --no-statusline --no-global --agents claude
+            end
+            # graft build already gitignores its own graft/ dir, but make sure
+            # explicitly in case that step was skipped or .gitignore predates it.
+            if not grep -qxF '/graft/' .gitignore 2>/dev/null
+                echo '/graft/' >>.gitignore
+            end
+            set graft_done 1
+        end
+    end
+
     # Step 2/3: gather what's already there so the prompt reports status instead
     # of re-asking / recreating blindly, then delegate the actual analysis
     # (MCP proposals, Serena, local files) to claude — it can inspect the
@@ -48,6 +69,7 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
     test -f AGENTS.local.md; and set -a facts "AGENTS.local.md: present" ; or set -a facts "AGENTS.local.md: missing"
     test -f .claude/settings.local.json; and set -a facts ".claude/settings.local.json: present" ; or set -a facts ".claude/settings.local.json: missing"
     test -d .serena; and set -a facts ".serena/: present (Serena already set up)" ; or set -a facts ".serena/: missing"
+    test $graft_done -eq 1; and set -a facts "graft/: present (code graph wired in)" ; or set -a facts "graft/: not applicable (no graft-supported source) or not built"
     set -l mcp_list (command claude mcp list 2>/dev/null)
     test -z "$mcp_list"; and set mcp_list "(none configured)"
 
