@@ -2,10 +2,10 @@ git:
   commit:
     signOff: true
   overrideGpg: true
-  pagers:
-    - externalDiffCommand: difft --color=always
+  diffRenderers:
+    - command: difft --color=always
+      type: extDiff
   parseEmoji: true
-
 customCommands:
   - command: czg --signoff --gpg-sign
     context: files
