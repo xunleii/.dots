@@ -40,26 +40,12 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
         echo "clawd --onboard: not in a git repo, skipping profile pinning (using "(__claude_default_profile)")"
     end
 
-    # Step 1.5: graft (code-graph MCP, see NONO.md-adjacent chezmoi/dot_claude
-    # notes) — only worth wiring in when the repo actually has source in a
-    # language its parsers cover; running it elsewhere just builds a 0-node
-    # graph. Extension list is graft's own supported set (`graft build -e
-    # .zzz` prints it) — keep it in sync if graft adds languages.
-    set -l graft_done 0
-    if test $in_repo -eq 1; and command -q graft
-        if git ls-files -z 2>/dev/null | grep -qzE '\.(bb|c|cc|cjs|clj|cljc|cljs|cpp|cs|cts|cxx|dart|ex|exs|go|h|hh|hpp|java|js|jsx|kt|kts|lua|mjs|ml|mli|mts|nix|php|py|pyi|r|rb|rs|sc|scala|sol|swift|ts|tsx|vue|zig)$'
-            if not test -d graft
-                echo "clawd --onboard: graft-compatible source found, wiring in graft (code graph MCP)…"
-                graft init --no-statusline --no-global --agents claude
-            end
-            # graft build already gitignores its own graft/ dir, but make sure
-            # explicitly in case that step was skipped or .gitignore predates it.
-            if not grep -qxF '/graft/' .gitignore 2>/dev/null
-                echo '/graft/' >>.gitignore
-            end
-            set graft_done 1
-        end
-    end
+    # Step 1.5: graft (code-graph MCP) eligibility/wiring is judged by the
+    # delegated claude call below, not decided/run here — it can inspect the
+    # repo and ask before running `graft init`. Just surface whether the CLI
+    # is on PATH so the prompt doesn't have to re-derive that.
+    set -l graft_bin "not installed"
+    command -q graft; and set graft_bin "installed"
 
     # Step 2/3: gather what's already there so the prompt reports status instead
     # of re-asking / recreating blindly, then delegate the actual analysis
@@ -69,7 +55,8 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
     test -f AGENTS.local.md; and set -a facts "AGENTS.local.md: present" ; or set -a facts "AGENTS.local.md: missing"
     test -f .claude/settings.local.json; and set -a facts ".claude/settings.local.json: present" ; or set -a facts ".claude/settings.local.json: missing"
     test -d .serena; and set -a facts ".serena/: present (Serena already set up)" ; or set -a facts ".serena/: missing"
-    test $graft_done -eq 1; and set -a facts "graft/: present (code graph wired in)" ; or set -a facts "graft/: not applicable (no graft-supported source) or not built"
+    set -a facts "graft CLI: $graft_bin"
+    test -d graft; and set -a facts "graft/: present (code graph already built)" ; or set -a facts "graft/: missing"
     set -l mcp_list (command claude mcp list 2>/dev/null)
     test -z "$mcp_list"; and set mcp_list "(none configured)"
 
@@ -90,8 +77,9 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
         "" \
         "1. Inspect the project (language, frameworks, tooling) and propose the MCP servers relevant to it, local scope only (\`claude mcp add\` defaults to local — don't use --scope project). If there are several candidates, group them (e.g. by concern: code nav, infra, docs) and ask which to enable rather than adding them all." \
         "2. If the project has actual source code and Serena isn't set up yet, offer to add the Serena MCP server (https://github.com/oraios/serena, local scope — check its README for the current add command) and, once added, run its project onboarding." \
-        "3. If missing, create AGENTS.local.md at the repo root: project-specific agent instructions, complementing (not duplicating) any existing AGENTS.md/CLAUDE.md." \
-        "4. If missing, create .claude/settings.local.json with sensible project-local settings." \
+        "3. If the graft CLI is installed and graft/ is missing, judge for yourself whether this repo is a good fit for it (real source code in a language it parses — running it on a repo with none just builds an empty graph; \`graft build -e .zzz\` prints graft's supported extensions). If it looks like a fit, ask the user before running \`graft init --no-statusline --no-global --agents claude\` (local-only: skips the statusLine override and skips writes outside the repo). If they accept and it runs, make sure \`/graft/\` ends up in .gitignore." \
+        "4. If missing, create AGENTS.local.md at the repo root: project-specific agent instructions, complementing (not duplicating) any existing AGENTS.md/CLAUDE.md." \
+        "5. If missing, create .claude/settings.local.json with sensible project-local settings." \
         "Explain each MCP server you add in one line. Ask before anything destructive." \
         | string collect)
 
