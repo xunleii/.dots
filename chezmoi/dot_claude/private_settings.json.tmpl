@@ -1,3 +1,17 @@
+{{- $work := get . "work" -}}
+{{- /* Plugins always on, plus work-only ones added below. */ -}}
+{{- $enabledPlugins := dict
+      "ponytail@ponytail" true
+      "nono@nolabs-ai" true
+      "superpowers@claude-plugins-official" true
+      "code-review@claude-plugins-official" true
+      "skill-creator@claude-plugins-official" true
+      "claude-md-management@claude-plugins-official" true
+      "serena@claude-plugins-official" true
+-}}
+{{- if $work -}}
+{{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
+{{- end -}}
 {
   "model": "sonnet",
   "permissions": {
@@ -62,11 +76,7 @@
       }
     ]
   },
-  "enabledPlugins": {
-    "ponytail@ponytail": true,
-    "rust-analyzer-lsp@claude-plugins-official": false,
-    "nono@nolabs-ai": true
-  },
+  "enabledPlugins": {{ $enabledPlugins | toJson }},
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
