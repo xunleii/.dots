@@ -1,0 +1,20 @@
+{{ template "banner.tmpl" "Fish - Graft (code-graph MCP)" }}
+
+# https://github.com/trailhq/graft — installed via
+# .chezmoiscripts/run_onchange_after_npm-graft.sh.tmpl
+#
+# GRAFT_NO_GITIGNORE / GRAFT_NO_IGNORE: skip .gitignore / other ignore files
+# when building or refreshing the graph, so gitignored sources (generated
+# code, vendored deps someone still wants indexed) aren't silently invisible
+# to `graft ask`/`grep`/`callers`.
+set --global --export GRAFT_NO_GITIGNORE 1
+set --global --export GRAFT_NO_IGNORE 1
+
+# Skip auto-installing Claude Code's statusLine on every `graft init`; the
+# per-repo invocation in __clawd_onboard.fish already passes --no-statusline,
+# this just covers any other entry point (plain `graft init`, CI, etc.).
+set --global --export GRAFT_NO_STATUSLINE 1
+
+# Opt out of graft's telemetry (see TELEMETRY.md upstream). The cross-tool
+# convention, so it also silences anything else that honours it.
+set --global --export DO_NOT_TRACK 1
