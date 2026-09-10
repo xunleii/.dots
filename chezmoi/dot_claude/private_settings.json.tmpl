@@ -11,6 +11,15 @@
 {{- if $work -}}
 {{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
 {{- end -}}
+{{- /*
+Key order below matches what Claude Code itself writes back on every touch
+(model change, plugin toggle, ccstatusline's own `--hook` installer, …), not
+just taste — chezmoi apply is a no-op against that rewrite only if the order
+matches, otherwise `chezmoi diff` shows the same reshuffle every time. Same
+reason the two ccstatusline-managed hook entries below carry no extra marker
+key: Claude's settings writer drops anything it doesn't know about, so a
+`_tag` field here just churns forever instead of surviving.
+*/ -}}
 {
   "permissions": {
     "allow": [
