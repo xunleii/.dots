@@ -12,7 +12,6 @@
 {{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
 {{- end -}}
 {
-  "model": "sonnet",
   "permissions": {
     "allow": [
       "Bash(nono why *)",
@@ -21,6 +20,7 @@
       "Bash(nono profile show *)"
     ]
   },
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {
@@ -75,6 +75,12 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "ccstatusline",
+    "padding": 0,
+    "refreshInterval": 10
+  },
   "enabledPlugins": {{ $enabledPlugins | toJson }},
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -92,11 +98,5 @@
   },
   "tui": "fullscreen",
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "statusLine": {
-    "type": "command",
-    "command": "ccstatusline",
-    "padding": 0,
-    "refreshInterval": 10
-  }
+  "agentPushNotifEnabled": true
 }
