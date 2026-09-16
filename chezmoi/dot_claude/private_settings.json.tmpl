@@ -38,7 +38,7 @@ key: Claude's settings writer drops anything it doesn't know about, so a
         "hooks": [
           {
             "type": "command",
-            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true; echo \"Reminder: call mnemosyne_recall before assuming existing project context or past decisions; call mnemosyne_remember for any new durable preference, decision, or convention that surfaces this session.\""
+            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true; echo \"Reminder: mnemosyne is long-term memory shared across projects and agents. Call mnemosyne_recall before assuming context; call mnemosyne_remember to save new durable facts.\""
           }
         ]
       }
@@ -89,6 +89,17 @@ key: Claude's settings writer drops anything it doesn't know about, so a
           {
             "type": "command",
             "command": "ccstatusline --hook"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; case \"$f\" in */.claude/projects/*/memory/*) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Memory file changed -- mnemosyne is long-term memory shared across projects and agents, so sync this change there too (mnemosyne_recall to check, mnemosyne_remember/mnemosyne_forget to update).\"}}' ;; esac; }"
           }
         ]
       }
