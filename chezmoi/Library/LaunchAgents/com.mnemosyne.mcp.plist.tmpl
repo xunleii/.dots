@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Managed by chezmoi. Reloaded by run_onchange_after_launchagents.sh.tmpl.
+     Same `uv tool` shim + /bin/sh wrapper as com.headroom.proxy.plist: the
+     shim (~/.local/bin/mnemosyne) is an ad-hoc-signed venv interpreter on the
+     internal disk, and launchd's xpcproxy wedges execing that directly. A
+     signed system binary (/bin/sh) execs cleanly, then its own exec of the
+     shim runs under the normal (permissive) exec path. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.mnemosyne.mcp</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <string>exec "{{ .chezmoi.homeDir }}/.local/bin/mnemosyne" mcp --transport sse --host 127.0.0.1 --port 8788</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>{{ .chezmoi.homeDir }}</string>
+        <!-- Embeddings + consolidation route to the local LM Studio server
+             (see com.headroom.proxy.plist's :8787 for the equivalent proxy
+             port convention; LM Studio itself listens on :1234). -->
+        <key>MNEMOSYNE_EMBEDDINGS_VIA_API</key>
+        <string>1</string>
+        <key>MNEMOSYNE_EMBEDDING_API_URL</key>
+        <string>http://localhost:1234/v1</string>
+        <key>MNEMOSYNE_EMBEDDING_MODEL</key>
+        <string>text-embedding-bge-m3</string>
+        <key>MNEMOSYNE_EMBEDDING_DIM</key>
+        <string>1024</string>
+        <key>MNEMOSYNE_LLM_BASE_URL</key>
+        <string>http://localhost:1234/v1</string>
+        <key>MNEMOSYNE_LLM_MODEL</key>
+        <string>google/gemma-4-e4b</string>
+        <!-- launchd redirects stdout to a file, so Python block-buffers it
+             and the log stays empty while the process is alive. -->
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <key>StandardOutPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/mnemosyne/mcp.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/mnemosyne/mcp.log</string>
+</dict>
+</plist>

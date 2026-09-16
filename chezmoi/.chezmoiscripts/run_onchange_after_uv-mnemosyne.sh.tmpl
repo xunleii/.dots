@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Mnemosyne - uv tool install/upgrade" }}
+# Installed via `uv tool` (same mechanism as headroom, see
+# run_onchange_after_uv-headroom.sh.tmpl): keeps chezmoi apply responsible for
+# installing/upgrading it, off mise. Same as headroom, it runs headless as a
+# LaunchAgent (com.mnemosyne.mcp), reached over SSE (registered in
+# ~/.claude.json as {"type": "sse", "url": "http://127.0.0.1:8788/sse"} — not
+# chezmoi-managed) rather than stdio, so the same internal-disk/launchd/TCC
+# constraint applies here.
+# Embeddings + consolidation route to LM Studio over its OpenAI-compatible
+# API, so no local embedding/LLM extras needed.
+
+export PATH="$HOME/.local/bin:$PATH"
+
+echo "==> [chezmoi] mnemosyne: installing/updating via uv tool…"
+uv tool install --python 3.13 'mnemosyne-memory[mcp]'
+uv tool upgrade mnemosyne-memory || true
