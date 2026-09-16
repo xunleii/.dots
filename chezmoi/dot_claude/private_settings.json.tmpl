@@ -38,7 +38,7 @@ key: Claude's settings writer drops anything it doesn't know about, so a
         "hooks": [
           {
             "type": "command",
-            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true"
+            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true; echo \"Reminder: call mnemosyne_recall before assuming existing project context or past decisions; call mnemosyne_remember for any new durable preference, decision, or convention that surfaces this session.\""
           }
         ]
       }
