@@ -31,6 +31,17 @@ key: Claude's settings writer drops anything it doesn't know about, so a
   },
   "model": "sonnet",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": ".*",
