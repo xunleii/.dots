@@ -32,17 +32,6 @@ key: Claude's settings writer drops anything it doesn't know about, so a
   },
   "model": "sonnet",
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "mnemosyne recall \"project context decisions preferences\" 8 2>/dev/null || true; echo \"Reminder: mnemosyne is long-term memory shared across projects and agents. Call mnemosyne_recall before assuming context; call mnemosyne_remember to save new durable facts.\""
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "matcher": ".*",
@@ -93,17 +82,6 @@ key: Claude's settings writer drops anything it doesn't know about, so a
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; case \"$f\" in */.claude/projects/*/memory/*) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Memory file changed -- mnemosyne is long-term memory shared across projects and agents, so sync this change there too (mnemosyne_recall to check, mnemosyne_remember/mnemosyne_forget to update).\"}}' ;; esac; }"
-          }
-        ]
-      }
-    ]
   },
   "statusLine": {
     "type": "command",
