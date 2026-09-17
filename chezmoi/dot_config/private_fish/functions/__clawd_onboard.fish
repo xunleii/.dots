@@ -68,7 +68,7 @@ function __clawd_onboard --description "clawd --onboard: pick/create this projec
     set -l prompt (string join \n \
         "Onboard this project's local Claude Code setup. Everything you create/add here is per-developer and must never be committed." \
         "" \
-        "Speak French for this whole onboarding session, casual/relaxed tone (see the user's ~/.claude/PERSONNALITY.md — it's loaded globally but easy to drop at the start of a delegated session like this one, hence the explicit reminder here)." \
+        "Speak French for this whole onboarding session, casual/relaxed tone (see the user's ~/.claude/SOUL.md — it's loaded globally but easy to drop at the start of a delegated session like this one, hence the explicit reminder here)." \
         "" \
         "Detected before you started:" \
         $facts \
