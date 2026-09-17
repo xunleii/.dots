@@ -34,7 +34,9 @@ status is-interactive; and set --global --export GPG_TTY (tty)
 # Caches the computed base URL per git toplevel so cd-ing within the same repo
 # (the common case) costs 1 git spawn instead of 3 — was showing up as a
 # multi-second stall on every `cd` in large/slow-disk repos.
-if type -q curl; and curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1
+# ponytail: disabled 2026-09-17, suspected of causing more API crashes/context
+# compactions than it saves. Service left running; drop "and false" to re-enable.
+if type -q curl; and curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1; and false
     function __headroom_project_url
         set -l base http://127.0.0.1:8787
         set -l toplevel (git rev-parse --show-toplevel 2>/dev/null)
