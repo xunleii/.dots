@@ -12,11 +12,12 @@
 .config/fish/conf.d/70-lazy-load.fish
 .config/fish/conf.d/keychain.fish
 .config/fish/conf.d/wsl.fish
+.config/fish/conf.d/45-brew.fish
 .claude/hooks/session
 
 # --- Unmanaged leftovers that every interactive shell still sourced
 # 30-utilities: duplicates the atuin/zoxide init in 25-tools, and sources
-#   brew-wrap, which fights the `brew` wrapper in 45-brew
+#   brew-wrap, which rewrites the chezmoi-managed ~/.Brewfile behind our back
 # 80-bitwarden-ssh: points $SSH_AUTH_SOCK at Bitwarden, overriding the
 #   Secretive default from 80-secretive-ssh. Bitwarden is opt-in per command,
 #   via bwssh

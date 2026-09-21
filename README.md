@@ -121,9 +121,8 @@ Where each thing is installed from — and therefore where to add a new one:
 | `uv tool` | `chezmoi/.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl` | Python tools that must live on the internal disk (headroom, serena) |
 
 `brew bundle cleanup` runs on every apply, so anything **not** in the Brewfile
-gets uninstalled. Installing or uninstalling by hand still works: the `brew`
-wrapper in `conf.d/45-brew.fish.tmpl` writes the change back into the source
-Brewfile for you.
+gets uninstalled. Installing by hand is therefore temporary: add the line to
+`chezmoi/dot_Brewfile.tmpl` and apply, rather than running `brew install`.
 
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md) covers only the apps that need a
 manual, GUI-only setup step after install.

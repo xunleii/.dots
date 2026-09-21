@@ -78,9 +78,9 @@ sourced from the `promptStringOnce` in `.chezmoi.yaml.tmpl`) has to be
 updated by hand afterwards, then re-applied.
 
 `brew bundle cleanup --global --force` also runs there, so anything **not**
-listed in the Brewfile gets uninstalled on the next apply. The `brew` wrapper
-in `conf.d/45-brew.fish.tmpl` exists for that reason: a manual
-`brew install`/`uninstall` is written back into the source Brewfile.
+listed in the Brewfile gets uninstalled on the next apply. The Brewfile is a
+hand-curated list: never suggest a bare `brew install`, it gets reverted on
+the next apply. Edit `dot_Brewfile.tmpl` instead.
 
 ## Where a new tool goes
 
