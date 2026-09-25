@@ -7,6 +7,10 @@
       "code-review@claude-plugins-official" true
       "skill-creator@claude-plugins-official" true
       "claude-md-management@claude-plugins-official" true
+      "remember@claude-plugins-official" true
+      "plannotator@plannotator" true
+      "waza@waza" true
+      "understand-anything@understand-anything" true
 -}}
 {{- if $work -}}
 {{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
@@ -101,6 +105,24 @@ key: Claude's settings writer drops anything it doesn't know about, so a
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    },
+    "waza": {
+      "source": {
+        "source": "github",
+        "repo": "tw93/Waza"
+      }
+    },
+    "understand-anything": {
+      "source": {
+        "source": "github",
+        "repo": "Egonex-AI/Understand-Anything"
       }
     }
   },
