@@ -24,6 +24,14 @@ function __clawd_run --description "clawd's default path: resolve the nono profi
     set -l profile (test -n "$repo"; and __claude_profile_for "$repo")
     test -z "$profile"; and set profile (__claude_default_profile)
 
+    # Project identity for tools that want it, only when there is one.
+    set -lx PLANNOTATOR_GLIMPSE
+    set -lx CLAUDE_PROJECT_DIR
+    set -lx CLAUDE_PROJECT_NAME
+    test -n "$repo"; and set PLANNOTATOR_GLIMPSE 0
+    test -n "$repo"; and set CLAUDE_PROJECT_DIR $repo
+    test -n "$repo"; and set CLAUDE_PROJECT_NAME (__git_remote_slug)
+
     set -l rollback_banner
     if test $want_rollback -eq 1
         set -a extra --rollback
