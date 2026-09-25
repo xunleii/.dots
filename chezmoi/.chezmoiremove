@@ -14,6 +14,7 @@
 .config/fish/conf.d/wsl.fish
 .config/fish/conf.d/45-brew.fish
 .claude/hooks/session
+.claude/commands
 
 # --- Unmanaged leftovers that every interactive shell still sourced
 # 30-utilities: duplicates the atuin/zoxide init in 25-tools, and sources
