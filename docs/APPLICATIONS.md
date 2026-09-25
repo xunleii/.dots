@@ -19,7 +19,7 @@ To see what's actually on the machine right now, ask the machine:
 brew bundle list --global --all   # everything the Brewfile installs
 brew leaves                        # formulae nobody depends on
 mise ls                            # runtimes and mise-managed CLIs
-uv tool list                       # serena
+uv tool list                       # mnemosyne
 ```
 
 `brew bundle cleanup` runs on every `chezmoi apply`, so the Brewfile *is* the
@@ -37,7 +37,7 @@ no CLI equivalent, and are required for the rest of the config to work:
 | **Little Snitch** | Approve the system extension, then reboot | Nothing else installs cleanly while its rules prompt is pending. |
 | **Tailscale** | Sign in | Fleet access. |
 | **Claude desktop / Claude Code** | Sign in | — |
-| **ToolHive Studio** | Sign in, install the MCP servers you want | `clawd --onboard` proposes per-project MCP servers but can't install them for you. |
+| **ToolHive Studio** | Sign in, install the MCP servers you want | Nothing in this repo installs MCP servers for you. |
 | **Terminal font** | Nothing, if you use ghostty or kitty | `font-iosevka-term-nerd-font` is already referenced by both configs in `dot_config/`. |
 
 Everything else in the Brewfile is either headless or logs in on first launch

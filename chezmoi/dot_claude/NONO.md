@@ -17,11 +17,6 @@ flags fit in one string: `clawd --nono '--allow ~/.toolhive --allow ~/.claude.js
 Other flags (stripped before reaching `claude`; anything else passes straight through):
 - `-h, --help` — usage.
 - `--raw` — bypass the sandbox entirely (`command claude $argv`).
-- `--onboard` — onboard a project: pick/create its nono profile (fzf menu over
-  `nono-profile --use/--new`), then hand off to claude with a prompt that reports what's
-  already configured vs. still missing and only acts on the gaps (MCP servers grouped by
-  concern, Serena for code repos plus its project onboarding, `AGENTS.local.md`,
-  `.claude/settings.local.json`). Was named `--init` before it grew the profile step.
 
 Guidance:
 - Before suggesting a `clawd` invocation, run `clawd --help` to reconfirm current syntax — it

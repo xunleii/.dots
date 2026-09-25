@@ -19,6 +19,11 @@
 # Binary is a `uv tool` shim, not chezmoi-installed, so it isn't removed here —
 # torn down by hand alongside the LaunchAgent unload.
 Library/LaunchAgents/com.headroom.proxy.plist
+# serena + graft + clawd --onboard: dropped together, onboarding was mostly
+# what wired them in. graft's npm-global binary isn't chezmoi-installed, so
+# it isn't removed here — torn down by hand.
+.config/fish/conf.d/46-graft.fish
+.config/fish/functions/__clawd_onboard.fish
 
 # --- Unmanaged leftovers that every interactive shell still sourced
 # 30-utilities: duplicates the atuin/zoxide init in 25-tools, and sources

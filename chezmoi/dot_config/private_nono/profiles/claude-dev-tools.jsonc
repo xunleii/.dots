@@ -14,7 +14,6 @@
         "allow": [
             "~/.local/state/mise/", // mise (runtime version manager) state
             "~/.plannotator/", // Plannotator skill data (plannotator-* skills)
-            "~/.serena/", // Serena MCP semantic-code-tool state (CLAUDE.md: prefer Serena when available)
         ],
         "read": [
             "~/.agents/", // shared cross-project AGENTS.md/agent config

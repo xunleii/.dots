@@ -8,11 +8,9 @@
 #   --nono 'FLAGS'    extra flags forwarded to `nono run`, e.g.
 #                     clawd --nono '--allow ~/.toolhive'
 #   --rollback       enable nono's atomic rollback snapshots for this run
-#   --onboard        set up this project (nono profile, MCPs, Serena), see
-#                     __clawd_onboard
 #
-# Logic lives in __clawd_run (sandbox launch) and __clawd_onboard (--onboard),
-# kept separate so each stays a one-screen, one-job function.
+# Logic lives in __clawd_run (sandbox launch), kept as its own one-screen,
+# one-job function.
 
 function clawd --description "Launch Claude Code in the nono sandbox, per-repo profile aware"
     if contains -- -h $argv; or contains -- --help $argv
@@ -27,26 +25,18 @@ function clawd --description "Launch Claude Code in the nono sandbox, per-repo p
             '  --nono '"'"'FLAGS'"'"'    extra flags forwarded to `nono run`' \
             '                    e.g. clawd --nono '"'"'--allow ~/.toolhive'"'"'' \
             '  --rollback        enable nono'"'"'s atomic rollback snapshots for this run' \
-            '  --onboard         set up this project: pick/create its nono profile,' \
-            '                    propose MCP servers, offer Serena (with onboarding)' \
             '' \
             'Anything else is passed straight through to claude.' \
             '' \
             'Examples:' \
             '  clawd' \
             '  clawd --nono '"'"'--allow ~/.toolhive --allow ~/.claude.json'"'"'' \
-            '  clawd --rollback' \
-            '  clawd --onboard'
+            '  clawd --rollback'
         return 0
     end
 
     if not command -sq nono; or contains -- --raw $argv
         command claude (string match -v -- --raw $argv)
-        return
-    end
-
-    if contains -- --onboard $argv
-        __clawd_onboard (string match -v -- --onboard $argv)
         return
     end
 
