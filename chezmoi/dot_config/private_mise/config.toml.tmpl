@@ -34,11 +34,6 @@ doggo = "latest"
 # from now on, so re-run it after an in-place update to get back in sync.
 "ubi:backnotprop/plannotator" = "latest"
 
-# Headroom lives outside mise now — installed via `uv tool` in
-# run_onchange_after_mise.sh.tmpl. It runs headless as a LaunchAgent and
-# launchd has no TCC access to the external {{ .runtimes_root }} volume where
-# mise puts its venvs, so the venv must sit on the internal disk.
-
 [env]
 MISE_DATA_DIR = "{{ .runtimes_root }}/mise"
 

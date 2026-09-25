@@ -19,7 +19,7 @@ To see what's actually on the machine right now, ask the machine:
 brew bundle list --global --all   # everything the Brewfile installs
 brew leaves                        # formulae nobody depends on
 mise ls                            # runtimes and mise-managed CLIs
-uv tool list                       # headroom, serena
+uv tool list                       # serena
 ```
 
 `brew bundle cleanup` runs on every `chezmoi apply`, so the Brewfile *is* the

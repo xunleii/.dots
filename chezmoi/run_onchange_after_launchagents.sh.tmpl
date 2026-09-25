@@ -10,7 +10,7 @@
 set -uo pipefail
 
 dom="gui/$(id -u)"
-mkdir -p "$HOME/.local/state/headroom" "$HOME/.local/state/mnemosyne"
+mkdir -p "$HOME/.local/state/mnemosyne"
 
 # Already loaded → kickstart -k (~1s blip). Not loaded yet → bootstrap. Never
 # bootout: that opened a ~30s window with the proxy down, and any shell started
@@ -33,12 +33,4 @@ for name in {{ range (glob (joinPath .chezmoi.sourceDir "Library/LaunchAgents/*"
     plist="$HOME/Library/LaunchAgents/$name"
     [ -f "$plist" ] || continue
     reload "$plist"
-done
-
-# Don't let `chezmoi apply` return until the proxy answers again — otherwise the
-# next shell races a still-booting proxy and skips the base URL.
-# ponytail: hard-coded :8787, must match com.headroom.proxy.plist. Bump together.
-for _ in $(seq 1 50); do
-    curl -sf --max-time 0.4 http://127.0.0.1:8787/livez >/dev/null 2>&1 && break
-    sleep 0.2
 done

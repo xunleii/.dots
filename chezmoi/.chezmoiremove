@@ -15,6 +15,10 @@
 .config/fish/conf.d/45-brew.fish
 .claude/hooks/session
 .claude/commands
+# headroom: dropped entirely (proxy + wrap were disabled/dead weight anyway).
+# Binary is a `uv tool` shim, not chezmoi-installed, so it isn't removed here —
+# torn down by hand alongside the LaunchAgent unload.
+Library/LaunchAgents/com.headroom.proxy.plist
 
 # --- Unmanaged leftovers that every interactive shell still sourced
 # 30-utilities: duplicates the atuin/zoxide init in 25-tools, and sources

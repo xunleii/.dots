@@ -89,7 +89,8 @@ Pick the narrowest one that works, in this order: Homebrew
 GitHub-release binaries brew doesn't carry) → mise (`private_mise/config.toml.tmpl`,
 for language runtimes and npm/pipx-only CLIs) → `uv tool` (a
 `.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl`, only when the venv must sit
-on the internal disk — see the headroom/launchd TCC note there).
+on the internal disk, e.g. a headless LaunchAgent with no TCC access to an
+external volume).
 
 Never add a `curl` fetch to a shell startup file: that's what a chezmoi
 external is for (see the kubectl completions entry).
