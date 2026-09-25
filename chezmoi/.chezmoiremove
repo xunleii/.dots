@@ -19,6 +19,8 @@
 # Binary is a `uv tool` shim, not chezmoi-installed, so it isn't removed here —
 # torn down by hand alongside the LaunchAgent unload.
 Library/LaunchAgents/com.headroom.proxy.plist
+# mnemosyne: dropped entirely, same reasoning/shape as headroom above.
+Library/LaunchAgents/com.mnemosyne.mcp.plist
 # serena + graft + clawd --onboard: dropped together, onboarding was mostly
 # what wired them in. graft's npm-global binary isn't chezmoi-installed, so
 # it isn't removed here — torn down by hand.

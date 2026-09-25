@@ -44,7 +44,7 @@ One per top-level dotfile/tool this repo manages. Add a new one here when a
 new tool/dir shows up — don't pre-invent scopes for things that don't exist
 yet.
 
-`chezmoi`, `fish`, `nono`, `brew`, `git`, `mise`, `mnemosyne`,
+`chezmoi`, `fish`, `nono`, `brew`, `git`, `mise`,
 `ghostty`, `kitty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
 `docs`, `claude`
 

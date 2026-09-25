@@ -118,7 +118,7 @@ Where each thing is installed from — and therefore where to add a new one:
 | Homebrew | `chezmoi/dot_Brewfile.tmpl` | almost everything, formulae and casks |
 | chezmoi externals | `chezmoi/.chezmoiexternal.toml.tmpl` + `.chezmoidata.yaml` | GitHub-release binaries brew doesn't carry (mise, usage, ocx) |
 | mise | `chezmoi/dot_config/private_mise/config.toml.tmpl` | language runtimes, and CLIs only published to npm/pipx |
-| `uv tool` | `chezmoi/.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl` | Python tools that must live on the internal disk (mnemosyne) |
+| `uv tool` | `chezmoi/.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl` | Python tools that must live on the internal disk |
 
 `brew bundle cleanup` runs on every apply, so anything **not** in the Brewfile
 gets uninstalled. Installing by hand is therefore temporary: add the line to

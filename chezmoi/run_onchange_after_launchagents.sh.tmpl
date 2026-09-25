@@ -10,7 +10,6 @@
 set -uo pipefail
 
 dom="gui/$(id -u)"
-mkdir -p "$HOME/.local/state/mnemosyne"
 
 # Already loaded → kickstart -k (~1s blip). Not loaded yet → bootstrap. Never
 # bootout: that opened a ~30s window with the proxy down, and any shell started
