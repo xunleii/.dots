@@ -14,19 +14,18 @@
         "allow": [
             "~/.local/state/mise/", // mise (runtime version manager) state
             "~/.plannotator/", // Plannotator skill data (plannotator-* skills)
+            "~/.claude-swap-backup/", // claude-swap state: accounts, credentials, configs, logs
+            // claude-swap takes Claude Code's own lock dirs (proper-lockfile) while splicing oauthAccount
+            "~/.claude.json.lock",
+            "~/.claude.lock",
         ],
         "read": [
             "~/.agents/", // shared cross-project AGENTS.md/agent config
-            "~/.claude.json", // Claude Code's own session/account config
             "~/.config/ccstatusline", // ccstatusline status-line config (see settings.json hooks)
             "~/.config/gh", // gh CLI auth/config, for PR/issue operations
             "~/.config/mise/", // mise tool-version pins
             "~/.gitignore", // global gitignore (git core.excludesfile)
             "~/.toolhive/", // ToolHive MCP server manager state
-        ],
-        "write": [
-            "~/.local/share/claude/versions", // Claude Code self-update storage
-            "~/.local/share/uv", // uv (Python package manager) cache/data
         ],
         "suppress_save_prompt": ["~/", "~/Library/Application Support/"],
     },
