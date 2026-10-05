@@ -23,4 +23,8 @@ end
 # -----------------------------------------------------------------------------
 if command -v mise &>/dev/null
     mise activate fish | source
+    # Activation runs here, before the rest of conf.d. mise skips the first
+    # prompt eval when PWD is unchanged, so a project's mise.toml opened as the
+    # starting dir was only picked up after a `cd`. Re-eval at first prompt.
+    set -e __mise_skip_first_prompt_pwd
 end
