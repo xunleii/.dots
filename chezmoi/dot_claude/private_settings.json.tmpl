@@ -11,6 +11,12 @@
       "plannotator@plannotator" true
       "waza@waza" true
       "understand-anything@understand-anything" true
+      "flightdeck@claude-flightdeck" true
+      "branch-board@awesome-claude-code-mods" true
+      "worktree-map@awesome-claude-code-mods" true
+      "tool-timing@awesome-claude-code-mods" true
+      "error-inbox@awesome-claude-code-mods" true
+      "claude-mermaid@claude-mods" true
 -}}
 {{- if $work -}}
 {{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
@@ -35,6 +41,9 @@ key: Claude's settings writer drops anything it doesn't know about, so a
     ]
   },
   "model": "sonnet",
+  "env": {
+    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
+  },
   "hooks": {
     "Stop": [
       {
@@ -84,6 +93,26 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "command": "ccstatusline --hook"
           }
         ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/per-command/gitleaks-redact.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/per-command/gitleaks-redact.sh"
+          }
+        ]
       }
     ]
   },
@@ -123,6 +152,24 @@ key: Claude's settings writer drops anything it doesn't know about, so a
       "source": {
         "source": "github",
         "repo": "Egonex-AI/Understand-Anything"
+      }
+    },
+    "claude-flightdeck": {
+      "source": {
+        "source": "github",
+        "repo": "scasella/claude-flightdeck"
+      }
+    },
+    "awesome-claude-code-mods": {
+      "source": {
+        "source": "github",
+        "repo": "whyashthakker/awesome-claude-code-mods"
+      }
+    },
+    "claude-mods": {
+      "source": {
+        "source": "github",
+        "repo": "galElmalah/claude-mods"
       }
     }
   },
