@@ -45,6 +45,18 @@ key: Claude's settings writer drops anything it doesn't know about, so a
     "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '{{ .chezmoi.homeDir }}/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": ".*",
