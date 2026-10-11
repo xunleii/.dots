@@ -48,5 +48,8 @@ function __clawd_run --description "clawd's default path: resolve the nono profi
     set_color -d
     echo "nono → $profile$repo_banner$rollback_banner"
     set_color normal
-    command nono run --profile $profile --allow-cwd $extra -- claude $rest
+    # HERDR_AGENT: nono hides claude behind its supervisor PTY, so herdr only
+    # sees `nono` in the foreground; this hint makes it apply claude's screen
+    # manifest. Scoped to this process only, not exported.
+    HERDR_AGENT=claude command nono run --profile $profile --allow-cwd $extra -- claude $rest
 end
