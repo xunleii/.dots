@@ -1,0 +1,11 @@
+# worktrunk herdr plugin settings. Read each time the picker runs, so edits apply without a restart.
+# Unset keys fall back to the defaults shown here.
+
+# "workspace" nests each worktree as a sidebar workspace; "tab" opens a tab in the current workspace.
+open_mode = "workspace"
+
+# "split" or "popup" for the picker.
+picker_placement = "split"
+
+# Keep the pane open after a successful action until a key is pressed.
+hold_on_success = false
