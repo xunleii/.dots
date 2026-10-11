@@ -55,6 +55,16 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ],
     "Stop": [
@@ -85,6 +95,16 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "command": "ccstatusline --hook"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ],
     "PreToolUse": [
@@ -125,6 +145,16 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "command": "$HOME/.claude/hooks/per-command/gitleaks-redact.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ]
   },
