@@ -12,6 +12,7 @@
       "waza@waza" true
       "understand-anything@understand-anything" true
       "claude-mermaid@claude-mods" true
+      "terminal-browser@terminal-browser" true
 -}}
 {{- if $work -}}
 {{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
@@ -195,6 +196,19 @@ key: Claude's settings writer drops anything it doesn't know about, so a
       "source": {
         "source": "github",
         "repo": "galElmalah/claude-mods"
+      }
+    },
+    "terminal-browser": {
+      "source": {
+        "source": "github",
+        "repo": "zenbu-labs/terminal-browser"
+      }
+    }
+  },
+  "pluginConfigs": {
+    "terminal-browser@terminal-browser": {
+      "options": {
+        "agentTool": true
       }
     }
   },
