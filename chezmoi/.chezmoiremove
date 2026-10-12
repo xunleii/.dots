@@ -48,3 +48,7 @@ Library/LaunchAgents/com.mnemosyne.mcp.plist
 .local/bin/lazygit
 .local/bin/zoxide
 .local/bin/plannotator
+
+# --- herdr (dropped: never used)
+.config/herdr
+.claude/hooks/herdr-agent-state.sh

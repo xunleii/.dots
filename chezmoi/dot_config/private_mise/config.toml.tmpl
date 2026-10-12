@@ -60,8 +60,6 @@ CARGO_TARGET_DIR = "{{ .runtimes_root }}/rust/cargo/target"
 PIP_CACHE_DIR = "{{ .runtimes_root }}/python/pip"
 UV_CACHE_DIR = "{{ .runtimes_root }}/python/uv"
 
-# herdr-projects plugin root (--root in dot_claude/private_settings.json.tmpl)
-HERDR_PROJECTS_ROOT = "{{ .chezmoi.homeDir }}/.local/share/herdr/projects"
 
 # PATH definition using mise's env._.path
 # This handles prepending to PATH automatically

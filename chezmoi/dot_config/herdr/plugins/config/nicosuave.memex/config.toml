@@ -1,8 +1,0 @@
-# memex herdr plugin settings. Read on every invocation, so edits apply without a restart.
-# Unset keys fall back to the defaults shown here.
-
-# Background-index memex when a herdr session starts.
-index_on_startup = true
-
-# Address of the local web UI started by "memex: open web UI".
-web_listen = "127.0.0.1:6363"

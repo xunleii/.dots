@@ -41,28 +41,6 @@ key: Claude's settings writer drops anything it doesn't know about, so a
     "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "^(startup|resume|clear|compact|fork)$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash '{{ .chezmoi.homeDir }}/.claude/hooks/herdr-agent-state.sh' session",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
-            "timeout": 10,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
-      }
-    ],
     "Stop": [
       {
         "matcher": ".*",
@@ -91,16 +69,6 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "command": "ccstatusline --hook"
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
-            "timeout": 10,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
       }
     ],
     "PreToolUse": [
@@ -141,16 +109,6 @@ key: Claude's settings writer drops anything it doesn't know about, so a
             "command": "$HOME/.claude/hooks/per-command/gitleaks-redact.sh"
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "{{ .chezmoi.homeDir }}/.config/herdr/plugins/github/herdr-projects-b1278ffb803c/target/release/herdr-projects --root {{ .chezmoi.homeDir }}/.local/share/herdr/projects hook --agent claude 2>/dev/null || true",
-            "timeout": 10,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
       }
     ]
   },

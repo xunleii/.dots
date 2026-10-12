@@ -1,9 +1,0 @@
-#!/bin/bash
-# Drops ~/.claude/hooks/herdr-agent-state.sh (herdr-managed, not vendored here).
-# The settings.json side is already in dot_claude/private_settings.json.tmpl with
-# the exact command herdr writes, so `install` leaves settings.json untouched.
-# Re-runs on herdr upgrades to refresh the hook script.
-# herdr version: {{ output "sh" "-c" "herdr --version 2>/dev/null || true" | trim }}
-set -euo pipefail
-command -v herdr >/dev/null || exit 0
-herdr integration install claude

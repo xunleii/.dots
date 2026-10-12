@@ -13,7 +13,6 @@
     "filesystem": {
         "allow": [
             "~/.local/state/mise/", // mise (runtime version manager) state
-            "~/.config/herdr/", // herdr.sock: herdr's SessionStart hook reports the pane's claude session id
             "~/.plannotator/", // Plannotator skill data (plannotator-* skills)
             "~/.claude-swap-backup/", // claude-swap state: accounts, credentials, configs, logs
             // claude-swap takes Claude Code's own lock dirs (proper-lockfile) while splicing oauthAccount
