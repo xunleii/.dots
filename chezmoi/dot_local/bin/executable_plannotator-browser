@@ -1,0 +1,9 @@
+#!/bin/sh
+# Opener for PLANNOTATOR_BROWSER: tab in an existing terminal-browser, else a right split.
+url="$1"
+key=$(terminal-browser ls 2>/dev/null | awk '$1 ~ /^[0-9]+-[0-9]+$/ {print $1; exit}')
+if [ -n "$key" ]; then
+  terminal-browser new-tab --browser "$key" "$url"
+else
+  terminal-browser open "$url" --split right
+fi
