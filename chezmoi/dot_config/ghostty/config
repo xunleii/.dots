@@ -7,11 +7,6 @@ command = /opt/homebrew/bin/fish
 # Enable native Ghostty shell integration for fish
 shell-integration = fish
 
-# Close a pane as soon as its command exits, never wait for a keypress.
-# (0 disables the "Process exited. Press any key" notice for commands that die fast.)
-wait-after-command = false
-abnormal-command-exit-runtime = 0
-
 # --- Theme ---
 # Theme inspired by Apple's Xcode IDE (High Contrast version)
 theme = Xcode Dark hc
