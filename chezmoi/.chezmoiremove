@@ -52,3 +52,6 @@ Library/LaunchAgents/com.mnemosyne.mcp.plist
 # --- herdr (dropped: never used)
 .config/herdr
 .claude/hooks/herdr-agent-state.sh
+
+# --- renamed to clawd-browser
+.local/bin/plannotator-browser

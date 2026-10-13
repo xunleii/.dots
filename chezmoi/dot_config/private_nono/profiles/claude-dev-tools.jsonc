@@ -32,6 +32,9 @@
     "platform_overrides": {
         "macos": {
             "filesystem": {
+                // launchd listener (clawd-browser): the sandbox can't send Apple
+                // Events to Ghostty, so browser requests go through this socket instead
+                "unix_socket": ["~/.local/state/clawd-browser.sock"],
                 // external volume hosting mise-installed runtimes (node/go/rust/python, see PATH)
                 "allow": ["/Volumes/Runtimes/"],
             },

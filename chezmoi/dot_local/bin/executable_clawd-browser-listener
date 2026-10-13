@@ -1,0 +1,35 @@
+#!/bin/sh
+# launchd socket-activated (stdin/stdout = client socket), runs OUTSIDE the nono
+# sandbox. Its input comes from the sandbox: validate every field, never pass raw.
+# Request: v1<TAB>surface id<TAB>direction<TAB>url   Reply: ok | err <reason>
+tab=$(printf '\t')
+IFS=$tab read -r ver sid dir url
+fail() { echo "err $1"; exit 1; }
+[ "$ver" = v1 ] || fail "unsupported version"
+case "$dir" in right | left | up | down) ;; *) fail "bad direction" ;; esac
+case "$url" in http://* | https://*) ;; *) fail "bad url" ;; esac
+case "$sid" in *[!0-9a-zA-Z-]*) fail "bad surface id" ;; esac
+osascript - /opt/homebrew/bin/terminal-browser "$url" "$sid" "$dir" <<'OSA' >/dev/null 2>&1 || fail "ghostty"
+on run argv
+  tell application "Ghostty"
+    set cfg to new surface configuration
+    set command of cfg to (quoted form of item 1 of argv) & " open " & quoted form of (item 2 of argv)
+    try
+      set t to first terminal whose id is (item 3 of argv)
+    on error
+      set t to focused terminal of selected tab of front window
+    end try
+    set d to item 4 of argv
+    if d is "left" then
+      split t direction left with configuration cfg
+    else if d is "up" then
+      split t direction up with configuration cfg
+    else if d is "down" then
+      split t direction down with configuration cfg
+    else
+      split t direction right with configuration cfg
+    end if
+  end tell
+end run
+OSA
+echo ok

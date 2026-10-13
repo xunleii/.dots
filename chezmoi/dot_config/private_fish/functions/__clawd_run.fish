@@ -32,6 +32,10 @@ function __clawd_run --description "clawd's default path: resolve the nono profi
     test -n "$repo"; and set CLAUDE_PROJECT_DIR $repo
     test -n "$repo"; and set CLAUDE_PROJECT_NAME (__git_remote_slug)
 
+    # Sandboxed claude can't drive Ghostty itself: plannotator opens its UI through
+    # clawd-browser (socket → launchd listener). Full path: a bare name goes to `open -a`.
+    set -lx PLANNOTATOR_BROWSER $HOME/.local/bin/clawd-browser
+
     set -l rollback_banner
     if test $want_rollback -eq 1
         set -a extra --rollback
