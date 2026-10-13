@@ -1,7 +1,7 @@
 ---
 name: but
-version: 0.0.0
-# Local: off by default (vendored at release/0.22.3). Only for GitButler workspaces; invoke with /but
+version: 0.22.3
+# Local: off by default. Keep `version` equal to the installed but, else `but` rewrites the deployed copy and drops this flag. Only for GitButler workspaces; invoke with /but
 # or let git-commit-assistant read it. Otherwise it hijacks every commit as "default VCS".
 disable-model-invocation: true
 description: "Commit, push, branch, and manage version control with GitButler. Use for commits, selective dirty-file or hunk commits, branches, diffs, PRs, history edits, squashes, amends, undo, merge, apply, and unapply. For selected dirty files or hunks, inspect with `but diff`; use compact `but status` for commit order, branch/stack placement, or conflict overview; use `but status -fv` when file/hunk IDs or per-commit file details matter. Replaces git write commands."
