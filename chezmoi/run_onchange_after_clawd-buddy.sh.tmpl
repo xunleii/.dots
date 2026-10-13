@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+{{ template "banner.tmpl" "Clawd Buddy - build and sign the helper app" }}
+# Re-runs when the Swift source or this script changes. Ad-hoc signed (no identity
+# on this machine): macOS re-asks the Automation prompt (Clawd Buddy -> Ghostty)
+# after each rebuild, since the cdhash changes.
+# hashlock icon: {{ include "dot_local/share/clawd-buddy/AppIcon.icns" | sha256sum }}
+set -euo pipefail
+
+app="$HOME/Applications/Clawd Buddy.app"
+src="$(mktemp -d)"
+trap 'rm -rf "$src"' EXIT
+
+cat >"$src/main.swift" <<'SWIFT'
+{{ template "clawd-buddy.swift" }}
+SWIFT
+
+# Retire the old sh-based listener before the new agent claims the same socket.
+launchctl bootout "gui/$(id -u)/dev.axnic.clawd-browser" 2>/dev/null || true
+
+# Stop the running app (if any) so its binary can be replaced.
+launchctl bootout "gui/$(id -u)/dev.axnic.clawd-buddy" 2>/dev/null || true
+
+rm -rf "$app"
+mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+cp "$HOME/.local/share/clawd-buddy/AppIcon.icns" "$app/Contents/Resources/AppIcon.icns"
+swiftc -O -o "$app/Contents/MacOS/clawd-buddy" "$src/main.swift"
+cat >"$app/Contents/Info.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key><string>dev.axnic.clawd-buddy</string>
+    <key>CFBundleName</key><string>Clawd Buddy</string>
+    <key>CFBundleExecutable</key><string>clawd-buddy</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>LSUIElement</key><true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Clawd Buddy opens links in a split of your Ghostty terminal.</string>
+</dict>
+</plist>
+PLIST
+# Hardened runtime blocks Apple Events (-1743, no prompt) unless this entitlement is set.
+cat >"$src/entitlements.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.automation.apple-events</key><true/>
+</dict>
+</plist>
+PLIST
+codesign --force --sign - --options runtime --entitlements "$src/entitlements.plist" "$app"

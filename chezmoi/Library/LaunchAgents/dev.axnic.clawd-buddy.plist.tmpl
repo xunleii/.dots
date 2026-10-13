@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Outside the nono sandbox: Clawd Buddy.app (signed helper, source in
+         .chezmoitemplates/clawd-buddy.swift) is started by launchd on the first
+         connection to this unix socket and has Ghostty open the URL in a split. -->
+    <key>Label</key>
+    <string>dev.axnic.clawd-buddy</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ .chezmoi.homeDir }}/Applications/Clawd Buddy.app/Contents/MacOS/clawd-buddy</string>
+    </array>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/clawd-buddy.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/.local/state/clawd-buddy.log</string>
+    <key>Sockets</key>
+    <dict>
+        <key>Listeners</key>
+        <dict>
+            <key>SockFamily</key>
+            <string>Unix</string>
+            <key>SockPathName</key>
+            <string>{{ .chezmoi.homeDir }}/.local/state/clawd-buddy.sock</string>
+            <key>SockPathMode</key>
+            <integer>384</integer>
+        </dict>
+    </dict>
+</dict>
+</plist>

@@ -55,3 +55,11 @@ Library/LaunchAgents/com.mnemosyne.mcp.plist
 
 # --- renamed to clawd-browser
 .local/bin/plannotator-browser
+
+# --- clawd-browser listener (sh) replaced by the signed Clawd Buddy app
+.local/bin/clawd-browser-listener
+Library/LaunchAgents/dev.axnic.clawd-browser.plist
+
+# --- clawd-browser sh client and socket replaced by `clawd-buddy --browser`
+.local/bin/clawd-browser
+.local/state/clawd-browser.sock

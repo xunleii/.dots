@@ -32,12 +32,13 @@
     "platform_overrides": {
         "macos": {
             "filesystem": {
-                // launchd listener (clawd-browser): the sandbox can't send Apple
-                // Events to Ghostty, so browser requests go through this socket instead
-                "unix_socket": ["~/.local/state/clawd-browser.sock"],
+                // Clawd Buddy: the sandbox can't send Apple Events to Ghostty, so
+                // `clawd-buddy --browser` talks to the daemon through this socket instead
+                "unix_socket": ["~/.local/state/clawd-buddy.sock"],
                 // external volume hosting mise-installed runtimes (node/go/rust/python, see PATH)
                 "allow": [
                     "/Volumes/Runtimes/",
+                    "~/Applications/Clawd Buddy.app/", // clawd-buddy client binary (symlinked in ~/.local/bin)
                     // GitButler (`but` CLI): project registry and settings.json (the latter
                     // sits in the sibling gitbutler/ dir; `but` fails with EEXIST if it can't stat it)
                     "~/Library/Application Support/com.gitbutler.app/",
