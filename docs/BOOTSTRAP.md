@@ -1,60 +1,59 @@
 # mise bootstrap cheat sheet
 
-This repo is driven by `mise bootstrap` + `mise dotfiles` (it used to be a
-chezmoi source repo; the chezmoi tree is gone). Everything below is what to
-know when editing the setup.
+This repo IS `~/.config/mise`: it is installed with `mise bootstrap --adopt`
+([docs](https://mise.jdx.dev/bootstrap/from-repository.html)), which clones the
+default branch into `$MISE_CONFIG_DIR`, so every later mise command reads it as
+the global config. It used to be a chezmoi source repo; the chezmoi tree is
+gone. Everything below is what to know when editing the setup.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
-| `.miserc.toml` | `auto_env = true`: platform envs (`unix`, `macos`, `macos-arm64`) load automatically |
-| `mise.toml` / `mise.macos.toml` | Base: `[vars]`, `[tasks]`, `[bootstrap.hooks]`, `[bootstrap.packages]`, `[dotfiles]` (macOS file: general casks, GNU userland formulas) |
-| `mise/conf.d/<name>/mise.toml` / `mise.macos.toml` | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, `mise.macos.toml` on macOS only (casks, macOS-only dotfiles) |
-| `mise/conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
-| `mise/conf.d/fish/scripts/` | Module task bodies (`fish-plugins.fish`); module tasks run from their folder |
-| `mise/conf.d/machines/mise.{personal,radiofrance}.toml` | Machine files, loaded only when selected (`-E`) |
-| `home/` | Root dotfile sources: only the mise base config template (`.config/mise/config.toml.tera`) |
-| `scripts/` | `check-volumes.sh` (task body) and `banner.sh` (deployed as `dots-banner`, not a task) |
+| `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, prune hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
+| `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (inlined) |
+| `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically |
+| `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
+| `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
+| `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
+| `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
+| `conf.d/machines/mise.{personal,radiofrance}.toml` | Machine files, loaded only when selected (`-E`) |
+| `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
-Every `mise*.toml` carries the dots banner and a header explaining its role and documenting its sections.
-Every `[dotfiles]` entry points into its own `home/` (module or root), or `scripts/` for `dots-banner`.
+Every config file carries the dots banner and a header explaining its role and documenting its sections.
+Every `[dotfiles]` entry points into its own `home/` (module), or `scripts/` for `dots-banner`.
 Modes: `symlink` for a file, `template` for `*.tera` (rendered and copied:
-gitconfig, allowed_signers, claude `settings.json`, mise base config, mise
-global fragment of `dev`, fish `40-environment` and `80-secretive-ssh`),
-`absent` to delete a retired target. `symlink-each` only where a module owns the
-whole directory (nono profiles, atuin, ghostty, lazygit). The shared
-`~/.config/fish/functions` and `completions` dirs are written by several
-modules, so each declares its files one by one. Symlink mode ignores `permissions`.
+gitconfig, allowed_signers, claude `settings.json`, fish `40-environment` and
+`80-secretive-ssh`), `absent` to delete a retired target. `symlink-each` only
+where a module owns the whole directory (nono profiles, atuin, ghostty,
+lazygit). The shared `~/.config/fish/functions` and `completions` dirs are
+written by several modules, so each declares its files one by one. Symlink mode
+ignores `permissions`.
 
 ## Modules
 
 Modules follow [mise modules](https://mise.jdx.dev/bootstrap/modules.html): a
-folder `mise/conf.d/<name>/` with `mise.toml` (+ `mise.macos.toml`) inside.
+folder `conf.d/<name>/` with `mise.toml` (+ per-OS files) inside.
 They are NOT optional: always loaded. Differences between machines live in the
-machine files. The root `mise.toml` loads after the `conf.d` fragments, so it
-would override them: per-machine vars (`git_email`, `git_signingkey`) have no
-base default and templates use `| default(value="")`.
+machine files. `config.toml` loads after `conf.d`, so it would override it:
+per-machine vars (`git_email`, `git_signingkey`) have no base default and
+templates use `| default(value="")`.
 
 | Module | Holds |
 | --- | --- |
-| base (`mise.toml`, `mise.macos.toml`) | volume vars, `check-volumes` (macOS file), mise shell activation, general packages, GNU userland and general casks incl. betterdisplay (macOS), retired-target `absent` entries (commented) |
-| `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish` |
-| `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, global tool `czg` |
+| base (`config.toml`, `config.macos.toml`) | volume vars, `usage`, `check-volumes` (macOS file), mise shell activation, general packages, GNU userland and general casks (macOS), retired-target `absent` entries |
+| `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish`; Linux: fish itself as a tool (`mise.linux.toml`) |
+| `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
-| `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, global tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
-| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), language runtimes and toolchain env (global fragment) |
-| `personal`, `radiofrance` | machine files (`mise/conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (personal only) |
+| `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
+| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), language runtimes and toolchain env |
+| `personal`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (personal only) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
 `platform_overrides.macos`.
 
-Global tools and env are per module: each deploys
-`~/.config/mise/conf.d/<m>/mise.toml` (source under
-`mise/conf.d/<m>/home/.config/mise/conf.d/<m>/`). A `[tools]` in the repo's own
-module files would only apply inside the repo, hence these global fragments.
-The base `~/.config/mise/config.toml` holds only settings, `MISE_DATA_DIR`, the
-`~/.local/bin` PATH and `usage`.
+Because modules are loaded globally, a module's `[tools]` and `[env]` apply
+everywhere, not only inside the repo.
 
 mise activation in fish comes from `[bootstrap.mise_shell_activate]
 fish = "auto"` (mise edits `~/.config/fish/config.fish`). The old
@@ -64,9 +63,9 @@ unverified.
 
 Remove a module with `mise bootstrap unapply <module>`.
 
-Add a module: create `mise/conf.d/<name>/mise.toml` (+ `mise.macos.toml`) with
+Add a module: create `conf.d/<name>/mise.toml` (+ per-OS files) with
 its `[dotfiles]` (`source = "home/..."`, relative to the module folder), put the
-files in `mise/conf.d/<name>/home/`, then `mise trust` the files. Add a dotfile
+files in `conf.d/<name>/home/`, then `mise trust` the files. Add a dotfile
 or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`.
 
 ## Fresh machine
@@ -75,35 +74,43 @@ Needs `git`.
 
 ```sh
 curl https://mise.run | sh
-mise -E radiofrance bootstrap --from git@github.com:xunleii/.dots.git
+mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git
 ```
 
-[`--from`](https://mise.jdx.dev/bootstrap/from-repository.html) clones the repo
-into `$MISE_DATA_DIR/bootstrap-repo` (`--update` pulls) and bootstraps from it.
-`-E` selects the machine profile for that run only (`personal` or
-`radiofrance`, i.e. `mise/conf.d/machines/mise.<name>.toml`; comma list allowed).
+`--adopt` clones the repo's default branch into `$MISE_CONFIG_DIR` (default
+`~/.config/mise`) and bootstraps from it. To try a branch, `?ref=<branch>` on
+the URL may work (unverified). `-E` selects the machine profile
+(`personal` or `radiofrance`, i.e. `conf.d/machines/mise.<name>.toml`; comma
+list allowed).
 
 Caveats:
 
-- **Profile is per run.** Re-running `mise bootstrap` without `-E` prunes the
-  packages of the omitted profile. Persist it on the machine with `MISE_ENV`
-  or `~/.config/mise/miserc.local.toml` (`env = ["radiofrance"]`).
+- **`$MISE_CONFIG_DIR` must be empty or absent.** Empty an existing populated
+  dir first (`--adopt` on a populated dir is unverified). In containers where
+  `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
+- **`-E` is not persisted automatically.** Write the profile locally, in
+  `~/.config/mise/miserc.local.toml` (gitignored):
+  ```toml
+  env = ["personal"]
+  ```
+  Otherwise a later `mise bootstrap` without `-E` prunes the packages of the
+  omitted profile.
 - **Homebrew must exist** for brew packages; mise does not install it.
 - **Trust**: each `conf.d` module file must be trusted (`mise trust`; trusting
   a folder's file trusts that folder, `mise trust --all` does not reach them).
-  Unverified whether this is handled under `--from`.
+  Unverified whether this is handled under `--adopt`.
 
 `mise bootstrap` order, with this repo's hooks (hooks of all active modules run):
 
-1. `pre-packages` (`mise.macos.toml`): `check-volumes`
+1. `pre-packages` (`config.macos.toml`): `check-volumes`
 2. `[bootstrap.packages]` (Homebrew)
 3. `post-packages`: `mise bootstrap packages prune --yes` (uninstalls anything not declared)
 4. `[dotfiles]`
 5. `post-dotfiles` (fish module): `fish-plugins`
-6. tools (global fragments: base config and each module's); no `post-tools` hook
+6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
 
-`check-volumes` ([`scripts/check-volumes.sh`](../scripts/check-volumes.sh)) is a hard
-failure (macOS only, defined in `mise.macos.toml`, no `uname` guard): it aborts before anything is installed unless both
+`check-volumes` is a hard
+failure (macOS only, a task inlined in `config.macos.toml`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` exist (read from `[vars]` via
 `MISE_VAR_*`).
 
@@ -112,11 +119,11 @@ failure (macOS only, defined in `mise.macos.toml`, no `uname` guard): it aborts 
 No secrets to provision. The git identity is plain `[vars]`, public on
 purpose since it ends up in every commit.
 
-- `git_name`: in `mise.toml`.
+- `git_name`: in `config.toml`.
 - `git_email`: per machine, in the machine file (`personal`: GitHub noreply;
-  `radiofrance`: work address). No base default (root `mise.toml` loads after
+  `radiofrance`: work address). No base default (`config.toml` loads after
   `conf.d` and would override machine files); no `-E` means an empty email.
-- `git_signingkey`: per machine (Secretive public key), in `mise/conf.d/machines/mise.personal.toml`.
+- `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.personal.toml`.
   Empty means no signing.
 
 ## chezmoi to mise
@@ -127,10 +134,25 @@ purpose since it ends up in every commit.
 | `.chezmoidata.yaml` | `[vars]` (also exported as `MISE_VAR_*` via `[env]`) |
 | `banner.tmpl` | `scripts/banner.sh`, deployed as `~/.local/bin/dots-banner` (no task). Tera in mise 2026.10 has no include/import (`{% include %}` gives "Unknown template", `{% import %}` gives "Unknown tag"); `exec()` works |
 | `run_onchange_*` | tasks wired as bootstrap hooks. They run every time, so they must be idempotent: `fish-plugins` checksums `fish_plugins` |
-| `.chezmoiexternal` | mise tools (`usage`) + vendored `kubectl.fish` dotfile (dev module); mise itself comes from <https://mise.run> |
+| `.chezmoiexternal` | mise tools (`usage`, in `config.toml`) + vendored `kubectl.fish` dotfile (dev module); mise itself comes from <https://mise.run> |
 | `.chezmoiremove` | `{ mode = "absent" }` entries in `[dotfiles]` |
-| `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`mise/conf.d/claude/home/.claude/SOUL.md`) |
+| `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`conf.d/claude/home/.claude/SOUL.md`) |
 | `dot_Brewfile.tmpl` | `[bootstrap.packages]` (base + modules). Pruning is automatic, like `brew bundle cleanup --force`: the post-packages hook runs `mise bootstrap packages prune --yes` (preview: `mise bootstrap packages prune --dry-run`) |
+
+## chezmoi cheat sheet
+
+| chezmoi | mise |
+| --- | --- |
+| `chezmoi init --apply <repo>` | `mise -E <profile> bootstrap --adopt <repo>` |
+| `chezmoi apply` / `diff` / `status` | `mise dot apply` / `diff` / `status` (from anywhere) |
+| `chezmoi cd` / `edit` | `cd ~/.config/mise` / `mise dot edit` |
+| `chezmoi add` | `mise dot add` |
+| `chezmoi update` | `git -C ~/.config/mise pull`, then `mise bootstrap` |
+
+Most dotfiles are symlinks into the repo, so editing the target already edits
+the repo (commit it); `*.tera` files are rendered, edit the source and apply.
+`mise dot track` / `save` / `history-watch` is a separate local history, not
+needed here.
 
 ## Tera gotchas
 
@@ -143,16 +165,22 @@ purpose since it ends up in every commit.
 
 ## Testing safely
 
-Never run `mise bootstrap` or `mise dotfiles apply` to test. Prefer read-only
-commands (no hooks): `mise -E radiofrance dotfiles status|diff`,
-`mise -E radiofrance bootstrap plan`, `mise -E radiofrance bootstrap packages status`.
+Never run `mise bootstrap`, `mise dot apply`, `mise run`, `mise exec` or
+`mise install` to test: the last three auto-install every global tool, and the
+config `[env]` points `MISE_DATA_DIR` at the runtimes volume. Prefer read-only
+commands (no hooks): `mise config ls`, `mise -E radiofrance dot status|diff`,
+`mise -E radiofrance bootstrap plan`.
 
-With a throwaway `$HOME`, also set `MISE_CEILING_PATHS=<real home>` and unset
-the `XDG_*` variables, otherwise mise still reads the real config:
+Use a fake `$HOME` holding a copy of the repo (no `.git`) at `$HOME/.config/mise`,
+run from another directory, unset the `XDG_*` and `MISE_DATA_DIR` /
+`MISE_CONFIG_DIR` variables, and set `MISE_CEILING_PATHS=<real home>`, otherwise
+mise still reads the real config:
 
 ```sh
-real=$HOME; unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME
-HOME=$(mktemp -d) MISE_CEILING_PATHS=$real mise -E radiofrance dotfiles status
+real=$HOME; fake=$(mktemp -d)
+unset XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME MISE_DATA_DIR MISE_CONFIG_DIR
+mkdir -p $fake/.config/mise && rsync -a --exclude .git ./ $fake/.config/mise/
+cd $fake && HOME=$fake MISE_CEILING_PATHS=$real mise -E radiofrance dot status
 ```
 
 ## Known gaps

@@ -7,7 +7,7 @@
 
 ### macOS
 
-**This repo targets macOS only.** Cross-platform is not a goal: `mise.macos.toml`
+**This repo targets macOS only.** Cross-platform is not a goal: `*.macos.toml`
 files hold the macOS casks and dotfiles, and `check-volumes` fails when the
 Runtimes/Spaces volumes are missing on macOS. Nothing is portable beyond that,
 so on Linux fork it and adapt (see [AGENTS.md](AGENTS.md#macos-only)).
@@ -67,44 +67,50 @@ mkdir -p /Volumes/Spaces/{Lab,Work,OSS,Personal}
 - `APFSX` (case-sensitive) is deliberate: it's what a checkout of a repo
   developed on Linux expects. Swap it for `APFS` for the macOS default.
 - Different names or paths are fine — they're configurable in
-  the `[vars]` table of `mise.toml` (`runtimes_root`, `spaces_root`).
-- `mise bootstrap` fails in its `check-volumes` hook when a volume is missing, so
+  the `[vars]` table of `config.toml` (`runtimes_root`, `spaces_root`).
+- `mise bootstrap` fails in its `check-volumes` hook (`config.macos.toml`) when a volume is missing, so
   nothing is installed or written until both are mounted.
 
 ## Install
 
-Needs `git` (and network). On a blank Mac:
+This repo is `~/.config/mise`: `mise bootstrap --adopt` clones it there
+([docs](https://mise.jdx.dev/bootstrap/from-repository.html)) and every later
+mise command reads it as the global config. Needs `git` (and network). On a
+blank Mac:
 
 ```bash
 # 1. mise
 curl https://mise.run | sh
 
 # 2. Everything: -E picks the machine profile (personal | radiofrance, comma list allowed)
-mise -E radiofrance bootstrap --from git@github.com:xunleii/.dots.git
+mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git
 ```
 
-`--from` ([docs](https://mise.jdx.dev/bootstrap/from-repository.html)) clones
-the repo into `$MISE_DATA_DIR/bootstrap-repo` (`--update` pulls it) and
-bootstraps from there. Caveats:
+Caveats:
 
-- **The profile is per run.** `-E radiofrance` only applies to that invocation: running
-  `mise bootstrap` again without `-E` prunes the packages of the omitted
-  profile. Persist it on the machine with `MISE_ENV=radiofrance` or
-  `~/.config/mise/miserc.local.toml` (`env = ["radiofrance"]`).
+- **`$MISE_CONFIG_DIR` (default `~/.config/mise`) must be empty or absent.**
+  Empty an existing one first. In containers where
+  `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
+  `?ref=<branch>` on the URL may select a branch (unverified).
+- **`-E` is not persisted.** Write it locally in
+  `~/.config/mise/miserc.local.toml` (gitignored): `env = ["radiofrance"]`.
+  Otherwise running `mise bootstrap` again without `-E` prunes the packages of
+  the omitted profile.
 - **Homebrew must already exist**: brew packages need it, mise does not install it.
-- **Trust**: every `mise/conf.d/<module>/mise*.toml` must be trusted
-  (`mise trust`). Unverified whether `--from` handles this on its own.
+- **Trust**: every `conf.d/<module>/mise*.toml` must be trusted
+  (`mise trust`). Unverified whether `--adopt` handles this on its own.
 
-No token or prompt is needed: the git identity is plain `[vars]` in the repo (`git_name` in `mise.toml`, `git_email` in the machine file).
+No token or prompt is needed: the git identity is plain `[vars]` in the repo (`git_name` in `config.toml`, `git_email` in the machine file).
 Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 Then the manual steps that have no CLI (see
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
 a Secure Enclave key, put the public key in `git_signingkey` (in the machine's
-`mise/conf.d/machines/mise.<name>.toml`), then re-run `mise bootstrap`.
+`conf.d/machines/mise.<name>.toml`), then re-run `mise bootstrap`.
 
-Day to day: `mise dotfiles diff` to preview, `mise dotfiles apply` for
-dotfiles only, `mise bootstrap` for everything.
+Day to day, from anywhere: `mise dot diff` to preview, `mise dot apply` for
+dotfiles only, `mise bootstrap` for everything. Update with
+`git -C ~/.config/mise pull` then `mise bootstrap`.
 
 ## How to use this repository
 
@@ -117,16 +123,16 @@ Tested on macOS (Sequoia 15.6+) only.
 
 ## Modules
 
-`mise.toml` + `mise.macos.toml` at the root are the base: volume vars,
+`config.toml` + `config.macos.toml` at the root are the base: volume vars,
 general packages (GNU userland and general casks on macOS), the
 mise shell activation and the retired-target `absent` entries. Everything else
-is a module, a folder `mise/conf.d/<name>/`
+is a module, a folder `conf.d/<name>/`
 ([mise modules](https://mise.jdx.dev/bootstrap/modules.html)). Modules are
 always loaded; machine files carry the differences.
 
-`.miserc.toml` at the repo root sets `auto_env = true`: the platform
-environments (`unix`, `macos`, `macos-arm64`) load automatically. So each module
-has `mise.toml` (every OS) and `mise.macos.toml` (macOS only: casks, macOS-only
+`miserc.toml` at the repo root sets `auto_env = true`: the platform
+environments (`macos`, `linux`) load automatically. So each module
+has `mise.toml` (every OS) and `mise.macos.toml` / `mise.linux.toml` (that OS only: casks, OS-only
 dotfiles), plus its own `home/` tree of dotfile sources.
 
 | Module | Holds |
@@ -136,15 +142,14 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: Secretive, Bitwarden |
 | `claude` | `~/.claude`, nono, `clawd` / `nono-profile` functions; macOS: sleep hooks |
 | `dev` | ghostty, zed, language runtimes and toolchain env |
-| `personal`, `radiofrance` | machine files in `mise/conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
+| `personal`, `radiofrance` | machine files in `conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
 
 Machine files load only through `-E` (or `MISE_ENV` / `miserc.local.toml`).
-The root `mise.toml` loads after the `conf.d` fragments and overrides them, so
-per-machine vars (`git_email`, `git_signingkey`) have no base default. Global
-tools and env are per module: each deploys `~/.config/mise/conf.d/<m>/mise.toml`
-(a `[tools]` in the repo's own modules would only apply inside the repo).
+`config.toml` loads after the `conf.d` fragments and overrides them, so
+per-machine vars (`git_email`, `git_signingkey`) have no base default. Modules
+are loaded globally, so their `[tools]` and `[env]` apply everywhere.
 `mise bootstrap unapply <module>` removes a module. To add one: create
-`mise/conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `home/`) and `mise trust` it.
+`conf.d/<name>/mise.toml` (+ per-OS files, `home/`) and `mise trust` it.
 
 ## Machine layout
 
@@ -159,12 +164,12 @@ Where each thing is installed from — and therefore where to add a new one:
 
 | Method | Source of truth | For |
 | --- | --- | --- |
-| Homebrew | `[bootstrap.packages]` in `mise.toml` / `mise.macos.toml` (base) or the module / machine file that needs it (`mise/conf.d/...`) | almost everything, formulae and casks |
-| mise | `~/.config/mise/conf.d/<module>/mise.toml` fragments (`mise/conf.d/<module>/home/.config/mise/conf.d/`); base `home/.config/mise/config.toml.tera` | language runtimes (dev), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
+| Homebrew | `[bootstrap.packages]` in `config.toml` / `config.macos.toml` (base) or the module / machine file that needs it (`conf.d/...`) | almost everything, formulae and casks |
+| mise | `[tools]` of `conf.d/<module>/mise.toml`; base `config.toml` | language runtimes (dev), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
 
 Anything **not** declared in `[bootstrap.packages]` of an active file is uninstalled by the
 post-packages hook (`mise bootstrap packages prune --yes`) on every bootstrap.
-Installing by hand is therefore temporary: add the line to the right `mise.toml` / `mise.<name>.toml` and
+Installing by hand is therefore temporary: add the line to the right `config.toml` / `conf.d/...` file and
 bootstrap, rather than running `brew install`.
 
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md) covers only the apps that need a
@@ -175,11 +180,11 @@ manual, GUI-only setup step after install.
 ### [mise](https://mise.jdx.dev) - bootstrap, dotfiles and runtimes
 
 `mise` is the single tool behind this repo: `mise bootstrap` installs packages
-and runs the setup hooks, `mise dotfiles` symlinks the files under each module's `home/` into
+and runs the setup hooks, `mise dot` symlinks the files under each module's `home/` into
 `$HOME` (only `*.tera` files are rendered and copied), and it manages language runtimes (Go, Node, Python, Rust)
 and the few CLIs that only ship via npm/pipx. The `[env]` block of its config
 redirects every toolchain cache onto `/Volumes/Runtimes`. Per-project overrides
-go in the project's own `.mise.toml`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)
+go in the project's own `mise.toml`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)
 for the cheat sheet used when editing this repo.
 
 ### [fish](https://fishshell.com) shell - a smart and user-friendly command line shell

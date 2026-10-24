@@ -48,8 +48,8 @@ yet.
 `ghostty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
 `docs`, `claude`
 
-Module or machine-file changes (`mise/conf.d/<module>/mise[.macos].toml`, `mise/conf.d/machines/mise.<name>.toml`) use the scope of the tool
-they configure, or `mise` for the module plumbing itself.
+Module or machine-file changes (`conf.d/<module>/mise[.macos].toml`, `conf.d/machines/mise.<name>.toml`) use the scope of the tool
+they configure, or `mise` for the module plumbing itself (`config.toml`, `config.macos.toml`, `miserc.toml`).
 
 ## Examples
 

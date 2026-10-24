@@ -6,7 +6,7 @@ Studio), a dedicated APFS volume on the internal disk otherwise (MacBook). See
 [the README](../README.md#two-volumes) for how to create them.
 
 Both are declared once in the `[vars]` table of
-[`mise.toml`](../mise.toml) (base; exported as `MISE_VAR_*` via `[env]`) and read
+[`config.toml`](../config.toml) (base; exported as `MISE_VAR_*` via `[env]`) and read
 from there by every template and script that needs them — never hardcode either path again.
 
 | Volume | Var | Holds |
@@ -15,7 +15,7 @@ from there by every template and script that needs them — never hardcode eithe
 | `/Volumes/Spaces` | `spaces_root` | all working copies, grouped by Space |
 
 `mise bootstrap` fails on macOS when either volume is missing — see
-[`scripts/check-volumes.sh`](../scripts/check-volumes.sh), the `check-volumes` task run as the `pre-packages` hook. An
+[`config.macos.toml`](../config.macos.toml), the `check-volumes` task run as the `pre-packages` hook. An
 unmounted volume is transient; mount it and re-run, everything pointing at it
 recovers on its own.
 
@@ -55,7 +55,7 @@ the Space is what decides the target path.
 ### No per-Space git identity
 
 Work and personal each have their own machine, so `user.email` is settled once
-per machine from the plain `git_email` var (`mise.toml`, overridable in a machine file under `mise/conf.d/machines/`). `mise/conf.d/git/home/.gitconfig.tera` deliberately emits no
+per machine from the plain `git_email` var (`config.toml`, overridable in a machine file under `conf.d/machines/`). `conf.d/git/home/.gitconfig.tera` deliberately emits no
 `includeIf "gitdir:"` blocks — Spaces are about *where things live*, not about
 who you are while editing them.
 
@@ -63,9 +63,9 @@ who you are while editing them.
 
 One edit, one apply:
 
-1. Add the name to `spaces` (space-separated) in the `[vars]` table of `mise.toml`.
-2. `mise dotfiles apply` — fish's `$SPACES` follows (the `fish` module renders `40-environment`).
+1. Add the name to `spaces` (space-separated) in the `[vars]` table of `config.toml`.
+2. `mise dot apply` — fish's `$SPACES` follows (the `fish` module renders `40-environment`).
 3. `mkdir /Volumes/Spaces/<Name>`.
 
-Consumers of that list today: `mise/conf.d/fish/home/.config/fish/conf.d/40-environment.fish.tera` (exports
+Consumers of that list today: `conf.d/fish/home/.config/fish/conf.d/40-environment.fish.tera` (exports
 `$SPACES_ROOT` and `$SPACES`) and `clone.fish` in the `git` module (via those variables).
