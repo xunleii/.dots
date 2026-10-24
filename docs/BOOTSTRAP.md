@@ -96,6 +96,12 @@ Caveats:
   failed before the post-packages hook, no file is written: rerun with `-E` or
   create it manually, else a bare `mise bootstrap` prunes the omitted profile's
   packages.
+- **How `persist-profile` finds `-E`.** Workaround: hooks and templates do not
+  receive the `-E` value (`MISE_ENV` stays empty in a hook, even with `-E`).
+  The task uses `$MISE_ENV` if set, else walks up the process tree and reads
+  `-E` / `--env` from the command line of the parent `mise bootstrap` (comma
+  lists supported). It writes `${MISE_CONFIG_DIR:-$HOME/.config/mise}/miserc.local.toml`
+  only if absent.
 - **Homebrew must exist** for brew packages; mise does not install it.
 - **Trust**: each `conf.d` module file must be trusted (`mise trust`; trusting
   a folder's file trusts that folder, `mise trust --all` does not reach them).
@@ -193,3 +199,10 @@ cd $fake && HOME=$fake MISE_CEILING_PATHS=$real mise -E radiofrance dot status
   (`launchctl bootout gui/$(id -u)/dev.axnic.clawd-browser`).
 - Removed for good: clawd-browser, `seed-soul`, kitty, memex, ocx, lm-studio, toolhive-studio, hermes-desktop.
 - `gitleaks-redact.sh` warns on stderr when gitleaks is missing and skips empty inputs.
+- starship, atuin and zoxide stay Homebrew packages on purpose; `fzf` is a mise
+  tool (`[tools]` in `conf.d/fish/mise.toml`). `conf.d/fish` runs the `init` of
+  the first three at shell startup, before the mise activation block that
+  `mise bootstrap` writes into `~/.config/fish/config.fish` (`config.fish` runs
+  after `conf.d`), so mise tools are not on PATH yet. fzf is only called at use
+  time. Moving those three to mise would need an early PATH/activation in
+  `conf.d/00-base`.
