@@ -31,8 +31,8 @@ idiomatic_version_file_enable_tools = ["terraform"]
 # Values shared by templates and tasks; read them as {{ vars.<name> }}.
 
 [vars]
-# Volume holding every toolchain, cache and package dir: mise data (MISE_DATA_DIR below), node/go/rust/
-# python caches (conf.d/dev). Checked at bootstrap on macOS (check-volumes), never hardcode the path elsewhere.
+# Volume holding every toolchain, cache and package dir: mise data (MISE_DATA_DIR below) and the
+# node/go/rust/python/uv caches (see [env]). Declared once here: never hardcode the path elsewhere.
 runtimes_root = "/Volumes/Runtimes"
 
 # Volume holding every working copy, laid out as <spaces_root>/<Space>/<host>/<user>/<repo>.
@@ -57,10 +57,27 @@ git_name = "Alexandre NICOLAIE"
 [env]
 # Where mise keeps its installs, shims and downloads: on the runtimes volume, not the system disk.
 MISE_DATA_DIR = "{{ vars.runtimes_root }}/mise"
-# ~/.local/bin first on PATH (mise env._.path prepends it)
-_.path = ["{{ env.HOME }}/.local/bin"]
+# PATH additions (mise env._.path prepends them): ~/.local/bin, then the runtimes' bin dirs.
+_.path = [
+    "{{ env.HOME }}/.local/bin",
+    "{{ vars.runtimes_root }}/node/npm/bin",
+    "{{ vars.runtimes_root }}/go/bin",
+    "{{ vars.runtimes_root }}/rust/cargo/bin",
+]
+
 # [vars] exported as environment variables, for scripts and tasks that cannot read Tera
 # (the check-volumes task in config.macos.toml).
+# Each toolchain's cache/install dir, redirected onto the runtimes volume (one block per runtime
+# declared in [tools] below).
+npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"
+npm_config_prefix = "{{ vars.runtimes_root }}/node/npm"
+GOPATH = "{{ vars.runtimes_root }}/go"
+GOCACHE = "{{ vars.runtimes_root }}/go/cache"
+GOMODCACHE = "{{ vars.runtimes_root }}/go/mod"
+CARGO_HOME = "{{ vars.runtimes_root }}/rust/cargo"
+CARGO_TARGET_DIR = "{{ vars.runtimes_root }}/rust/cargo/target"
+PIP_CACHE_DIR = "{{ vars.runtimes_root }}/python/pip"
+UV_CACHE_DIR = "{{ vars.runtimes_root }}/python/uv"
 MISE_VAR_RUNTIMES_ROOT = "{{ vars.runtimes_root }}"
 MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
 
@@ -108,6 +125,17 @@ run = ["mise run --skip-tools persist-profile"]
 # Global mise tools, on PATH everywhere (not only inside this repo).
 
 [tools]
+# -----------------------------------------------------------------------------
+# Language runtimes and package managers
+# -----------------------------------------------------------------------------
+# Always installed, by the base config: the npm:, pipx:, cargo: and go: tools of every module
+# depend on them, and `uv` is what mise needs to install the pipx: ones.
+go = "1.27"
+node = "26"
+rust = "1.99"
+python = "3.15"
+uv = "latest"
+
 # -----------------------------------------------------------------------------
 # Mise's own helpers
 # -----------------------------------------------------------------------------

@@ -7,41 +7,9 @@
 #                                   . d o t s
 #                                   Module dev
 #
-# Editors, terminal and language toolchains.
+# Editors, terminal and developer CLI tools (the language runtimes and uv are in config.toml).
 # Always loaded, every OS. Dotfile sources are relative to this folder (home/ tree).
 # =============================================================================
-
-# =============================================================================
-# Environment
-# =============================================================================
-# Environment variables mise exports in every shell.
-
-[env]
-# Redirects each toolchain's cache/install dir onto the external runtimes volume.
-# Only the languages declared in [tools] below belong here.
-
-# Node
-npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"
-npm_config_prefix = "{{ vars.runtimes_root }}/node/npm"
-
-# Go
-GOPATH = "{{ vars.runtimes_root }}/go"
-GOCACHE = "{{ vars.runtimes_root }}/go/cache"
-GOMODCACHE = "{{ vars.runtimes_root }}/go/mod"
-
-# Rust
-CARGO_HOME = "{{ vars.runtimes_root }}/rust/cargo"
-CARGO_TARGET_DIR = "{{ vars.runtimes_root }}/rust/cargo/target"
-
-# Python
-PIP_CACHE_DIR = "{{ vars.runtimes_root }}/python/pip"
-UV_CACHE_DIR = "{{ vars.runtimes_root }}/python/uv"
-
-_.path = [
-    "{{ vars.runtimes_root }}/node/npm/bin",
-    "{{ vars.runtimes_root }}/go/bin",
-    "{{ vars.runtimes_root }}/rust/cargo/bin",
-]
 
 # =============================================================================
 # Tools
@@ -49,17 +17,6 @@ _.path = [
 # Global mise tools, on PATH everywhere (not only inside this repo).
 
 [tools]
-# -----------------------------------------------------------------------------
-# Languages
-# -----------------------------------------------------------------------------
-go = "1.27"
-node = "26"
-rust = "1.99"
-python = "3.15"
-
-# Python package/project manager; also what mise needs to install the pipx: tools
-uv = "latest"
-
 # -----------------------------------------------------------------------------
 # CLI tools brew doesn't carry well
 # -----------------------------------------------------------------------------
