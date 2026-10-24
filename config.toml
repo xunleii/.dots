@@ -71,13 +71,17 @@ _.path = [
 # declared in [tools] below).
 npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"
 npm_config_prefix = "{{ vars.runtimes_root }}/node/npm"
+
 GOPATH = "{{ vars.runtimes_root }}/go"
 GOCACHE = "{{ vars.runtimes_root }}/go/cache"
 GOMODCACHE = "{{ vars.runtimes_root }}/go/mod"
+
 CARGO_HOME = "{{ vars.runtimes_root }}/rust/cargo"
 CARGO_TARGET_DIR = "{{ vars.runtimes_root }}/rust/cargo/target"
+
 PIP_CACHE_DIR = "{{ vars.runtimes_root }}/python/pip"
 UV_CACHE_DIR = "{{ vars.runtimes_root }}/python/uv"
+
 MISE_VAR_RUNTIMES_ROOT = "{{ vars.runtimes_root }}"
 MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
 
