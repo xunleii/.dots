@@ -92,10 +92,13 @@ Caveats:
   Empty an existing one first. In containers where
   `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
   `?ref=<branch>` on the URL may select a branch (unverified).
-- **`-E` is not persisted.** Write it locally in
-  `~/.config/mise/miserc.local.toml` (gitignored): `env = ["radiofrance"]`.
-  Otherwise running `mise bootstrap` again without `-E` prunes the packages of
-  the omitted profile.
+- **`-E` is persisted automatically.** The `persist-profile` task (first
+  post-packages command) writes `env = ["radiofrance"]` to
+  `~/.config/mise/miserc.local.toml` (gitignored) if absent, never overwriting
+  it; later `mise bootstrap` / `mise dot ...` need no `-E`. To change the profile,
+  edit that file. If bootstrap failed before the post-packages hook, nothing is
+  written: rerun with `-E` or create the file by hand, else a bare `mise bootstrap`
+  prunes the packages of the omitted profile.
 - **Homebrew must already exist**: brew packages need it, mise does not install it.
 - **Trust**: every `conf.d/<module>/mise*.toml` must be trusted
   (`mise trust`). Unverified whether `--adopt` handles this on its own.
@@ -168,7 +171,7 @@ Where each thing is installed from — and therefore where to add a new one:
 | mise | `[tools]` of `conf.d/<module>/mise.toml`; base `config.toml` | language runtimes (dev), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
 
 Anything **not** declared in `[bootstrap.packages]` of an active file is uninstalled by the
-post-packages hook (`mise bootstrap packages prune --yes`) on every bootstrap.
+post-packages hook (`persist-profile`, then `mise bootstrap packages prune --yes`) on every bootstrap.
 Installing by hand is therefore temporary: add the line to the right `config.toml` / `conf.d/...` file and
 bootstrap, rather than running `brew install`.
 

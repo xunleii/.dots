@@ -14,7 +14,9 @@ where needed. Modules are always loaded (not optional) and globally, so their
 `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` apply everywhere;
 machine files `conf.d/machines/mise.{personal,radiofrance}.toml` carry the
 differences and load only via `-E` (`mise -E radiofrance bootstrap`, comma list
-allowed), `MISE_ENV` or `~/.config/mise/miserc.local.toml` (gitignored). The root
+allowed), `MISE_ENV` or `~/.config/mise/miserc.local.toml` (gitignored; written automatically
+by the `persist-profile` task, first command of the post-packages hook, from the first
+`-E` bootstrap if absent, never overwritten; edit it to change profile). The root
 `config.toml` loads after the `conf.d` fragments and overrides them, so
 per-machine vars have no base default (templates use `| default(value="")`).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
@@ -94,10 +96,11 @@ machine file (e.g. `conf.d/machines/mise.personal.toml`; empty means no signing)
 re-run `mise bootstrap`. There are no secrets in this setup: `git_name` is a plain
 `[vars]` entry in `config.toml`; `git_email` lives in the machine files.
 
-The post-packages hook runs `mise bootstrap packages prune --yes`, so anything
+The post-packages hook runs `persist-profile`, then `mise bootstrap packages prune --yes`, so anything
 **not** declared in `[bootstrap.packages]` gets uninstalled on the next
 bootstrap, across the active files (a profile selected only with `-E` and not
-persisted in `miserc.local.toml` counts as dropped). The list is hand-curated: never suggest a
+persisted in `miserc.local.toml` counts as dropped; `persist-profile` normally
+writes it, unless bootstrap failed before this hook). The list is hand-curated: never suggest a
 bare `brew install`, it gets reverted. Edit the right `config*.toml` / `conf.d/` file instead.
 
 ## Where a new tool goes

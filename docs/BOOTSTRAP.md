@@ -88,13 +88,14 @@ Caveats:
 - **`$MISE_CONFIG_DIR` must be empty or absent.** Empty an existing populated
   dir first (`--adopt` on a populated dir is unverified). In containers where
   `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
-- **`-E` is not persisted automatically.** Write the profile locally, in
-  `~/.config/mise/miserc.local.toml` (gitignored):
-  ```toml
-  env = ["personal"]
-  ```
-  Otherwise a later `mise bootstrap` without `-E` prunes the packages of the
-  omitted profile.
+- **`-E` is persisted automatically.** The `persist-profile` task (first
+  post-packages command) writes `~/.config/mise/miserc.local.toml` (gitignored)
+  if it does not exist, e.g. `env = ["personal"]`; it never overwrites it and
+  does nothing without `-E`. Later `mise dot apply|diff` and `mise bootstrap`
+  need no `-E`. To change the profile, edit that file by hand. If bootstrap
+  failed before the post-packages hook, no file is written: rerun with `-E` or
+  create it manually, else a bare `mise bootstrap` prunes the omitted profile's
+  packages.
 - **Homebrew must exist** for brew packages; mise does not install it.
 - **Trust**: each `conf.d` module file must be trusted (`mise trust`; trusting
   a folder's file trusts that folder, `mise trust --all` does not reach them).
@@ -104,7 +105,7 @@ Caveats:
 
 1. `pre-packages` (`config.macos.toml`): `check-volumes`
 2. `[bootstrap.packages]` (Homebrew)
-3. `post-packages`: `mise bootstrap packages prune --yes` (uninstalls anything not declared)
+3. `post-packages`: `persist-profile` (writes `miserc.local.toml` from `-E` if absent), then `mise bootstrap packages prune --yes` (uninstalls anything not declared)
 4. `[dotfiles]`
 5. `post-dotfiles` (fish module): `fish-plugins`
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
