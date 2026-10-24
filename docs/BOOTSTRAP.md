@@ -12,12 +12,12 @@ gone. Everything below is what to know when editing the setup.
 | --- | --- |
 | `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, prune hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
 | `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (inlined) |
-| `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically |
+| `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["personal"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
-| `conf.d/machines/mise.{personal,radiofrance}.toml` | Machine files, loaded only when selected (`-E`) |
+| `conf.d/machines/mise.{personal,radiofrance}.toml` | Machine files; `personal` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
 Every config file carries the dots banner and a header explaining its role and documenting its sections.
@@ -36,8 +36,8 @@ Modules follow [mise modules](https://mise.jdx.dev/bootstrap/modules.html): a
 folder `conf.d/<name>/` with `mise.toml` (+ per-OS files) inside.
 They are NOT optional: always loaded. Differences between machines live in the
 machine files. `config.toml` loads after `conf.d`, so it would override it:
-per-machine vars (`git_email`, `git_signingkey`) have no base default and
-templates use `| default(value="")`.
+per-machine vars (`git_email`, `git_signingkey`) have no base default; templates
+keep `| default(value="")` as a safety net (a profile is always active).
 
 | Module | Holds |
 | --- | --- |
@@ -74,14 +74,16 @@ Needs `git`.
 
 ```sh
 curl https://mise.run | sh
-mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git
+mise bootstrap --adopt https://github.com/xunleii/.dots.git                # personal (default)
+mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git  # other profile
 ```
 
 `--adopt` clones the repo's default branch into `$MISE_CONFIG_DIR` (default
 `~/.config/mise`) and bootstraps from it. To try a branch, `?ref=<branch>` on
-the URL may work (unverified). `-E` selects the machine profile
-(`personal` or `radiofrance`, i.e. `conf.d/machines/mise.<name>.toml`; comma
-list allowed).
+the URL may work (unverified). The machine profile (`personal` or `radiofrance`,
+i.e. `conf.d/machines/mise.<name>.toml`) defaults to `personal` (`env` in
+`miserc.toml`); `-E` selects another one (comma list allowed) and REPLACES the
+default, it does not add to it. A personal machine needs no `-E`.
 
 Caveats:
 
@@ -90,12 +92,12 @@ Caveats:
   `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
 - **`-E` is persisted automatically.** The `persist-profile` task (first
   post-packages command) writes `~/.config/mise/miserc.local.toml` (gitignored)
-  if it does not exist, e.g. `env = ["personal"]`; it never overwrites it and
-  does nothing without `-E`. Later `mise dot apply|diff` and `mise bootstrap`
+  if it does not exist, e.g. `env = ["radiofrance"]`; it never overwrites it and
+  does nothing without `-E`. It replaces the `miserc.toml` default too. Later `mise dot apply|diff` and `mise bootstrap`
   need no `-E`. To change the profile, edit that file by hand. If bootstrap
   failed before the post-packages hook, no file is written: rerun with `-E` or
-  create it manually, else a bare `mise bootstrap` prunes the omitted profile's
-  packages.
+  create it manually, else a bare `mise bootstrap` falls back to `personal`
+  (personal email, personal packages added, the omitted profile's packages pruned).
 - **How `persist-profile` finds `-E`.** Workaround: hooks and templates do not
   receive the `-E` value (`MISE_ENV` stays empty in a hook, even with `-E`).
   The task uses `$MISE_ENV` if set, else walks up the process tree and reads
@@ -129,7 +131,7 @@ purpose since it ends up in every commit.
 - `git_name`: in `config.toml`.
 - `git_email`: per machine, in the machine file (`personal`: GitHub noreply;
   `radiofrance`: work address). No base default (`config.toml` loads after
-  `conf.d` and would override machine files); no `-E` means an empty email.
+  `conf.d` and would override machine files); no profile selected falls back to `personal` (default), so it is never empty.
 - `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.personal.toml`.
   Empty means no signing.
 
@@ -150,7 +152,7 @@ purpose since it ends up in every commit.
 
 | chezmoi | mise |
 | --- | --- |
-| `chezmoi init --apply <repo>` | `mise -E <profile> bootstrap --adopt <repo>` |
+| `chezmoi init --apply <repo>` | `mise [-E <profile>] bootstrap --adopt <repo>` |
 | `chezmoi apply` / `diff` / `status` | `mise dot apply` / `diff` / `status` (from anywhere) |
 | `chezmoi cd` / `edit` | `cd ~/.config/mise` / `mise dot edit` |
 | `chezmoi add` | `mise dot add` |

@@ -82,8 +82,9 @@ blank Mac:
 # 1. mise
 curl https://mise.run | sh
 
-# 2. Everything: -E picks the machine profile (personal | radiofrance, comma list allowed)
-mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git
+# 2. Everything. `personal` is the default profile; -E replaces it (radiofrance, comma list allowed)
+mise bootstrap --adopt https://github.com/xunleii/.dots.git               # personal
+mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git  # other profile
 ```
 
 Caveats:
@@ -92,13 +93,17 @@ Caveats:
   Empty an existing one first. In containers where
   `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
   `?ref=<branch>` on the URL may select a branch (unverified).
+- **`personal` is the default profile** (`env = ["personal"]` in `miserc.toml`); a
+  personal machine needs neither `-E` nor a local file. `-E` and
+  `miserc.local.toml` replace that list, they do not add to it.
 - **`-E` is persisted automatically.** The `persist-profile` task (first
   post-packages command) writes `env = ["radiofrance"]` to
   `~/.config/mise/miserc.local.toml` (gitignored) if absent, never overwriting
   it; later `mise bootstrap` / `mise dot ...` need no `-E`. To change the profile,
   edit that file. If bootstrap failed before the post-packages hook, nothing is
   written: rerun with `-E` or create the file by hand, else a bare `mise bootstrap`
-  prunes the packages of the omitted profile.
+  falls back to `personal` (personal email, personal packages added, the
+  radiofrance packages pruned).
 - **Homebrew must already exist**: brew packages need it, mise does not install it.
 - **Trust**: every `conf.d/<module>/mise*.toml` must be trusted
   (`mise trust`). Unverified whether `--adopt` handles this on its own.
@@ -147,7 +152,7 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 | `dev` | ghostty, zed, orbstack, kubectl completion, dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
 | `personal`, `radiofrance` | machine files in `conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
 
-Machine files load only through `-E` (or `MISE_ENV` / `miserc.local.toml`).
+`personal` loads by default (`miserc.toml`); `-E`, `MISE_ENV` or `miserc.local.toml` replace it.
 `config.toml` loads after the `conf.d` fragments and overrides them, so
 per-machine vars (`git_email`, `git_signingkey`) have no base default. Modules
 are loaded globally, so their `[tools]` and `[env]` apply everywhere.
