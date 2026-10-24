@@ -94,7 +94,20 @@
     "padding": 0,
     "refreshInterval": 10
   },
-  "enabledPlugins": {"claude-md-management@claude-plugins-official":true,"claude-mermaid@claude-mods":true,"code-review@claude-plugins-official":true,"nono@nolabs-ai":true,"plannotator@plannotator":true,"ponytail@ponytail":true,"remember@claude-plugins-official":true,"skill-creator@claude-plugins-official":true,"superpowers@claude-plugins-official":true,"terminal-browser@terminal-browser":true,"understand-anything@understand-anything":true,"waza@waza":true},
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "claude-mermaid@claude-mods": true,
+    "code-review@claude-plugins-official": true,
+    "nono@nolabs-ai": true,
+    "plannotator@plannotator": true,
+    "ponytail@ponytail": true,
+    "remember@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "terminal-browser@terminal-browser": true,
+    "understand-anything@understand-anything": true,
+    "waza@waza": true
+  },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
