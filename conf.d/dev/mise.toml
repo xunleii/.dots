@@ -56,6 +56,8 @@ go = "1.27"
 node = "26"
 rust = "1.99"
 python = "3.15"
+# Python package/project manager; also what mise needs to install the pipx: tools (claude-swap).
+uv = "latest"
 
 # -----------------------------------------------------------------------------
 # CLI tools brew doesn't carry well
@@ -77,7 +79,6 @@ doggo = "latest"
 # -----------------------------------------------------------------------------
 "brew:cmake" = "latest"  # cross-platform build system generator
 "brew:neovim" = "latest"  # Vim-fork text editor
-"brew:uv" = "latest"  # Python package/project manager
 
 # =============================================================================
 # Dotfiles

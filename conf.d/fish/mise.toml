@@ -38,7 +38,9 @@ fi
 # Hooks run EVERY time, so keep them safe to repeat.
 
 [bootstrap.hooks.post-dotfiles]
-run = ["mise run fish-plugins"]
+# --skip-tools: `mise run` would otherwise install every global tool first, before the `tools`
+# phase (and before uv/pipx exist for the pipx: tools).
+run = ["mise run --skip-tools fish-plugins"]
 
 # =============================================================================
 # Packages
