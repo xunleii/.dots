@@ -44,9 +44,12 @@ One per top-level dotfile/tool this repo manages. Add a new one here when a
 new tool/dir shows up — don't pre-invent scopes for things that don't exist
 yet.
 
-`chezmoi`, `fish`, `nono`, `brew`, `git`, `mise`,
-`ghostty`, `kitty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
+`fish`, `nono`, `brew`, `git`, `mise`,
+`ghostty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
 `docs`, `claude`
+
+Module or machine-file changes (`mise/conf.d/<module>/mise[.macos].toml`, `mise/conf.d/machines/mise.<name>.toml`) use the scope of the tool
+they configure, or `mise` for the module plumbing itself.
 
 ## Examples
 

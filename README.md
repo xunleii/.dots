@@ -7,12 +7,10 @@
 
 ### macOS
 
-**This repo is macOS-only.** Not "mostly tested on macOS" — it refuses to
-install anywhere else. `chezmoi init` and `chezmoi apply` both abort with an
-error on any other OS, before writing a single file. It is a deliberate
-single-platform setup, not a portable one, so there is nothing to disable if
-you are on Linux: fork it and strip the guards (see
-[AGENTS.md](AGENTS.md#macos-only)).
+**This repo targets macOS only.** Cross-platform is not a goal: `mise.macos.toml`
+files hold the macOS casks and dotfiles, and `check-volumes` fails when the
+Runtimes/Spaces volumes are missing on macOS. Nothing is portable beyond that,
+so on Linux fork it and adapt (see [AGENTS.md](AGENTS.md#macos-only)).
 
 ### Two volumes
 
@@ -69,29 +67,44 @@ mkdir -p /Volumes/Spaces/{Lab,Work,OSS,Personal}
 - `APFSX` (case-sensitive) is deliberate: it's what a checkout of a repo
   developed on Linux expects. Swap it for `APFS` for the macOS default.
 - Different names or paths are fine — they're configurable in
-  `chezmoi/.chezmoidata.yaml` (`runtimes_root`, `spaces_root`).
-- `chezmoi apply` only *warns* when a volume is missing, it does not fail — so
-  an unplugged external drive degrades gracefully instead of blocking the apply.
+  the `[vars]` table of `mise.toml` (`runtimes_root`, `spaces_root`).
+- `mise bootstrap` fails in its `check-volumes` hook when a volume is missing, so
+  nothing is installed or written until both are mounted.
 
 ## Install
 
-```bash
-# Install Homebrew if not already installed
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+Needs `git` (and network). On a blank Mac:
 
-# Install and configure chezmoi
-brew install chezmoi
-chezmoi init --apply https://github.com/xunleii/.dots
+```bash
+# 1. mise
+curl https://mise.run | sh
+
+# 2. Everything: -E picks the machine profile (personal | radiofrance, comma list allowed)
+mise -E radiofrance bootstrap --from git@github.com:xunleii/.dots.git
 ```
 
-`chezmoi init` asks for your git name, email, whether this is a work machine
-(it gates a few Brewfile entries) and your commit signing key. No secret is
-ever prompted for or stored.
+`--from` ([docs](https://mise.jdx.dev/bootstrap/from-repository.html)) clones
+the repo into `$MISE_DATA_DIR/bootstrap-repo` (`--update` pulls it) and
+bootstraps from there. Caveats:
+
+- **The profile is per run.** `-E radiofrance` only applies to that invocation: running
+  `mise bootstrap` again without `-E` prunes the packages of the omitted
+  profile. Persist it on the machine with `MISE_ENV=radiofrance` or
+  `~/.config/mise/miserc.local.toml` (`env = ["radiofrance"]`).
+- **Homebrew must already exist**: brew packages need it, mise does not install it.
+- **Trust**: every `mise/conf.d/<module>/mise*.toml` must be trusted
+  (`mise trust`). Unverified whether `--from` handles this on its own.
+
+No token or prompt is needed: the git identity is plain `[vars]` in the repo (`git_name` in `mise.toml`, `git_email` in the machine file).
+Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 Then the manual steps that have no CLI (see
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
-a Secure Enclave key, then re-run `chezmoi init` so `signingkey` picks it up —
-the prompt is pre-filled from the running ssh-agent, so it is just Enter.
+a Secure Enclave key, put the public key in `git_signingkey` (in the machine's
+`mise/conf.d/machines/mise.<name>.toml`), then re-run `mise bootstrap`.
+
+Day to day: `mise dotfiles diff` to preview, `mise dotfiles apply` for
+dotfiles only, `mise bootstrap` for everything.
 
 ## How to use this repository
 
@@ -101,6 +114,37 @@ and settings for my computers; even if it works for me, I don't guarantee it
 will for you.
 
 Tested on macOS (Sequoia 15.6+) only.
+
+## Modules
+
+`mise.toml` + `mise.macos.toml` at the root are the base: volume vars,
+general packages (GNU userland and general casks on macOS), the
+mise shell activation and the retired-target `absent` entries. Everything else
+is a module, a folder `mise/conf.d/<name>/`
+([mise modules](https://mise.jdx.dev/bootstrap/modules.html)). Modules are
+always loaded; machine files carry the differences.
+
+`.miserc.toml` at the repo root sets `auto_env = true`: the platform
+environments (`unix`, `macos`, `macos-arm64`) load automatically. So each module
+has `mise.toml` (every OS) and `mise.macos.toml` (macOS only: casks, macOS-only
+dotfiles), plus its own `home/` tree of dotfile sources.
+
+| Module | Holds |
+| --- | --- |
+| `fish` | shell, prompt, atuin, fisher, completions; macOS: GNU userland PATH |
+| `git` | gitconfig, signing, lazygit, `czg` |
+| `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: Secretive, Bitwarden |
+| `claude` | `~/.claude`, nono, `clawd` / `nono-profile` functions; macOS: sleep hooks |
+| `dev` | ghostty, zed, language runtimes and toolchain env |
+| `personal`, `radiofrance` | machine files in `mise/conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
+
+Machine files load only through `-E` (or `MISE_ENV` / `miserc.local.toml`).
+The root `mise.toml` loads after the `conf.d` fragments and overrides them, so
+per-machine vars (`git_email`, `git_signingkey`) have no base default. Global
+tools and env are per module: each deploys `~/.config/mise/conf.d/<m>/mise.toml`
+(a `[tools]` in the repo's own modules would only apply inside the repo).
+`mise bootstrap unapply <module>` removes a module. To add one: create
+`mise/conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `home/`) and `mise trust` it.
 
 ## Machine layout
 
@@ -115,29 +159,28 @@ Where each thing is installed from — and therefore where to add a new one:
 
 | Method | Source of truth | For |
 | --- | --- | --- |
-| Homebrew | `chezmoi/dot_Brewfile.tmpl` | almost everything, formulae and casks |
-| chezmoi externals | `chezmoi/.chezmoiexternal.toml.tmpl` + `.chezmoidata.yaml` | GitHub-release binaries brew doesn't carry (mise, usage, ocx) |
-| mise | `chezmoi/dot_config/private_mise/config.toml.tmpl` | language runtimes, and CLIs only published to npm/pipx |
-| `uv tool` | `chezmoi/.chezmoiscripts/run_onchange_after_uv-*.sh.tmpl` | Python tools that must live on the internal disk |
+| Homebrew | `[bootstrap.packages]` in `mise.toml` / `mise.macos.toml` (base) or the module / machine file that needs it (`mise/conf.d/...`) | almost everything, formulae and casks |
+| mise | `~/.config/mise/conf.d/<module>/mise.toml` fragments (`mise/conf.d/<module>/home/.config/mise/conf.d/`); base `home/.config/mise/config.toml.tera` | language runtimes (dev), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
 
-`brew bundle cleanup` runs on every apply, so anything **not** in the Brewfile
-gets uninstalled. Installing by hand is therefore temporary: add the line to
-`chezmoi/dot_Brewfile.tmpl` and apply, rather than running `brew install`.
+Anything **not** declared in `[bootstrap.packages]` of an active file is uninstalled by the
+post-packages hook (`mise bootstrap packages prune --yes`) on every bootstrap.
+Installing by hand is therefore temporary: add the line to the right `mise.toml` / `mise.<name>.toml` and
+bootstrap, rather than running `brew install`.
 
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md) covers only the apps that need a
 manual, GUI-only setup step after install.
 
 ## Core Dependencies
 
-### [chezmoi](https://www.chezmoi.io) - _dot files_ manager
+### [mise](https://mise.jdx.dev) - bootstrap, dotfiles and runtimes
 
-> [!Note]
-> `chezmoi` is automatically installed on bootstrap... by `chezmoi` itself
-
-`chezmoi` is a fantastic _dot files_ manager that I use to bootstrap and
-maintain all of my settings. It manages configuration files, external binaries,
-and templates. See [docs/CHEZMOI.md](docs/CHEZMOI.md) for the cheat sheet used
-when editing this repo.
+`mise` is the single tool behind this repo: `mise bootstrap` installs packages
+and runs the setup hooks, `mise dotfiles` symlinks the files under each module's `home/` into
+`$HOME` (only `*.tera` files are rendered and copied), and it manages language runtimes (Go, Node, Python, Rust)
+and the few CLIs that only ship via npm/pipx. The `[env]` block of its config
+redirects every toolchain cache onto `/Volumes/Runtimes`. Per-project overrides
+go in the project's own `.mise.toml`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)
+for the cheat sheet used when editing this repo.
 
 ### [fish](https://fishshell.com) shell - a smart and user-friendly command line shell
 
@@ -147,15 +190,6 @@ when editing this repo.
 - **Atuin** - shell history with sync, owns `Ctrl+R`
 - **Zoxide** - `z` / `zi`, frecency-based directory jumping
 - Custom functions and abbreviations (`clawd`, `clone`, `bwssh`, `nono-profile`)
-
-### [mise](https://mise.jdx.dev) - runtime versions manager
-
-> [!NOTE]
-> `mise` is automatically installed on bootstrap, using `chezmoi` externals
-
-`mise` manages language runtimes (Go, Node, Python, Rust) and the few CLIs that
-only ship via npm/pipx. Its `[env]` block redirects every toolchain cache onto
-`/Volumes/Runtimes`. Per-project overrides go in the project's own `.mise.toml`.
 
 ## LICENSE
 
