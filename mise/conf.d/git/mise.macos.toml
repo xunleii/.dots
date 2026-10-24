@@ -1,0 +1,18 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module git (macOS only)
+#
+# Loaded automatically on macOS: casks and macOS-specific files of this module.
+#
+# Sections used here:
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+# -----------------------------------------------------------------------------
+
+[bootstrap.packages]
+"brew:pinentry-mac" = "latest"  # macOS-native GPG passphrase prompt
+"brew-cask:gitbutler" = "latest"  # git client with parallel branches, ships the `but` CLI

@@ -1,0 +1,284 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                              Git - Global config
+#
+# -----------------------------------------------------------------------------
+
+
+# ============================================================================
+# SOURCES & REFERENCES
+# ============================================================================
+#  - https://git-scm.com/docs/git-config
+#  - https://gist.github.com/tdd/470582
+#  - https://gist.github.com/pyrtsa/4148804
+
+{#- Identity comes from [vars]: git_name in mise.toml, git_email and git_signingkey in the machine file (mise/conf.d/machines/).
+    SSH pubkey type prefixes: ssh-ed25519/ssh-rsa, ecdsa-sha2-* (Secure Enclave keys, e.g. Secretive,
+    are ECDSA — no "ssh-" prefix), and the sk-* FIDO/security-key variants. Anything else is treated
+    as a GPG key ID. -#}
+{%- set signingkey = vars.git_signingkey | default(value="") -%}
+{%- set is_ssh = signingkey | truncate(length=4, end="") == "ssh-" or signingkey | truncate(length=11, end="") == "ecdsa-sha2-" or signingkey | truncate(length=7, end="") == "sk-ssh-" or signingkey | truncate(length=14, end="") == "sk-ecdsa-sha2-" -%}
+{%- set gpg = exec(command="command -v gpg || true") | trim -%}
+{%- set gh = exec(command="command -v gh || true") | trim -%}
+{%- set difft = exec(command="command -v difft || true") | trim %}
+
+# ============================================================================
+# USER CONFIGURATION
+# ============================================================================
+[user]
+  email = {{ vars.git_email | default(value="") }}
+  name = {{ vars.git_name }}
+  {%- if signingkey %}
+  # Sign all commits by default
+  {#- gpg.format=ssh takes either a file path or a literal pubkey prefixed
+      "key::" — without the prefix git tries to open the value as a file. #}
+  signingkey = {% if is_ssh %}key::{% endif %}{{ signingkey }}
+  {%- endif %}
+
+# ============================================================================
+# SIGNING CONFIGURATION - Commit and tag signing
+# ============================================================================
+{%- if signingkey %}
+[gpg]
+  {%- if is_ssh %}
+  format = ssh
+
+[gpg "ssh"]
+  allowedSignersFile = {{ env.HOME }}/.ssh/allowed_signers
+  {%- else %}
+  {% if gpg -%}
+  # Use Homebrew's gpg if available, otherwise system default
+  program = {{ gpg }}
+  {%- endif %}
+  {%- endif %}
+
+[commit]
+  # Sign all commits by default
+  gpgsign = true
+
+[tag]
+  # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
+  sort = version:refname
+  # Sign all tags by default
+  gpgsign = true
+{%- else %}
+[commit]
+  gpgsign = false
+
+[tag]
+  # Sort tags as version numbers whenever applicable, so 1.10.2 is AFTER 1.2.0.
+  sort = version:refname
+  gpgsign = false
+{%- endif %}
+
+# ============================================================================
+# COLOR CONFIGURATION - Enable colors in Git output
+# ============================================================================
+
+[color]
+  # Enable colors in color-supporting terminals
+  ui = auto
+
+# ============================================================================
+# ALIASES - Custom Git commands for productivity
+# ============================================================================
+[alias]
+  # List available aliases
+  aliases = "!git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'"
+
+  # ── Repository Information ────────────────────────────────────────────────
+  # Show default branch
+  default = branch --remotes --list "'*/HEAD'" --format "'%(symref:lstrip=3)'"
+
+  # ── Log & History ─────────────────────────────────────────────────────────
+  # Display tree-like log, because default log is a pain…
+  lg = log --graph --date=relative --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%an %ad)%Creset'
+  # List local commits that were not pushed to remote repository
+  review-local = lg "@{push}.."
+
+  # ── Commit Utilities ──────────────────────────────────────────────────────
+  # Update last commit with staged files without editing the commit message
+  oops = commit --amend --no-edit
+  # Edit last commit message
+  reword = commit --amend
+  # Undo last commit but keep changed files in stage
+  uncommit = reset --soft HEAD~1
+  # Yoloooooooooooooo ?
+  yolo = !git add -A && git commit -m \"$(curl --silent --fail https://whatthecommit.com/index.txt)\"
+
+  # ── Branch Management ─────────────────────────────────────────────────────
+  # Set the current branch upstream
+  set-upstream = branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+  # Prune all local branches not available on remote
+  prune-all = "!git remote prune origin && git branch --merged | grep -v '^*' | xargs git branch -d"
+
+  # ── File Operations ───────────────────────────────────────────────────────
+  # Remove file(s) from Git but not from disk
+  untrack = rm --cache --
+
+  # ── File Listing ──────────────────────────────────────────────────────────
+  ls           = status -suno
+  ls-modified  = status --porcelain -uno | awk 'match($1, /M/) {print $2}'
+  ls-added     = status --porcelain -uno | awk 'match($1, /A/) {print $2}'
+  ls-deleted   = status --porcelain -uno | awk 'match($1, /D/) {print $2}'
+  ls-renamed   = status --porcelain -uno | awk 'match($1, /R/) {print $2}'
+  ls-copied    = status --porcelain -uno | awk 'match($1, /C/) {print $2}'
+  ls-updated   = status --porcelain -uno | awk 'match($1, /U/) {print $2}'
+  ls-staged    = status --porcelain -uno | grep -P '^[MA]' | awk '{ print $2 }'
+  ls-untracked = status --porcelain -uall | awk '$1 == \"??\" {print $2}'
+  ls-ignored   = ls-files --others --ignored --exclude-standard
+
+# ============================================================================
+# CORE CONFIGURATION - Editor, pager, and file handling
+# ============================================================================
+[core]
+  editor = zed --wait
+  excludesfile = {{ env.HOME }}/.gitignore
+
+  # Paginate output with `delta` by default
+  pager = less --tabs=4 -RFX
+  # Don't consider trailing space change as a cause for merge conflicts
+  whitespace = -trailing-space
+
+# ============================================================================
+# CREDENTIALS - macOS Keychain (git adds this to ~/.gitconfig on its own the
+# first time it saves a password; declare it here so mise stops reverting it)
+# ============================================================================
+[credential]
+  helper = osxkeychain
+{%- if gh %}
+
+# Use the GitHub CLI's credential helper for GitHub hosts specifically —
+# it handles token refresh, whereas a keychain-stored PAT can silently expire.
+[credential "https://github.com"]
+  helper =
+  helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+  helper =
+  helper = !gh auth git-credential
+{%- endif %}
+
+# ============================================================================
+# REPOSITORY INITIALIZATION & BRANCH BEHAVIOR
+# ============================================================================
+[init]
+  defaultBranch = main
+
+[branch]
+  # autoSetupMerge controls whether `git branch` and `git checkout -b`
+  # imply the `--track` option
+  # autoSetupMerge = always
+  # autoSetupRebase controls whether new branches should be set up to
+  # be rebased upon `git pull`
+  autoSetupRebase = always
+
+# ============================================================================
+# DIFF CONFIGURATION - How Git displays differences
+# ============================================================================
+[diff]
+  # Use better, descriptive initials (c, i, w) instead of a/b.
+  mnemonicPrefix = true
+  # Show renames/moves as such
+  renames = true
+  # When using --word-diff, assume --word-diff-regex=.
+  wordRegex = .
+  # Display submodule-related information (commit listings)
+  submodule = log
+  {% if difft -%}
+  # Use difftastic as default diff tool when running `git diff-tool`
+  external = difft
+  {%- endif %}
+
+# ============================================================================
+# FETCH, MERGE & REBASE BEHAVIOR
+# ============================================================================
+[fetch]
+  # Auto-fetch submodule changes (sadly, won't auto-update)
+  recurseSubmodules = on-demand
+
+[mergetool]
+  # Clean up backup files created by merge tools on tool exit
+  keepBackup = false
+  # Clean up temp files created by merge tools on tool exit
+  keepTemporaries = false
+  # Put the temp files in a dedicated dir anyway
+  writeToTemp = true
+  # Auto-accept file prompts when launching merge tools
+  prompt = false
+
+[pull]
+  # This is GREAT… when you know what you're doing and are careful
+  # not to pull --no-rebase over a local line containing a true merge.
+  # rebase = true
+  # This option, which does away with the one gotcha of
+  # auto-rebasing on pulls, is only available from 1.8.5 onwards.
+  # rebase = preserve
+  # WARNING! This option, which is the latest variation, is only
+  # available from 2.18 onwards.
+  rebase = merges
+
+[rebase]
+  # Rebase advanced usage.
+  # Automagically reorder and prefix your commands while doing an interactive
+  # rebase. This has to be used with `--fixup` and/or `--squash` options for
+  # `git commit`.
+  autoSquash = false
+  # Automatically stash current WD and stage when running rebase
+  # then you won't have to manually `git stash push` and `git stash pop`
+  # after and before your rebase.
+  autoStash = true
+
+# ============================================================================
+# PUSH CONFIGURATION - Default push behavior
+# ============================================================================
+[push]
+  # Default push should only push the current branch to its push target, regardless of its remote name
+  default = upstream
+  # When pushing, also push tags whose commit-ishs are now reachable upstream
+  followTags = true
+
+# ============================================================================
+# OUTPUT & DISPLAY SETTINGS - Grep, log, status, and tag configuration
+# ============================================================================
+[grep]
+  break = true
+  heading = true
+  lineNumber = true
+  # Consider most regexes to be ERE
+  extendedRegexp = true
+
+[log]
+  # Use abbrev SHAs whenever possible/relevant instead of full 40 chars
+  abbrevCommit = true
+  # Automatically --follow when given a single path
+  follow = true
+  # Disable decorate for reflog
+  # (because there is no dedicated `reflog` section available)
+  decorate = false
+  # Show GPG signature in git log
+  showSignature = true
+
+[status]
+  # Display submodule rev change summaries in status
+  submoduleSummary = true
+  # Recursively traverse untracked directories to display all contents
+  showUntrackedFiles = all
+
+[versionsort]
+  suffix = -pre
+  suffix = .pre
+  suffix = -beta
+  suffix = .beta
+  suffix = -rc
+  suffix = .rc
+
+# ============================================================================
+# GIT ABSORB - Auto-amend to the correct commit
+# ============================================================================
+[absorb]
+  fixupTargetAlwaysSHA = true
