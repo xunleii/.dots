@@ -43,6 +43,20 @@ fi
 run = ["mise run --skip-tools fish-plugins"]
 
 # =============================================================================
+# Tools
+# =============================================================================
+# Global mise tools, on PATH everywhere (not only inside this repo).
+
+[tools]
+# -----------------------------------------------------------------------------
+# Fuzzy finding
+# -----------------------------------------------------------------------------
+# Used at call time (fifc Tab completion, fzf.fish keybindings), once mise is activated. starship,
+# atuin and zoxide stay Homebrew packages: conf.d runs their `init` at shell startup, BEFORE the
+# mise activation block that `mise bootstrap` writes into config.fish.
+fzf = "latest"
+
+# =============================================================================
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
@@ -54,7 +68,6 @@ run = ["mise run --skip-tools fish-plugins"]
 # -----------------------------------------------------------------------------
 "brew:fish" = "latest"  # interactive shell
 "brew:starship" = "latest"  # cross-shell prompt
-"brew:fzf" = "latest"  # fuzzy finder
 
 # -----------------------------------------------------------------------------
 # History and navigation
