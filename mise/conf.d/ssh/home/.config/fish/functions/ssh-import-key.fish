@@ -51,9 +51,9 @@ function ssh-import-key --description "Import SSH public key from URL or string"
         echo "$entry" >> "$file"
         echo "Successfully added key to $file"
         
-        # If it's a chezmoi managed file, warn user
-        if test -f "$HOME/.local/share/chezmoi/chezmoi/dot_ssh/"(basename $file)".tmpl"
-            echo "Warning: This file is managed by chezmoi. You should update your chezmoi source to make it permanent."
+        # If it's a mise-managed file, warn user
+        if test -f "$HOME/.local/share/chezmoi/home/.ssh/"(basename $file)".tera"
+            echo "Warning: This file is managed by mise dotfiles. You should update the source in home/.ssh to make it permanent."
         end
     else
         echo "Key already exists in $file"
