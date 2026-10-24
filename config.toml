@@ -65,6 +65,27 @@ MISE_VAR_RUNTIMES_ROOT = "{{ vars.runtimes_root }}"
 MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
 
 # =============================================================================
+# Tasks
+# =============================================================================
+# Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
+
+[tasks.persist-profile]
+description = "Remember the machine profile (-E <profile>) in miserc.local.toml, once"
+# `mise -E radiofrance bootstrap --adopt <repo>` only applies the profile for that run. Without it
+# later commands (mise dot apply, mise bootstrap) would see no profile: empty git_email, and the
+# profile's packages pruned. So the first bootstrap writes it to the machine-local, gitignored
+# miserc.local.toml. Never overwrites: edit that file to change the profile of a machine.
+run = """
+[ -n "${MISE_ENV:-}" ] || exit 0
+rc="${MISE_CONFIG_DIR:-$HOME/.config/mise}/miserc.local.toml"
+
+[ -e "$rc" ] && exit 0
+printf 'env = ["%s"]\n' "$(printf '%s' "$MISE_ENV" | sed 's/,/", "/g')" > "$rc"
+
+echo "persist-profile: wrote $rc (env = $MISE_ENV)"
+"""
+
+# =============================================================================
 # Bootstrap
 # =============================================================================
 # What `mise bootstrap` does around its phases: shell activation and hooks.
@@ -77,7 +98,9 @@ MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
 fish = "auto"
 
 [bootstrap.hooks.post-packages]
-run = ["mise bootstrap packages prune --yes"]
+# persist-profile first: later runs without -E must keep the same profile (and not prune its packages).
+# --skip-tools: `mise run` would otherwise install every global tool before the `tools` phase.
+run = ["mise run --skip-tools persist-profile"]
 
 # =============================================================================
 # Tools
