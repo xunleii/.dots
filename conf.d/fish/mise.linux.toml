@@ -1,0 +1,20 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module fish (Linux only)
+#
+# Loaded automatically on Linux (platform environment). No Homebrew cask/formula route there,
+# so fish itself comes from mise: a static build.
+# =============================================================================
+
+# =============================================================================
+# Tools
+# =============================================================================
+# Global mise tools, on PATH everywhere (not only inside this repo).
+
+[tools]
+"aqua:fish-shell/fish-shell" = "latest"

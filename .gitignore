@@ -1,0 +1,5 @@
+# Machine-local mise files (never shared)
+miserc.local.toml
+config.local.toml
+mise.local.toml
+.DS_Store

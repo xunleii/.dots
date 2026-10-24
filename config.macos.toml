@@ -1,0 +1,76 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Mise - Base (macOS only)
+#
+# Loaded automatically on macOS (platform environment): general casks and GNU userland formulas.
+# =============================================================================
+
+# =============================================================================
+# Tasks
+# =============================================================================
+# Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
+
+[tasks.check-volumes]
+description = "Abort early when /Volumes/Runtimes or /Volumes/Spaces is not mounted"
+run = """
+for vol in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
+  [ -d "$vol" ] || { echo "check-volumes: $vol is not mounted" >&2; exit 1; }
+done
+"""
+
+# =============================================================================
+# Bootstrap
+# =============================================================================
+# What `mise bootstrap` does around its phases: shell activation and hooks.
+# Hooks run EVERY time, so keep them safe to repeat.
+
+[bootstrap.hooks.pre-packages]
+run = ["mise run check-volumes"]
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+# GNU userland (preferred over BSD, see conf.d/fish 05-gnu-userland)
+"brew:bash" = "latest"  # system bash is 3.2, unusable
+"brew:coreutils" = "latest"  # GNU file/shell/text utils
+"brew:findutils" = "latest"  # GNU find, xargs, locate
+"brew:gawk" = "latest"  # GNU awk
+"brew:gnu-sed" = "latest"  # GNU sed
+"brew:grep" = "latest"  # GNU grep/egrep/fgrep
+
+# -----------------------------------------------------------------------------
+# Desktop utilities
+# -----------------------------------------------------------------------------
+"brew-cask:betterdisplay" = "latest"  # external display management
+"brew-cask:raycast" = "latest"  # launcher / productivity toolbox
+"brew-cask:appcleaner" = "latest"  # thorough application uninstaller
+"brew-cask:rar" = "latest"  # RAR archive tool
+"brew-cask:rsyncui" = "latest"  # GUI for rsync
+
+# -----------------------------------------------------------------------------
+# Security and network
+# -----------------------------------------------------------------------------
+"brew-cask:little-snitch" = "latest"  # outbound application firewall
+
+# -----------------------------------------------------------------------------
+# Communication and browsers
+# -----------------------------------------------------------------------------
+"brew-cask:slack" = "latest"  # team chat
+"brew-cask:tailscale-app" = "latest"  # WireGuard-based mesh VPN
+"brew-cask:zen" = "latest"  # Gecko-based browser
+
+# -----------------------------------------------------------------------------
+# Notes and media
+# -----------------------------------------------------------------------------
+"brew-cask:octarine" = "latest"  # markdown note-taking app
+"brew-cask:deezer" = "latest"  # music streaming
+"brew-cask:vlc" = "latest"  # media player

@@ -1,0 +1,33 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module ssh (macOS only)
+#
+# Loaded automatically on macOS: casks and macOS-specific files of this module.
+# =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+# -----------------------------------------------------------------------------
+# SSH agents
+# -----------------------------------------------------------------------------
+"brew-cask:bitwarden" = "latest"  # password/login vault (fleet/"machines" SSH access, see bwssh)
+"brew-cask:secretive" = "latest"  # Secure Enclave-backed SSH agent (default: commit signing + direct SSH)
+
+# =============================================================================
+# Dotfiles
+# =============================================================================
+# Files deployed into $HOME. `symlink` points back into this repo (edit here, nothing to
+# re-apply), `template` renders a *.tera file, `absent` removes a retired file.
+
+[dotfiles]
+"~/.config/fish/conf.d/80-secretive-ssh.fish" = { source = "home/.config/fish/conf.d/80-secretive-ssh.fish.tera", mode = "template" }

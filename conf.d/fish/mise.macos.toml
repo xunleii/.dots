@@ -1,0 +1,29 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module fish (macOS only)
+#
+# Loaded automatically on macOS: casks and macOS-specific files of this module.
+# =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+"brew-cask:font-iosevka-term-nerd-font" = "latest"  # Iosevka Term patched with Nerd Font icons
+
+# =============================================================================
+# Dotfiles
+# =============================================================================
+# Files deployed into $HOME. `symlink` points back into this repo (edit here, nothing to
+# re-apply), `template` renders a *.tera file, `absent` removes a retired file.
+
+[dotfiles]
+"~/.config/fish/conf.d/05-gnu-userland.fish" = { source = "home/.config/fish/conf.d/05-gnu-userland.fish", mode = "symlink" }

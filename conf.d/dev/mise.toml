@@ -1,0 +1,91 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                                   Module dev
+#
+# Editors, terminal and language toolchains.
+# Always loaded, every OS. Dotfile sources are relative to this folder (home/ tree).
+# =============================================================================
+
+# =============================================================================
+# Environment
+# =============================================================================
+# Environment variables mise exports in every shell.
+
+[env]
+# Redirects each toolchain's cache/install dir onto the external runtimes volume.
+# Only the languages declared in [tools] below belong here.
+
+# Node
+npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"
+npm_config_prefix = "{{ vars.runtimes_root }}/node/npm"
+
+# Go
+GOPATH = "{{ vars.runtimes_root }}/go"
+GOCACHE = "{{ vars.runtimes_root }}/go/cache"
+GOMODCACHE = "{{ vars.runtimes_root }}/go/mod"
+
+# Rust
+CARGO_HOME = "{{ vars.runtimes_root }}/rust/cargo"
+CARGO_TARGET_DIR = "{{ vars.runtimes_root }}/rust/cargo/target"
+
+# Python
+PIP_CACHE_DIR = "{{ vars.runtimes_root }}/python/pip"
+UV_CACHE_DIR = "{{ vars.runtimes_root }}/python/uv"
+
+_.path = [
+    "{{ vars.runtimes_root }}/node/npm/bin",
+    "{{ vars.runtimes_root }}/go/bin",
+    "{{ vars.runtimes_root }}/rust/cargo/bin",
+]
+
+# =============================================================================
+# Tools
+# =============================================================================
+# Global mise tools, on PATH everywhere (not only inside this repo).
+
+[tools]
+# -----------------------------------------------------------------------------
+# Languages
+# -----------------------------------------------------------------------------
+go = "1.27"
+node = "26"
+rust = "1.99"
+python = "3.15"
+
+# -----------------------------------------------------------------------------
+# CLI tools brew doesn't carry well
+# -----------------------------------------------------------------------------
+jqp = "latest"
+crane = "latest"
+doggo = "latest"
+"github:str4d/rage" = "latest"
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+# -----------------------------------------------------------------------------
+# Build and editors
+# -----------------------------------------------------------------------------
+"brew:cmake" = "latest"  # cross-platform build system generator
+"brew:neovim" = "latest"  # Vim-fork text editor
+"brew:uv" = "latest"  # Python package/project manager
+
+# =============================================================================
+# Dotfiles
+# =============================================================================
+# Files deployed into $HOME. `symlink` points back into this repo (edit here, nothing to
+# re-apply), `template` renders a *.tera file, `absent` removes a retired file.
+
+[dotfiles]
+"~/.config/ghostty" = { source = "home/.config/ghostty", mode = "symlink-each" }
+"~/.config/zed/settings.json" = { source = "home/.config/zed/settings.json", mode = "symlink" }
+"~/.config/fish/completions/kubectl.fish" = { source = "home/.config/fish/completions/kubectl.fish", mode = "symlink" }

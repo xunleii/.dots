@@ -1,0 +1,25 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module dev (macOS only)
+#
+# Loaded automatically on macOS: casks and macOS-specific files of this module.
+# =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+# -----------------------------------------------------------------------------
+# Terminal, editor and containers
+# -----------------------------------------------------------------------------
+"brew-cask:ghostty@tip" = "latest"  # GPU-accelerated, platform-native terminal (nightly, macOS 27 compat)
+"brew-cask:zed" = "latest"  # multiplayer code editor
+"brew-cask:orbstack" = "latest"  # lightweight Docker Desktop replacement

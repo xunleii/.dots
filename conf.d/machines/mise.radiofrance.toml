@@ -1,0 +1,39 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Machine - radiofrance
+#
+# Radio France work machines (professional git identity).
+# Selected explicitly: mise -E radiofrance bootstrap (loaded last, wins on conflicts).
+# =============================================================================
+
+# =============================================================================
+# Variables
+# =============================================================================
+# Values shared by templates and tasks; read them as {{ vars.<name> }}.
+
+[vars]
+# Professional address used for every commit made on a Radio France machine (~/.gitconfig).
+git_email = "alexandre.nicolaie@radiofrance.com"
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Homebrew formulas and casks to install.
+# Anything not declared by a loaded file is pruned after install.
+
+[bootstrap.packages]
+# -----------------------------------------------------------------------------
+# Security
+# -----------------------------------------------------------------------------
+"brew-cask:gpg-suite" = "latest"  # GPGTools: GPG keychain, signed/encrypted emails and files
+
+# -----------------------------------------------------------------------------
+# Work apps
+# -----------------------------------------------------------------------------
+"brew-cask:microsoft-teams" = "latest"  # chat/video meetings
+"brew-cask:wifiman" = "latest"  # wifi network diagnostics
