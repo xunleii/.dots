@@ -1,0 +1,106 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Mise - Base
+#
+# Entry point of the bootstrap project (`mise -E <machine> bootstrap --from <repo>`).
+# Always loaded, on every OS: shared vars, tasks, hooks, general packages, retired targets.
+# Loaded AFTER the conf.d modules, so it overrides them: never give per-machine vars a default here.
+# Modules live in mise/conf.d/<name>/ (mise.toml always, mise.macos.toml on macOS only).
+# Sources of [dotfiles] are relative to this file; *.tera files are rendered, the rest is symlinked.
+#
+# Sections used here:
+#   [bootstrap.hooks.*]: commands run around a bootstrap phase; they run EVERY time, keep them safe to repeat.
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+#   [dotfiles]: files to deploy into $HOME. `symlink` points back into this repo (edit here, no re-apply),
+#   `template` renders a *.tera file (Tera), `absent` removes a retired file.
+# -----------------------------------------------------------------------------
+
+[vars]
+runtimes_root = "/Volumes/Runtimes"
+spaces_root = "/Volumes/Spaces"
+# Space-separated: [vars] only takes scalars.
+spaces = "Lab Work OSS Personal"
+# Git identity is public on purpose (it ends up in every commit). The name is shared; the email
+# and the signing key are per machine (mise/conf.d/machines/): this file loads AFTER conf.d, so
+# a default here would override them.
+git_name = "Alexandre NICOLAIE"
+
+[env]
+MISE_VAR_RUNTIMES_ROOT = "{{ vars.runtimes_root }}"
+MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
+
+# --- Bootstrap: packages -> dotfiles -> tools (see `mise bootstrap --help`). The macOS-only volume
+# check (pre-packages hook) lives in mise.macos.toml.
+# mise activation in fish (prompt hook; shims in scripts). Replaces `mise activate fish | source`.
+[bootstrap.mise_shell_activate]
+fish = "auto"
+
+[bootstrap.hooks.post-packages]
+run = ["mise bootstrap packages prune --yes"]
+
+# Like the old `brew bundle cleanup --force`, anything not declared by an active module is
+# uninstalled by the post-packages hook (`mise bootstrap packages prune --yes`).
+
+[bootstrap.packages]
+"brew:curl" = "latest"  # HTTP client, newer than the system one
+"brew:wget" = "latest"  # HTTP(S)/FTP file retriever
+"brew:btop" = "latest"  # resource monitor (TUI)
+"brew:procs" = "latest"  # modern `ps` replacement
+"brew:tree" = "latest"  # directory tree listing
+"brew:bat" = "latest"  # `cat` with syntax highlighting
+"brew:eza" = "latest"  # modern `ls` replacement
+"brew:fd" = "latest"  # fast `find` alternative
+"brew:ripgrep" = "latest"  # fast recursive grep
+"brew:hexyl" = "latest"  # hex viewer
+"brew:flock" = "latest"  # lock a file for the duration of a command
+"brew:sponge" = "latest"  # soak up stdin, write to a file (moreutils)
+"brew:graphviz" = "latest"  # graph/diagram rendering (`dot`)
+"brew:ipcalc" = "latest"  # IP subnet calculator
+
+[dotfiles]
+# --- Shared files
+"~/.local/bin/dots-banner" = { source = "scripts/banner.sh", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "home/.config/mise/config.toml.tera", mode = "template" }
+
+# --- Retired targets: files and dirs an earlier setup deployed and that must not stay. `absent`
+# removes them on the next apply (a no-op once gone), so old machines converge without manual cleanup.
+"~/.config/opencode" = { mode = "absent" }
+"~/.config/ghostty/shaders" = { mode = "absent" }
+"~/.local/bin/fasd" = { mode = "absent" }
+"~/.local/bin/git-wktree" = { mode = "absent" }
+"~/.local/bin/zai" = { mode = "absent" }
+"~/.local/bin/bws" = { mode = "absent" }
+"~/.config/fish/conf.d/70-lazy-load.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/keychain.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/wsl.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/45-brew.fish" = { mode = "absent" }
+"~/.claude/hooks/session" = { mode = "absent" }
+"~/.claude/commands" = { mode = "absent" }
+"~/Library/LaunchAgents/com.headroom.proxy.plist" = { mode = "absent" }
+"~/Library/LaunchAgents/com.mnemosyne.mcp.plist" = { mode = "absent" }
+"~/.config/fish/conf.d/46-graft.fish" = { mode = "absent" }
+"~/.config/fish/functions/__clawd_onboard.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/30-utilities.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/80-bitwarden-ssh.fish" = { mode = "absent" }
+"~/.config/fish/conf.d/80-fzf-tab-config.fish" = { mode = "absent" }
+"~/.local/bin/lazygit" = { mode = "absent" }
+"~/.local/bin/zoxide" = { mode = "absent" }
+"~/.local/bin/plannotator" = { mode = "absent" }
+"~/.config/herdr" = { mode = "absent" }
+"~/.claude/hooks/herdr-agent-state.sh" = { mode = "absent" }
+"~/.local/bin/plannotator-browser" = { mode = "absent" }
+"~/.local/bin/clawd-browser" = { mode = "absent" }
+"~/.local/bin/clawd-browser-listener" = { mode = "absent" }
+"~/Library/LaunchAgents/dev.axnic.clawd-browser.plist" = { mode = "absent" }
+"~/.config/kitty/kitty.conf" = { mode = "absent" }
+"~/.local/bin/ocx" = { mode = "absent" }
+"~/.config/fish/functions/gotmp.fish" = { mode = "absent" }
+"~/.local/bin/clawd-buddy" = { mode = "absent" }
+"~/.local/share/clawd-buddy" = { mode = "absent" }
+"~/Library/LaunchAgents/dev.axnic.clawd-buddy.plist" = { mode = "absent" }
+"~/Applications/Clawd Buddy.app" = { mode = "absent" }

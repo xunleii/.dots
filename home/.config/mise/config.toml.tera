@@ -1,0 +1,26 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Mise - Global configuration
+#
+# -----------------------------------------------------------------------------
+# Language runtimes and per-module tools live in ~/.config/mise/conf.d/<module>/mise.toml
+# (deployed by each module). This file only holds what is shared by all of them.
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["terraform"]
+
+[env]
+MISE_DATA_DIR = "{{ vars.runtimes_root }}/mise"
+
+# PATH definition using mise's env._.path (prepended automatically)
+_.path = ["{{ env.HOME }}/.local/bin"]
+
+[tools]
+# Fetched by mise itself (completions, task usage specs).
+usage = "latest"

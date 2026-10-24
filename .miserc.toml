@@ -1,0 +1,3 @@
+# Read by mise before any config: platform environments (unix, macos, macos-arm64, ...) are
+# active automatically, so each module's mise.macos.toml loads on macOS only.
+auto_env = true

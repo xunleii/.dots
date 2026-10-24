@@ -1,0 +1,44 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Mise - Base (macOS only)
+#
+# Loaded automatically on macOS (platform environment): general casks and GNU userland formulas.
+#
+# Sections used here:
+#   [tasks.*]: small idempotent scripts, run by the hooks below (or `mise run <name>`).
+#   [bootstrap.hooks.*]: commands run around a bootstrap phase; they run EVERY time, keep them safe to repeat.
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+# -----------------------------------------------------------------------------
+
+[tasks.check-volumes]
+description = "Abort early when /Volumes/Runtimes or /Volumes/Spaces is not mounted"
+run = "scripts/check-volumes.sh"
+
+[bootstrap.hooks.pre-packages]
+run = ["mise run check-volumes"]
+
+[bootstrap.packages]
+"brew:bash" = "latest"  # system bash is 3.2, unusable
+"brew:coreutils" = "latest"  # GNU file/shell/text utils
+"brew:findutils" = "latest"  # GNU find, xargs, locate
+"brew:gawk" = "latest"  # GNU awk
+"brew:gnu-sed" = "latest"  # GNU sed
+"brew:grep" = "latest"  # GNU grep/egrep/fgrep
+"brew-cask:betterdisplay" = "latest"  # external display management
+"brew-cask:raycast" = "latest"  # launcher / productivity toolbox
+"brew-cask:appcleaner" = "latest"  # thorough application uninstaller
+"brew-cask:rar" = "latest"  # RAR archive tool
+"brew-cask:rsyncui" = "latest"  # GUI for rsync
+"brew-cask:little-snitch" = "latest"  # outbound application firewall
+"brew-cask:slack" = "latest"  # team chat
+"brew-cask:google-chrome" = "latest"  # web browser
+"brew-cask:tailscale-app" = "latest"  # WireGuard-based mesh VPN
+"brew-cask:zen" = "latest"  # Gecko-based browser
+"brew-cask:octarine" = "latest"  # markdown note-taking app
+"brew-cask:deezer" = "latest"  # music streaming
+"brew-cask:vlc" = "latest"  # media player
