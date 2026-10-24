@@ -216,9 +216,10 @@ usage = "latest"
 
 # Retired targets: files and dirs an earlier setup deployed and that must not stay. `absent`
 # removes them on the next apply (a no-op once gone), so old machines converge without manual cleanup.
-"~/.claude/commands" = { mode = "absent" }
+# Files and symlinks only: `absent` errors on a directory (and blocks every diff/apply). Retired
+# directories to delete by hand: ~/.config/opencode, ~/.config/ghostty/shaders, ~/.config/herdr,
+# ~/.claude/hooks/session, ~/.claude/commands, ~/.local/share/clawd-buddy, ~/Applications/Clawd Buddy.app.
 "~/.claude/hooks/herdr-agent-state.sh" = { mode = "absent" }
-"~/.claude/hooks/session" = { mode = "absent" }
 "~/.config/fish/conf.d/30-utilities.fish" = { mode = "absent" }
 "~/.config/fish/conf.d/45-brew.fish" = { mode = "absent" }
 "~/.config/fish/conf.d/46-graft.fish" = { mode = "absent" }
@@ -229,10 +230,7 @@ usage = "latest"
 "~/.config/fish/conf.d/wsl.fish" = { mode = "absent" }
 "~/.config/fish/functions/__clawd_onboard.fish" = { mode = "absent" }
 "~/.config/fish/functions/gotmp.fish" = { mode = "absent" }
-"~/.config/ghostty/shaders" = { mode = "absent" }
-"~/.config/herdr" = { mode = "absent" }
 "~/.config/kitty/kitty.conf" = { mode = "absent" }
-"~/.config/opencode" = { mode = "absent" }
 "~/.local/bin/bws" = { mode = "absent" }
 "~/.local/bin/clawd-browser" = { mode = "absent" }
 "~/.local/bin/clawd-browser-listener" = { mode = "absent" }
@@ -245,8 +243,6 @@ usage = "latest"
 "~/.local/bin/plannotator-browser" = { mode = "absent" }
 "~/.local/bin/zai" = { mode = "absent" }
 "~/.local/bin/zoxide" = { mode = "absent" }
-"~/.local/share/clawd-buddy" = { mode = "absent" }
-"~/Applications/Clawd Buddy.app" = { mode = "absent" }
 "~/Library/LaunchAgents/com.headroom.proxy.plist" = { mode = "absent" }
 "~/Library/LaunchAgents/com.mnemosyne.mcp.plist" = { mode = "absent" }
 "~/Library/LaunchAgents/dev.axnic.clawd-browser.plist" = { mode = "absent" }
