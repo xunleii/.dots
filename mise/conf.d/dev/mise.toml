@@ -1,0 +1,29 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module dev
+#
+# Editors, terminal and language toolchains.
+# Always loaded, every OS. Sources are relative to this folder (home/ tree).
+# Global tools/env go to ~/.config/mise/conf.d/dev/mise.toml (a dotfile of this module).
+#
+# Sections used here:
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+#   [dotfiles]: files to deploy into $HOME. `symlink` points back into this repo (edit here, no re-apply),
+#   `template` renders a *.tera file (Tera), `absent` removes a retired file.
+# -----------------------------------------------------------------------------
+
+[bootstrap.packages]
+"brew:cmake" = "latest"  # cross-platform build system generator
+"brew:neovim" = "latest"  # Vim-fork text editor
+"brew:uv" = "latest"  # Python package/project manager
+
+[dotfiles]
+"~/.config/ghostty" = { source = "home/.config/ghostty", mode = "symlink-each" }
+"~/.config/zed/settings.json" = { source = "home/.config/zed/settings.json", mode = "symlink" }
+"~/.config/mise/conf.d/dev/mise.toml" = { source = "home/.config/mise/conf.d/dev/mise.toml.tera", mode = "template" }
+"~/.config/fish/completions/kubectl.fish" = { source = "home/.config/fish/completions/kubectl.fish", mode = "symlink" }
