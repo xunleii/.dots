@@ -10,7 +10,7 @@ only that:
 | Method | Source of truth |
 | --- | --- |
 | Homebrew formulae & casks | `[bootstrap.packages]` in [`config.toml`](../config.toml) / [`config.macos.toml`](../config.macos.toml) (base), `conf.d/<module>/mise.toml` / `mise.macos.toml` (fish, git, ssh, claude, dev; casks in the macOS file) or `conf.d/machines/mise.<profile>.toml` (personal, radiofrance) — commented, one line per app |
-| Language runtimes, npm/pipx CLIs, GitHub-release binaries | `[tools]` of each module's `conf.d/<module>/mise.toml` (dev: runtimes; git: czg; claude: claude-swap, ccstatusline, plannotator; fish on Linux: fish itself); `usage` in [`config.toml`](../config.toml) |
+| Language runtimes, npm/pipx CLIs, GitHub-release binaries | `[tools]` of `config.toml` (go, node, rust, python, uv; `usage`) and of each module's `conf.d/<module>/mise.toml` (dev: jqp, crane, doggo, rage; git: czg; claude: claude-swap, ccstatusline, plannotator; fish on Linux: fish itself) |
 
 To see what's actually on the machine right now, ask the machine:
 

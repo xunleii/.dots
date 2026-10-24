@@ -144,7 +144,7 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 | `git` | gitconfig, signing, lazygit, `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: Secretive, Bitwarden |
 | `claude` | `~/.claude`, nono, `clawd` / `nono-profile` functions; macOS: sleep hooks |
-| `dev` | ghostty, zed, language runtimes and toolchain env |
+| `dev` | ghostty, zed, orbstack, kubectl completion, dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
 | `personal`, `radiofrance` | machine files in `conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
 
 Machine files load only through `-E` (or `MISE_ENV` / `miserc.local.toml`).
@@ -168,7 +168,7 @@ Where each thing is installed from — and therefore where to add a new one:
 | Method | Source of truth | For |
 | --- | --- | --- |
 | Homebrew | `[bootstrap.packages]` in `config.toml` / `config.macos.toml` (base) or the module / machine file that needs it (`conf.d/...`) | almost everything, formulae and casks |
-| mise | `[tools]` of `conf.d/<module>/mise.toml`; base `config.toml` | language runtimes (dev), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
+| mise | `[tools]` of `conf.d/<module>/mise.toml`; base `config.toml` | language runtimes and `uv` (base), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
 
 Anything **not** declared in `[bootstrap.packages]` of an active file is uninstalled by the
 post-packages hook (`persist-profile`, then `mise bootstrap packages prune --yes`) on every bootstrap.
@@ -185,8 +185,8 @@ manual, GUI-only setup step after install.
 `mise` is the single tool behind this repo: `mise bootstrap` installs packages
 and runs the setup hooks, `mise dot` symlinks the files under each module's `home/` into
 `$HOME` (only `*.tera` files are rendered and copied), and it manages language runtimes (Go, Node, Python, Rust)
-and the few CLIs that only ship via npm/pipx. The `[env]` block of its config
-redirects every toolchain cache onto `/Volumes/Runtimes`. Per-project overrides
+and the few CLIs that only ship via npm/pipx. The base `[env]` block
+(`config.toml`) redirects every toolchain cache onto `/Volumes/Runtimes`. Per-project overrides
 go in the project's own `mise.toml`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)
 for the cheat sheet used when editing this repo.
 

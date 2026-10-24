@@ -75,7 +75,7 @@ hardcode `/Volumes/...` in a template, a fish function or a script. Neither is
 guaranteed to be mounted (`check-volumes` refuses to run without them).
 
 - `/Volumes/Runtimes` — every toolchain, cache and package dir (`MISE_DATA_DIR` in `config.toml` and the
-  `[env]` of modules, e.g. dev's toolchain env, redirect them all there).
+  `[env]` (GOPATH, CARGO_HOME, npm and pip/uv caches...) redirect them all there).
 - `/Volumes/Spaces/<Space>/<host>/<user>/<repo>` — all working copies. Spaces
   are `Lab`, `Work`, `OSS`, `Personal`.
 
@@ -108,10 +108,13 @@ bare `brew install`, it gets reverted. Edit the right `config*.toml` / `conf.d/`
 Pick the narrowest one that works, in this order: `[bootstrap.packages]` in
 `config.toml` / `config.macos.toml` or a module (`brew`, `brew-cask`) → mise
 `[tools]` in the owning module's `conf.d/<m>/mise.toml` (modules are loaded
-globally, so these are on PATH everywhere; runtimes in `dev`, `czg` in `git`,
+globally, so these are on PATH everywhere; `czg` in `git`,
 claude-swap / ccstatusline / plannotator in `claude`, fish on Linux in
-`fish/mise.linux.toml`). The base `config.toml` only holds `usage`, settings,
-vars, `MISE_DATA_DIR` and the `~/.local/bin` PATH.
+`fish/mise.linux.toml`). The base `config.toml` holds the language runtimes and `uv` (go, node,
+rust, python, uv: always installed, since the npm:, pipx:, cargo: and go: tools of
+every module depend on them), `usage`, settings, vars, the toolchain cache/install
+env (`MISE_DATA_DIR`, GOPATH, CARGO_HOME, npm_config_*, PIP_CACHE_DIR, UV_CACHE_DIR...)
+and the `~/.local/bin` plus node/go/cargo bin PATH entries.
 
 Never add a `curl` fetch to a shell startup file: vendor the file as a dotfile
 instead (e.g. `kubectl.fish` in the `dev` module).

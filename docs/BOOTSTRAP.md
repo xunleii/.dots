@@ -41,12 +41,12 @@ templates use `| default(value="")`.
 
 | Module | Holds |
 | --- | --- |
-| base (`config.toml`, `config.macos.toml`) | volume vars, `usage`, `check-volumes` (macOS file), mise shell activation, general packages, GNU userland and general casks (macOS), retired-target `absent` entries |
+| base (`config.toml`, `config.macos.toml`) | volume vars, language runtimes (go, node, rust, python) and `uv`, toolchain cache/install env, `usage`, `check-volumes` (macOS file), mise shell activation, general packages, GNU userland and general casks (macOS), retired-target `absent` entries |
 | `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish`; Linux: fish itself as a tool (`mise.linux.toml`) |
 | `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
 | `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
-| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), language runtimes and toolchain env |
+| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim, orbstack |
 | `personal`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (personal only) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
