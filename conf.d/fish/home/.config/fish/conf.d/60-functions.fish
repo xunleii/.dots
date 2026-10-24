@@ -12,7 +12,7 @@
 
 # --- Banner
 # -----------------------------------------------------------------------------
-# `dots-banner` is deployed from scripts/banner.sh (see mise.toml). Same argument
+# `dots-banner` is deployed from scripts/banner.sh (see config.toml). Same argument
 # order as the former banner: TITLE SUBTITLE.
 if command -sq dots-banner
   function dots_banner --description "Generate personal file header"

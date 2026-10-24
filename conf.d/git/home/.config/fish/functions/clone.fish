@@ -1,6 +1,6 @@
 # Clones into the Space you're standing in, at <host>/<user>/<repo> — the
 # layout documented in docs/SPACES.md. $SPACES_ROOT / $SPACES come from
-# conf.d/40-environment.fish.tera, which reads them from mise.toml [vars], so
+# conf.d/40-environment.fish.tera, which reads them from config.toml [vars], so
 # nothing here hardcodes a path or a Space name.
 
 function clone --description "git clone into the current Space, at <host>/<user>/<repo>"

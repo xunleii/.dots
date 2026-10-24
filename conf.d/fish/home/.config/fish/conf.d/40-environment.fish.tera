@@ -18,7 +18,7 @@ set --global --export GIT_EDITOR $EDITOR
 
 # --- Machine layout (see docs/SPACES.md)
 # -----------------------------------------------------------------------------
-# Both roots are separate volumes. Names come from [vars] in mise.toml, so fish
+# Both roots are separate volumes. Names come from [vars] in config.toml, so fish
 # and the docs can't drift apart — add a Space there, not here.
 set --global --export RUNTIMES_ROOT {{ vars.runtimes_root | json_encode }}
 set --global --export SPACES_ROOT {{ vars.spaces_root | json_encode }}
