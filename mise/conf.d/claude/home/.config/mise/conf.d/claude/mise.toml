@@ -1,0 +1,25 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Mise - Claude tools
+#
+# -----------------------------------------------------------------------------
+
+# Deployed to ~/.config/mise/conf.d/claude/mise.toml by the claude module.
+[tools]
+"pipx:claude-swap" = "latest"
+
+# Claude Code status line + hook renderer (see settings.json). Not on Homebrew; mise
+# installs it once and puts `ccstatusline` on PATH, so no hook or status-line refresh
+# has to resolve a package at call time.
+"npm:ccstatusline" = "latest"
+
+# Plan/diff annotation UI driven by the plannotator-* Claude Code skills. Upstream only
+# ships a `curl | bash` installer and bare GitHub release binaries, so the binary goes
+# through ubi, which picks the darwin/arm64 asset. NOTE: it can self-update in place;
+# `mise install` decides the version from now on, so re-run it after an in-place update.
+"ubi:backnotprop/plannotator" = "latest"

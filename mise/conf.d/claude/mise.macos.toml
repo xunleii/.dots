@@ -1,0 +1,26 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module claude (macOS only)
+#
+# Loaded automatically on macOS: casks and macOS-specific files of this module.
+#
+# Sections used here:
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+#   [dotfiles]: files to deploy into $HOME. `symlink` points back into this repo (edit here, no re-apply),
+#   `template` renders a *.tera file (Tera), `absent` removes a retired file.
+# -----------------------------------------------------------------------------
+
+[bootstrap.packages]
+"brew-cask:claude" = "latest"  # Anthropic's Claude desktop app
+"brew-cask:claude-code" = "latest"  # terminal-based AI coding assistant
+"brew-cask:steipete/tap/codexbar" = "latest"  # menu bar usage/status monitor, used here for Claude @trust
+"brew-cask:terminal-browser" = "latest"  # Kitty-graphics web browser in the terminal, driven by its Claude plugin
+
+[dotfiles]
+"~/.claude/hooks/per-command/allow-sleep.sh" = { source = "home/.claude/hooks/per-command/allow-sleep.sh", mode = "symlink" }
+"~/.claude/hooks/per-command/prevent-sleep.sh" = { source = "home/.claude/hooks/per-command/prevent-sleep.sh", mode = "symlink" }

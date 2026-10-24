@@ -25,20 +25,15 @@
             "~/.config/gh", // gh CLI auth/config, for PR/issue operations
             "~/.config/mise/", // mise tool-version pins
             "~/.gitignore", // global gitignore (git core.excludesfile)
-            "~/.toolhive/", // ToolHive MCP server manager state
         ],
         "suppress_save_prompt": ["~/", "~/Library/Application Support/"],
     },
     "platform_overrides": {
         "macos": {
             "filesystem": {
-                // Clawd Buddy: the sandbox can't send Apple Events to Ghostty, so
-                // `clawd-buddy --browser` talks to the daemon through this socket instead
-                "unix_socket": ["~/.local/state/clawd-buddy.sock"],
                 // external volume hosting mise-installed runtimes (node/go/rust/python, see PATH)
                 "allow": [
                     "/Volumes/Runtimes/",
-                    "~/Applications/Clawd Buddy.app/", // clawd-buddy client binary (symlinked in ~/.local/bin)
                     // GitButler (`but` CLI): project registry and settings.json (the latter
                     // sits in the sibling gitbutler/ dir; `but` fails with EEXIST if it can't stat it)
                     "~/Library/Application Support/com.gitbutler.app/",

@@ -32,10 +32,18 @@
         ],
         "allow_file": [
             "$SSH_AUTH_SOCK", // whichever ssh-agent is active for this run
-            // Secretive's agent, explicit path per nono's own docs (belt-and-suspenders
-            // alongside $SSH_AUTH_SOCK — not swept by any deny group, so no bypass_protection needed)
-            "~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh",
         ],
         "bypass_protection": ["~/.ssh/allowed_signers", "~/.ssh/config", "~/.ssh/config.d/", "~/.ssh/known_hosts"],
+    },
+    "platform_overrides": {
+        "macos": {
+            "filesystem": {
+                "allow_file": [
+                    // Secretive's agent, explicit path per nono's own docs (belt-and-suspenders
+                    // alongside $SSH_AUTH_SOCK — not swept by any deny group, so no bypass_protection needed)
+                    "~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh",
+                ],
+            },
+        },
     },
 }

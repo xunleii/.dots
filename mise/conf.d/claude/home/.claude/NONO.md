@@ -2,7 +2,7 @@
 
 Sessions run inside a nono sandbox (Landlock/Seatbelt). When a Bash command is denied and the
 built-in nono-sandbox skill's quick fix would normally be `nono run --allow <path> -- claude`,
-prefer `clawd` instead — it's the user's own fish function (`xunleii/dots` chezmoi repo,
+prefer `clawd` instead — it's the user's own fish function (`xunleii/dots` repo,
 `functions/clawd.fish`) wrapping `nono run --profile <per-repo profile> --allow-cwd -- claude`.
 
 `clawd` has **no direct `--allow <path>` flag**. The equivalent is:

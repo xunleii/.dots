@@ -36,6 +36,13 @@ if [ "${1:-}" = "--self-test" ]; then
     exit 0
 fi
 
+# gitleaks ships with the claude module (brew:gitleaks). Without it nothing is redacted,
+# so say so instead of failing open silently.
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "gitleaks-redact: gitleaks not found, secrets are NOT redacted" >&2
+    exit 0
+fi
+
 input=$(cat)
 event=$(jq -r '.hook_event_name // empty' <<<"$input")
 
@@ -43,6 +50,7 @@ case "$event" in
 PreToolUse)
     blob="$tmpdir/input.json"
     jq -c '.tool_input' <<<"$input" >"$blob"
+    [ -s "$blob" ] || exit 0
     before=$(cat "$blob")
     redact "$blob"
     [ "$before" = "$(cat "$blob")" ] && exit 0
@@ -52,6 +60,7 @@ PreToolUse)
 PostToolUse)
     blob="$tmpdir/output.txt"
     jq -r '.tool_output // empty' <<<"$input" >"$blob"
+    [ -s "$blob" ] || exit 0
     before=$(cat "$blob")
     redact "$blob"
     [ "$before" = "$(cat "$blob")" ] && exit 0

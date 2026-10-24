@@ -1,31 +1,3 @@
-{{- $work := get . "work" -}}
-{{- /* Plugins always on, plus work-only ones added below. */ -}}
-{{- $enabledPlugins := dict
-      "ponytail@ponytail" true
-      "nono@nolabs-ai" true
-      "superpowers@claude-plugins-official" true
-      "code-review@claude-plugins-official" true
-      "skill-creator@claude-plugins-official" true
-      "claude-md-management@claude-plugins-official" true
-      "remember@claude-plugins-official" true
-      "plannotator@plannotator" true
-      "waza@waza" true
-      "understand-anything@understand-anything" true
-      "claude-mermaid@claude-mods" true
-      "terminal-browser@terminal-browser" true
--}}
-{{- if $work -}}
-{{- $_ := set $enabledPlugins "atlassian@claude-plugins-official" true -}}
-{{- end -}}
-{{- /*
-Key order below matches what Claude Code itself writes back on every touch
-(model change, plugin toggle, ccstatusline's own `--hook` installer, …), not
-just taste — chezmoi apply is a no-op against that rewrite only if the order
-matches, otherwise `chezmoi diff` shows the same reshuffle every time. Same
-reason the two ccstatusline-managed hook entries below carry no extra marker
-key: Claude's settings writer drops anything it doesn't know about, so a
-`_tag` field here just churns forever instead of surviving.
-*/ -}}
 {
   "permissions": {
     "defaultMode": "auto",
@@ -41,6 +13,7 @@ key: Claude's settings writer drops anything it doesn't know about, so a
     "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
   },
   "hooks": {
+{%- if os() == "macos" %}
     "Stop": [
       {
         "matcher": ".*",
@@ -52,7 +25,9 @@ key: Claude's settings writer drops anything it doesn't know about, so a
         ]
       }
     ],
+{%- endif %}
     "UserPromptSubmit": [
+{%- if os() == "macos" %}
       {
         "matcher": ".*",
         "hooks": [
@@ -62,6 +37,7 @@ key: Claude's settings writer drops anything it doesn't know about, so a
           }
         ]
       },
+{%- endif %}
       {
         "hooks": [
           {
@@ -118,7 +94,7 @@ key: Claude's settings writer drops anything it doesn't know about, so a
     "padding": 0,
     "refreshInterval": 10
   },
-  "enabledPlugins": {{ $enabledPlugins | toJson }},
+  "enabledPlugins": {"claude-md-management@claude-plugins-official":true,"claude-mermaid@claude-mods":true,"code-review@claude-plugins-official":true,"nono@nolabs-ai":true,"plannotator@plannotator":true,"ponytail@ponytail":true,"remember@claude-plugins-official":true,"skill-creator@claude-plugins-official":true,"superpowers@claude-plugins-official":true,"terminal-browser@terminal-browser":true,"understand-anything@understand-anything":true,"waza@waza":true},
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
