@@ -1,0 +1,23 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Fish - Tool integrations
+#
+# -----------------------------------------------------------------------------
+
+
+# --- Atuin (shell history)  — binds Ctrl+R and Up
+# -----------------------------------------------------------------------------
+if command -sq atuin
+  atuin init fish | source
+end
+
+# --- Zoxide (smarter cd)  — provides `z` and `zi`
+# -----------------------------------------------------------------------------
+if command -sq zoxide
+  zoxide init fish | source
+end

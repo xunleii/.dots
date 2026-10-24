@@ -1,0 +1,30 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                              Fish - Keybindings
+#
+# -----------------------------------------------------------------------------
+
+
+# --- FZF Keybindings
+# -----------------------------------------------------------------------------
+if command -sq fzf_configure_bindings
+  # --history left unbound: atuin owns Ctrl+R (see 25-tools.fish)
+  fzf_configure_bindings --directory=\cf --git_log=\cg --git_status=\cs --history=   # [Ctrl+F] Find file in directory
+                                                                                     # [Ctrl+G] Find file in git history
+                                                                                     # [Ctrl+S] Find file in git status
+end
+
+# --- Fifc (fzf-powered Tab completion)
+# -----------------------------------------------------------------------------
+# Defaults are fullscreen + fd with no depth limit (searches the whole subtree
+# on every <Tab>). Pin an inline height and cap directory listing to the
+# current level — type a path segment + Tab to descend, same as stock fish.
+if functions -q fifc
+  set --global --export fifc_custom_fzf_opts --height=40%
+  set --global --export fifc_fd_opts --max-depth 1
+end

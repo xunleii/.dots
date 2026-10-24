@@ -1,0 +1,84 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                        Fish - Aliases & Abbreviations
+#
+# -----------------------------------------------------------------------------
+
+
+# --- K9s (Kubernetes CLI)
+# -----------------------------------------------------------------------------
+if command -sq k9s
+  abbr --add --global k9s k9s --readonly
+  abbr --add --global k9s! k9s
+end
+
+# --- Kubectl (Kubernetes CLI)
+# -----------------------------------------------------------------------------
+if command -sq kubectl
+  # Completions are a vendored dotfile (dev module: completions/kubectl.fish),
+  # not curl'd at shell startup.
+  abbr --add --global k kubectl
+  abbr --add --global kn kubectl config set-context --current --namespace
+  abbr --add --global kx kubectl config use-context
+end
+
+# --- Git
+# -----------------------------------------------------------------------------
+abbr --add --global g git
+
+abbr --add --global gl git pull
+abbr --add --global gp git push
+abbr --add --global gpf git push --force-with-lease
+abbr --add --global grb git rebase
+abbr --add --global grba git rebase --abort
+abbr --add --global grbc git rebase --continue
+abbr --add --global gst git status
+abbr --add --global gs git switch
+abbr --add --global gsc git switch --create
+
+# --- Grep
+# -----------------------------------------------------------------------------
+alias grep "grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}"
+
+# --- Lazygit
+# -----------------------------------------------------------------------------
+if command -sq lazygit
+  abbr --add --global lg lazygit
+end
+
+# --- Ls (file listing)
+# -----------------------------------------------------------------------------
+alias ls "ls --color=auto"
+abbr --add --global ll ls -lh
+abbr --add --global la ls -lah
+
+# --- Eza (modern ls replacement)
+# -----------------------------------------------------------------------------
+if command -sq eza
+  abbr --add --global eza "eza --icons --grid"
+end
+
+# --- Procs (modern ps)
+# -----------------------------------------------------------------------------
+if command -sq procs
+  alias ps procs
+end
+
+# --- Hexyl (hex viewer)
+# -----------------------------------------------------------------------------
+if command -sq hexyl
+  alias hex hexyl
+end
+
+# --- Nono (sandboxed `claude`) → see functions/clawd.fish (per-repo profile picker)
+
+# --- Vim/Neovim
+# -----------------------------------------------------------------------------
+if command -sq nvim
+  abbr --add --global vim nvim
+end

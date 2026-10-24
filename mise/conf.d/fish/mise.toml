@@ -1,0 +1,59 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module fish
+#
+# Shell, prompt, history, fisher and completions.
+# Always loaded, every OS. Sources are relative to this folder (home/ tree).
+# Global tools/env go to ~/.config/mise/conf.d/fish/mise.toml (a dotfile of this module).
+#
+# Sections used here:
+#   [tasks.*]: small idempotent scripts, run by the hooks below (or `mise run <name>`).
+#   [bootstrap.hooks.*]: commands run around a bootstrap phase; they run EVERY time, keep them safe to repeat.
+#   [bootstrap.packages]: Homebrew formulas/casks to install; anything not declared by a loaded file is pruned after install.
+#   [dotfiles]: files to deploy into $HOME. `symlink` points back into this repo (edit here, no re-apply),
+#   `template` renders a *.tera file (Tera), `absent` removes a retired file.
+# -----------------------------------------------------------------------------
+
+[tasks.fish-plugins]
+description = "fisher update, only when fish_plugins changed"
+# This hook runs before the `tools` phase and right after packages, when Homebrew's bin dir may not be
+# in mise's PATH yet. Look for fish in the usual Homebrew prefixes first; if it is still missing
+# (Linux without brew), let mise fetch a static build for this one run.
+run = """
+PATH="/opt/homebrew/bin:/usr/local/bin:/home/linuxbrew/.linuxbrew/bin:$PATH"
+if command -v fish >/dev/null 2>&1; then
+  fish scripts/fish-plugins.fish
+else
+  mise exec aqua:fish-shell/fish-shell@latest -- fish scripts/fish-plugins.fish
+fi
+"""
+
+[bootstrap.hooks.post-dotfiles]
+run = ["mise run fish-plugins"]
+
+[bootstrap.packages]
+"brew:fish" = "latest"  # interactive shell
+"brew:starship" = "latest"  # cross-shell prompt
+"brew:fzf" = "latest"  # fuzzy finder
+"brew:atuin" = "latest"  # shell history sync/search
+"brew:zoxide" = "latest"  # frecency-based `cd` replacement
+
+[dotfiles]
+"~/.config/atuin" = { source = "home/.config/atuin", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "home/.config/starship.toml", mode = "symlink" }
+"~/.config/fish/.gitignore" = { source = "home/.config/fish/.gitignore", mode = "symlink" }
+"~/.config/fish/fish_plugins" = { source = "home/.config/fish/fish_plugins", mode = "symlink" }
+"~/.config/fish/functions/fish_greeting.fish" = { source = "home/.config/fish/functions/fish_greeting.fish", mode = "symlink" }
+"~/.config/fish/completions/fd.fish" = { source = "home/.config/fish/completions/fd.fish", mode = "symlink" }
+"~/.config/fish/conf.d/00-base.fish" = { source = "home/.config/fish/conf.d/00-base.fish", mode = "symlink" }
+"~/.config/fish/conf.d/10-keybindings.fish" = { source = "home/.config/fish/conf.d/10-keybindings.fish", mode = "symlink" }
+"~/.config/fish/conf.d/20-prompt.fish" = { source = "home/.config/fish/conf.d/20-prompt.fish", mode = "symlink" }
+"~/.config/fish/conf.d/25-tools.fish" = { source = "home/.config/fish/conf.d/25-tools.fish", mode = "symlink" }
+"~/.config/fish/conf.d/50-aliases.fish" = { source = "home/.config/fish/conf.d/50-aliases.fish", mode = "symlink" }
+"~/.config/fish/conf.d/60-functions.fish" = { source = "home/.config/fish/conf.d/60-functions.fish", mode = "symlink" }
+"~/.config/fish/conf.d/40-environment.fish" = { source = "home/.config/fish/conf.d/40-environment.fish.tera", mode = "template" }
