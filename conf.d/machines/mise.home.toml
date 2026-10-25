@@ -18,7 +18,7 @@
 
 [vars]
 # Commit address: the default from conf.d/git (GitHub noreply) applies, nothing to set here.
-# git_signingkey is machine-local, not here: `mise run --skip-tools setup-signing-key` (conf.d/git).
+# git_signingkey is machine-local, not here: `mise run dots:setup:signing:key` (conf.d/git).
 
 # =============================================================================
 # Packages

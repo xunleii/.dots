@@ -17,7 +17,7 @@
 #  - https://gist.github.com/tdd/470582
 #  - https://gist.github.com/pyrtsa/4148804
 
-{#- Identity comes from [vars]: git_name in config.toml, git_email in conf.d/git/mise.toml (radiofrance overrides it), git_signingkey in the gitignored conf.d/git/mise.local.toml (written by the setup-signing-key task; unset = no signing).
+{#- Identity comes from [vars]: git_name in config.toml, git_email in conf.d/git/mise.toml (radiofrance overrides it), git_signingkey in the gitignored conf.d/git/mise.local.toml (written by the dots:setup:signing:key task; unset = no signing).
     SSH pubkey type prefixes: ssh-ed25519/ssh-rsa, ecdsa-sha2-* (Secure Enclave keys, e.g. Secretive,
     are ECDSA — no "ssh-" prefix), and the sk-* FIDO/security-key variants. Anything else is treated
     as a GPG key ID. -#}

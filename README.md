@@ -8,7 +8,7 @@
 ### macOS
 
 **This repo targets macOS only.** Cross-platform is not a goal: `*.macos.toml`
-files hold the macOS casks and dotfiles, and `check-volumes` fails when the
+files hold the macOS casks and dotfiles, and `dots:check:volumes` fails when the
 Runtimes/Spaces volumes are missing on macOS. Nothing is portable beyond that,
 so on Linux fork it and adapt (see [AGENTS.md](AGENTS.md#macos-only)).
 
@@ -68,7 +68,7 @@ mkdir -p /Volumes/Spaces/{Lab,Work,OSS,Personal}
   developed on Linux expects. Swap it for `APFS` for the macOS default.
 - Different names or paths are fine — they're configurable in
   the `[vars]` table of `config.toml` (`runtimes_root`, `spaces_root`).
-- `mise bootstrap` fails in its `check-volumes` hook (`config.macos.toml`) when a volume is missing, so
+- `mise bootstrap` fails in its `dots:check:volumes` hook (`config.macos.toml`) when a volume is missing, so
   nothing is installed or written until both are mounted.
 
 ## Install
@@ -96,7 +96,7 @@ Caveats:
 - **`home` is the default profile** (`env = ["home"]` in `miserc.toml`); a
   home machine needs neither `-E` nor a local file. `-E` and
   `miserc.local.toml` replace that list, they do not add to it.
-- **`-E` is persisted automatically.** The `persist-profile` task (first
+- **`-E` is persisted automatically.** The `dots:persist:profile` task (first
   post-packages command) writes `env = ["radiofrance"]` to
   `~/.config/mise/miserc.local.toml` (gitignored) if absent, never overwriting
   it; later `mise bootstrap` / `mise dot ...` need no `-E`. To change the profile,
@@ -113,7 +113,7 @@ Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 Then the manual steps that have no CLI (see
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
-a Secure Enclave key, then run `mise run setup-signing-key` (pick the key with fzf; it writes
+a Secure Enclave key, then run `mise run dots:setup:signing:key` (pick the key with fzf; it writes
 `git_signingkey` to the gitignored `conf.d/git/mise.local.toml`) and `mise dot apply`.
 Until then commits are unsigned.
 

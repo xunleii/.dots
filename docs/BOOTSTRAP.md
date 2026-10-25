@@ -11,15 +11,16 @@ gone. Everything below is what to know when editing the setup.
 | Path | Role |
 | --- | --- |
 | `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, post-packages hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
-| `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (body in `scripts/`) |
+| `config.macos.toml` | macOS base: general casks, GNU userland, the `pre-packages` hook that runs `dots:check:volumes` (Runtimes/Spaces) |
 | `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
-| `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
-| `conf.d/git/scripts/` | `setup-signing-key.sh`, the body of the `setup-signing-key` task |
+| `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `dots:fish:plugins` toml task |
+| `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
+| `tasks/` | File tasks `dots/check/volumes` and `dots/persist/profile` (mise's global task dir) |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
-| `scripts/` | `check-volumes.sh`, `persist-profile.sh` (bodies of the base tasks); `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
+| `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task); `ui.sh` (output helper) and `volumes.sh` (`diskutil_field`, `require_apfs_volume`; sources `ui.sh`), both sourced by task scripts, see [Tasks](#tasks) |
 
 Every config file carries the dots banner and a header explaining its role and documenting its sections.
 Every `[dotfiles]` entry points into its own `home/` (module), or `scripts/` for `dots-banner`.
@@ -42,7 +43,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 
 | Module | Holds |
 | --- | --- |
-| base (`config.toml`, `config.macos.toml`) | volume vars, language runtimes (go, node, rust, python) and `uv`, toolchain cache/install env, `usage`, `check-volumes` (macOS file), mise shell activation, general packages, GNU userland and general casks (macOS), retired-target `absent` entries |
+| base (`config.toml`, `config.macos.toml`) | volume vars, language runtimes (go, node, rust, python) and `uv`, toolchain cache/install env, `usage`, `dots:check:volumes` hook (macOS file), mise shell activation, general packages, GNU userland and general casks (macOS), retired-target `absent` entries |
 | `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish`; Linux: fish itself as a tool (`mise.linux.toml`) |
 | `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
@@ -69,6 +70,16 @@ its `[dotfiles]` (`source = "home/..."`, relative to the module folder), put the
 files in `conf.d/<name>/home/`, then `mise trust` the files. Add a dotfile
 or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`.
 
+## Tasks
+
+- **Naming**: `dots:<area>:<action>` (`dots:check:volumes`, `dots:persist:profile`, `dots:setup:signing:key`, `dots:fish:plugins`); `:` is the separator.
+- **File tasks**: `tasks/` at the repo root (= `~/.config/mise/tasks`, mise's global task dir) and `conf.d/<name>/mise-tasks/` in a module (`.mise/tasks/` also works). The path gives the name, `/` becomes `:` (`tasks/dots/check/volumes` is `dots:check:volumes`). `conf.d/<m>/tasks/` is NOT discovered.
+- **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the preflight check (`dots:check:volumes`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
+- **Toml task**: only `dots:fish:plugins` (`conf.d/fish/mise.toml`, wrapper around `conf.d/fish/scripts/fish-plugins.fish`): it needs a Homebrew PATH preamble because fish does not exist yet in the hook phase.
+- **`scripts/ui.sh`**: sourced by task scripts; `ui_step` / `ui_ok` / `ui_warn` / `ui_fail` print coloured through `gum` when installed and on a tty, plain text otherwise (also if gum fails, or before Homebrew installs it). Tasks run quiet (no `[task] $ cmd` echo).
+- **Hooks** call tasks with `mise run --skip-tools <name>`, so no tool gets installed during bootstrap.
+- **Tool declaration**: a file task declares each non-system tool it uses (`fzf`, `gum`, ...) in its `#MISE` header, all on one line in the [inline-table form](https://mise.jdx.dev/tasks/file-tasks.html): `#MISE tools={fzf="latest", gum="latest"}` (or `#MISE tools={gum="latest"}`). A task that only reaches gum through `scripts/ui.sh` still declares it (output falls back to plain text without it). System commands (`ssh-add`, `diskutil`, `plutil`, `ps`, `sed`) are not declared. Since hooks use `--skip-tools`, declared tools are not installed there: they must exist another way (Homebrew `brew:gum`, or the module's global `[tools]` for `fzf`).
+
 ## Fresh machine
 
 Needs `git`.
@@ -91,7 +102,7 @@ Caveats:
 - **`$MISE_CONFIG_DIR` must be empty or absent.** Empty an existing populated
   dir first (`--adopt` on a populated dir is unverified). In containers where
   `MISE_CONFIG_DIR=MISE_DATA_DIR=/mise`, set `MISE_CONFIG_DIR=$HOME/.config/mise`.
-- **`-E` is persisted automatically.** The `persist-profile` task (first
+- **`-E` is persisted automatically.** The `dots:persist:profile` task (first
   post-packages command) writes `~/.config/mise/miserc.local.toml` (gitignored)
   if it does not exist, e.g. `env = ["radiofrance"]`; it never overwrites it and
   does nothing without `-E`. It replaces the `miserc.toml` default too. Later `mise dot apply|diff` and `mise bootstrap`
@@ -99,7 +110,7 @@ Caveats:
   failed before the post-packages hook, no file is written: rerun with `-E` or
   create it manually, else a bare `mise bootstrap` falls back to `home`
   (home packages added, the omitted profile's packages not installed).
-- **How `persist-profile` finds `-E`.** Workaround: hooks and templates do not
+- **How `dots:persist:profile` finds `-E`.** Workaround: hooks and templates do not
   receive the `-E` value (`MISE_ENV` stays empty in a hook, even with `-E`).
   The task uses `$MISE_ENV` if set, else walks up the process tree and reads
   `-E` / `--env` from the command line of the parent `mise bootstrap` (comma
@@ -112,20 +123,20 @@ Caveats:
 
 `mise bootstrap` order, with this repo's hooks (hooks of all active modules run):
 
-1. `pre-packages` (`config.macos.toml`): `check-volumes` (body in `scripts/check-volumes.sh`, run with `--skip-tools` so no tool is installed yet)
+1. `pre-packages` (`config.macos.toml`): `dots:check:volumes` (run with `--skip-tools` so no tool is installed yet)
 2. `[bootstrap.packages]` (Homebrew)
-3. `post-packages`: `persist-profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
+3. `post-packages`: `dots:persist:profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
 4. `[dotfiles]`
-5. `post-dotfiles` (fish module): `fish-plugins`
+5. `post-dotfiles` (fish module): `dots:fish:plugins`
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
 
-`check-volumes` is a hard
-failure (macOS only, task body in `scripts/check-volumes.sh`, no `uname` guard): it aborts before anything is installed unless both
+`dots:check:volumes` is a hard
+failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
-refused). `/nix` gets the same check when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
+refused). `/nix` is checked by its own task, `dots:check:nix` (`conf.d/nix/mise-tasks/dots/check/nix`, nix module hook, runs first), only when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
 sets `nix = "true"`): `mise -E home,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
-replaces the default, so list the machine profile too). Without it, `/nix` is not checked.
+replaces the default, so list the machine profile too). Without it, `dots:check:nix` does nothing (`/nix not checked`), so it is safe on every machine.
 
 ## Identity
 
@@ -137,7 +148,7 @@ purpose since it ends up in every commit.
   which loads after `conf.d` and would override machine files); `radiofrance`
   overrides it with the work address. `home` and no `-E` inherit the default.
 - `git_signingkey`: not in the repo. After creating the key in Secretive, run
-  `mise run setup-signing-key` (picks from `ssh-add -L`, writes
+  `mise run dots:setup:signing:key` (picks from `ssh-add -L`, writes
   the gitignored `conf.d/git/mise.local.toml`), then `mise dot apply`; rerun to change it.
   Unset means no signing config at all (no `signingkey`, `[gpg]` or `gpgsign`; empty `allowed_signers`).
 
@@ -148,7 +159,7 @@ purpose since it ends up in every commit.
 | `promptStringOnce` | plain `[vars]` (git identity), machine files for per-machine values |
 | `.chezmoidata.yaml` | `[vars]` (also exported as `MISE_VAR_*` via `[env]`) |
 | `banner.tmpl` | `scripts/banner.sh`, deployed as `~/.local/bin/dots-banner` (no task). Tera in mise 2026.10 has no include/import (`{% include %}` gives "Unknown template", `{% import %}` gives "Unknown tag"); `exec()` works |
-| `run_onchange_*` | tasks wired as bootstrap hooks. They run every time, so they must be idempotent: `fish-plugins` checksums `fish_plugins` |
+| `run_onchange_*` | tasks wired as bootstrap hooks. They run every time, so they must be idempotent: `dots:fish:plugins` checksums `fish_plugins` |
 | `.chezmoiexternal` | mise tools (`usage`, in `config.toml`) + vendored `kubectl.fish` dotfile (dev module); mise itself comes from <https://mise.run> |
 | `.chezmoiremove` | `{ mode = "absent" }` entries in `[dotfiles]` |
 | `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`conf.d/claude/home/.claude/SOUL.md`) |

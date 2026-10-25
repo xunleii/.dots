@@ -66,7 +66,7 @@ _.path = [
 ]
 
 # [vars] exported as environment variables, for scripts and tasks that cannot read Tera
-# (the check-volumes task in config.macos.toml).
+# (the dots:check:volumes task).
 # Each toolchain's cache/install dir, redirected onto the runtimes volume (one block per runtime
 # declared in [tools] below).
 npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"
@@ -87,31 +87,22 @@ MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
 MISE_VAR_NIX = "{{ vars.nix | default(value=\"\") }}"
 
 # =============================================================================
-# Tasks
-# =============================================================================
-# Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
-
-[tasks.persist-profile]
-description = "Remember the machine profile (-E <profile>) in miserc.local.toml, once"
-# Why and how: see the script. Absolute path, so the task does not depend on the working directory.
-run = "sh ${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/persist-profile.sh"
-
-# =============================================================================
 # Bootstrap
 # =============================================================================
 # What `mise bootstrap` does around its phases: shell activation and hooks.
 # Hooks run EVERY time, so keep them safe to repeat.
 
 # Bootstrap: packages -> dotfiles -> tools (see `mise bootstrap --help`). The macOS-only volume
-# check (pre-packages hook) lives in config.macos.toml.
+# check (pre-packages hook) lives in config.macos.toml. The tasks the hooks run are file tasks in
+# tasks/ (tasks/dots/persist/profile -> dots:persist:profile), documented in their own header.
 # mise activation in fish (prompt hook; shims in scripts). Replaces `mise activate fish | source`.
 [bootstrap.mise_shell_activate]
 fish = "auto"
 
 [bootstrap.hooks.post-packages]
-# persist-profile first: later runs without -E must keep the same profile (and keep its packages).
+# dots:persist:profile first: later runs without -E must keep the same profile (and keep its packages).
 # --skip-tools: `mise run` would otherwise install every global tool before the `tools` phase.
-run = ["mise run --skip-tools persist-profile"]
+run = ["mise run --skip-tools dots:persist:profile"]
 
 # =============================================================================
 # Tools
@@ -154,6 +145,7 @@ usage = "latest"
 "brew:btop" = "latest"  # resource monitor (TUI)
 "brew:procs" = "latest"  # modern `ps` replacement
 "brew:tree" = "latest"  # directory tree listing
+"brew:gum" = "latest"  # styled output for the task scripts (scripts/ui.sh)
 
 # -----------------------------------------------------------------------------
 # Files and search

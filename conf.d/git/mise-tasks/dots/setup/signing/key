@@ -1,0 +1,33 @@
+#!/bin/sh
+#MISE description="Pick this machine's SSH signing key from the agent (ssh-add -L, fzf) and store it locally"
+#MISE tools={fzf="latest", gum="latest"}
+#MISE quiet=true
+#
+# dots:setup:signing:key -- pick this machine's SSH signing key from the agent and store it.
+#
+# Run it by hand, once per machine and again to change the key:
+#   mise run dots:setup:signing:key   (then: mise dot apply)
+#
+# Flow: lists the public keys of the SSH agent (ssh-add -L, e.g. Secretive), you pick one with fzf,
+# and it is written as git_signingkey to conf.d/git/mise.local.toml. That file is gitignored and
+# owned entirely by this script: the key is machine-specific, so it is deliberately not in the repo.
+# Until it exists no commit signing is configured (see conf.d/git/home/.gitconfig.tera).
+#
+# Needs: ssh-add (system) with a reachable agent ($SSH_AUTH_SOCK), fzf, gum (colours, optional).
+# Exit: 0 when the key is written, 1 when the agent has no key or the pick is cancelled.
+
+UI_TASK="dots:setup:signing:key"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+out="${MISE_CONFIG_DIR:-$HOME/.config/mise}/conf.d/git/mise.local.toml"
+
+keys=$(ssh-add -L 2>/dev/null) ||
+  ui_fail "no key in the SSH agent (SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-unset})"
+
+ui_step "pick the key that signs your commits"
+key=$(printf '%s\n' "$keys" | fzf --prompt='signing key> ' --height=40% --reverse) ||
+  ui_fail "nothing selected, nothing written"
+
+printf '[vars]\ngit_signingkey = "%s"\n' "$key" > "$out"
+ui_ok "wrote $out"
+ui_step "next: mise dot apply"

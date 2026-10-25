@@ -1,0 +1,50 @@
+#!/bin/sh
+#MISE description="Remember the machine profile (-E <profile>) in miserc.local.toml, once"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# dots:persist:profile -- remember the machine profile (-E <profile>) in miserc.local.toml, once.
+#
+# Runs as the post-packages hook (config.toml), and by hand: mise run dots:persist:profile
+#
+# Why: `mise -E radiofrance bootstrap --adopt <repo>` only applies the profile for that run. Without
+# this, later commands (mise dot apply, mise bootstrap) would see no profile: default git_email and
+# the profile's packages missing. So the first bootstrap writes the profile to the machine-local,
+# gitignored miserc.local.toml.
+#
+# Never overwrites: edit that file to change the profile of a machine. Does nothing when no -E was
+# given (the file is then simply not created).
+#
+# Inputs: MISE_CONFIG_DIR (default ~/.config/mise); MISE_ENV when set, else the -E / --env option of
+# the parent `mise bootstrap` command line (hooks and templates do not receive it).
+# Output: miserc.local.toml containing e.g. env = ["home", "nix"].
+
+UI_TASK="dots:persist:profile"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+rc="${MISE_CONFIG_DIR:-$HOME/.config/mise}/miserc.local.toml"
+[ -e "$rc" ] && exit 0
+
+# Neither hooks nor templates receive the -E value (MISE_ENV stays empty), so read it from the
+# command line of the parent `mise bootstrap`, walking up the process tree.
+profile_from_parent() {
+  pid=$$
+  for _ in 1 2 3 4 5 6 7 8; do
+    pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+    [ -n "$pid" ] && [ "$pid" -gt 1 ] || return 0
+    args=$(ps -o args= -p "$pid" 2>/dev/null)
+    case " $args " in
+      *" bootstrap "*)
+        found=$(printf '%s\n' "$args" | sed -n -E 's/.* (-E|--env)[ =]([^ ]+).*/\2/p')
+        [ -n "$found" ] && { echo "$found"; return 0; }
+        ;;
+    esac
+  done
+}
+
+profile="${MISE_ENV:-$(profile_from_parent)}"
+[ -n "$profile" ] || exit 0
+
+# "home,nix" -> env = ["home", "nix"]
+printf 'env = ["%s"]\n' "$(printf '%s' "$profile" | sed 's/,/", "/g')" > "$rc"
+ui_ok "wrote $rc (env = $profile)"

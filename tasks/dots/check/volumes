@@ -1,0 +1,25 @@
+#!/bin/sh
+#MISE description="Abort early unless Runtimes and Spaces are mounted, dedicated APFS volumes"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#MISE hide=true
+#
+# dots:check:volumes -- preflight: abort the bootstrap early unless the machine layout is in place.
+#
+# Runs as the pre-packages hook (config.macos.toml), before anything is installed, and by hand:
+#   mise run dots:check:volumes      (hidden from `mise tasks`: it is a preflight, not a command)
+#
+# Checks that Runtimes and Spaces are mounted and are DEDICATED APFS volumes. A plain folder on the
+# boot disk is refused: those volumes hold every toolchain and working copy, so they must be the
+# separate volumes declared in config.toml. /nix has its own check, dots:check:nix (nix module).
+#
+# Inputs (exported by config.toml [env]): MISE_VAR_RUNTIMES_ROOT, MISE_VAR_SPACES_ROOT.
+# Exit: 0 when everything is in place, 1 with the reason on stderr otherwise.
+
+UI_TASK="dots:check:volumes"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
+
+for volume in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
+  [ -d "$volume" ] || ui_fail "$volume is not mounted"
+  require_apfs_volume "$volume"
+done

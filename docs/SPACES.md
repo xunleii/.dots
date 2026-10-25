@@ -15,7 +15,7 @@ from there by every template and script that needs them — never hardcode eithe
 | `/Volumes/Spaces` | `spaces_root` | all working copies, grouped by Space |
 
 `mise bootstrap` fails on macOS when either volume is missing — see
-[`config.macos.toml`](../config.macos.toml), the `check-volumes` task run as the `pre-packages` hook. An
+[`config.macos.toml`](../config.macos.toml), the `dots:check:volumes` task run as the `pre-packages` hook. An
 unmounted volume is transient; mount it and re-run, everything pointing at it
 recovers on its own.
 

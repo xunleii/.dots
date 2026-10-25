@@ -16,15 +16,14 @@ machine files `conf.d/machines/mise.{home,radiofrance}.toml` carry the
 differences. `miserc.toml` sets `env = ["home"]`, so `home` is the default
 profile; `-E` (`mise -E radiofrance bootstrap`, comma list allowed), `MISE_ENV` or
 `~/.config/mise/miserc.local.toml` (gitignored; written automatically by the
-`persist-profile` task, first command of the post-packages hook, from the first `-E`
+`dots:persist:profile` task, first command of the post-packages hook, from the first `-E`
 bootstrap if absent, never overwritten; edit it to change profile) REPLACE that list,
 they do not add to it. The root
 `config.toml` loads after the `conf.d` fragments and overrides them, so
 `git_email` defaults in `conf.d/git` (`git_signingkey` is local, see below); templates keep `| default(value="")` as a safety net; a profile is always active).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
 module folder; files are symlinked into the repo, only `*.tera` files are
-rendered templates, copied). Base task bodies live in `scripts/` (`banner.sh`, `check-volumes.sh`, `persist-profile.sh`),
-module task bodies in `conf.d/<name>/scripts/`. A fresh Mac: install mise, then
+rendered templates, copied). Tasks are named `dots:<area>:<action>`; most are file tasks (`tasks/dots/...` at the root, `conf.d/<name>/mise-tasks/dots/...` in a module), the exception being `dots:fish:plugins` (toml task). `scripts/` holds `banner.sh`, `ui.sh` (coloured output helper) and `volumes.sh` (volume checks), both sourced by tasks. Every file task declares each non-system tool it uses (`fzf`, `gum`) on one header line (`#MISE tools={fzf="latest", gum="latest"}`) (see BOOTSTRAP.md, Tasks). A fresh Mac: install mise, then
 `mise bootstrap --adopt https://github.com/xunleii/.dots.git` (add `-E radiofrance` for a non-default profile) into
 an empty `~/.config/mise`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) for the
 full cheat sheet (layout, modules, hook order, identity, chezmoi equivalents,
@@ -41,7 +40,7 @@ by the next apply.
 
 Apply with `mise bootstrap` (the full run), or `mise dot apply` for
 dotfiles only. Preview with `mise dot diff` / `mise dot status`. Never run
-`mise run` / `exec` / `install` to test: they auto-install all global tools
+`mise run` / `exec` / `install` to test (hooks use `mise run --skip-tools`): they auto-install all global tools
 (see [Testing safely](docs/BOOTSTRAP.md#testing-safely)).
 
 ## macOS only
@@ -50,8 +49,8 @@ This repo is **single-platform on purpose**. Do not add portability: no
 Linux/WSL/Windows branches, no per-distro package abstraction, no CI images for
 other OSes.
 
-The `check-volumes` task (body in `scripts/check-volumes.sh`) is the `pre-packages`
-bootstrap hook, defined in `config.macos.toml` (so macOS only), and runs on every
+The `dots:check:volumes` task (file task `tasks/dots/check/volumes`) is the `pre-packages`
+bootstrap hook, wired in `config.macos.toml` (so macOS only), and runs on every
 `mise bootstrap` before anything is installed. It fails hard when the
 Runtimes/Spaces volumes are not mounted. macOS-only content goes in
 `config.macos.toml` / a module's `mise.macos.toml`. Keep it working.
@@ -74,7 +73,7 @@ volume on the internal disk on laptops — declared once in the `[vars]` table o
 `config.toml` (base) as `runtimes_root`, `spaces_root` and `spaces`, and exported to
 scripts and templates via `[env]` (`MISE_VAR_*`). Read them from there; never
 hardcode `/Volumes/...` in a template, a fish function or a script. Neither is
-guaranteed to be mounted (`check-volumes` refuses to run without them).
+guaranteed to be mounted (`dots:check:volumes` refuses to run without them).
 
 - `/Volumes/Runtimes` — every toolchain, cache and package dir (`MISE_DATA_DIR` in `config.toml` and the
   `[env]` (GOPATH, CARGO_HOME, npm and pip/uv caches...) redirect them all there).
@@ -94,16 +93,16 @@ flow (e.g. Secretive: open the app once and generate a Secure Enclave key
 yourself, there's no CLI for that) needs a manual step afterwards, and any
 config value that depends on it has to be updated by hand, then re-applied.
 For the signing key, once the Secretive key exists run
-`mise run setup-signing-key` (fzf pick from `ssh-add -L`; writes `git_signingkey` to the gitignored
+`mise run dots:setup:signing:key` (fzf pick from `ssh-add -L`; writes `git_signingkey` to the gitignored
 `conf.d/git/mise.local.toml`, which the task owns), then `mise dot apply`. Until then nothing is signed. There are no secrets in this setup: `git_name` is a plain
 `[vars]` entry in `config.toml`; `git_email` defaults in `conf.d/git/mise.toml` (GitHub noreply; it must not
 live in `config.toml`, which loads after `conf.d` and would override machine files) and `radiofrance` overrides it.
 
-The post-packages hook only runs `persist-profile`; bootstrap never uninstalls. Pruning is manual:
+The post-packages hook only runs `dots:persist:profile`; bootstrap never uninstalls. Pruning is manual:
 `mise bootstrap packages prune` uninstalls anything **not** declared in `[bootstrap.packages]`
 across the active files (a non-default profile selected only with `-E` and not
 persisted in `miserc.local.toml` counts as dropped: the run falls back to `home` and its
-packages are not installed; `persist-profile` normally writes the file,
+packages are not installed; `dots:persist:profile` normally writes the file,
 unless bootstrap failed before this hook). The list is hand-curated: never suggest a
 bare `brew install`, it is drift that a prune removes. Edit the right `config*.toml` / `conf.d/` file instead.
 

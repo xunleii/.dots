@@ -3,5 +3,5 @@
 auto_env = true
 
 # Default machine profile (conf.d/machines/mise.home.toml). `-E <profile>` and the machine-local,
-# gitignored miserc.local.toml (written by the persist-profile task) replace this list, they do not add to it.
+# gitignored miserc.local.toml (written by the dots:persist:profile task) replace this list, they do not add to it.
 env = ["home"]
