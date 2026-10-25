@@ -2,10 +2,12 @@
 #MISE description="Remember the machine profile (-E <profile>) in miserc.local.toml, once"
 #MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
 #MISE quiet=true
+#MISE hide=true
 #
 # dots:persist:profile -- remember the machine profile (-E <profile>) in miserc.local.toml, once.
 #
 # Runs as the post-packages hook (config.toml), and by hand: mise run dots:persist:profile
+# (hidden from `mise tasks`: it only exists for the hook; `mise tasks ls --hidden` shows it).
 #
 # Why: `mise -E radiofrance bootstrap --adopt <repo>` only applies the profile for that run. Without
 # this, later commands (mise dot apply, mise bootstrap) would see no profile: default git_email and
