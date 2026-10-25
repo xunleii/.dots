@@ -42,14 +42,20 @@ type![scope]: Subject
 
 One per top-level dotfile/tool this repo manages. Add a new one here when a
 new tool/dir shows up — don't pre-invent scopes for things that don't exist
-yet.
+yet. The one exception is `modules:<name>` (below): any existing `conf.d/`
+folder is valid without being listed here.
 
 `fish`, `nono`, `brew`, `git`, `mise`,
 `ghostty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
 `docs`, `claude`
 
-Module or machine-file changes (`conf.d/<module>/mise[.macos].toml`, `conf.d/machines/mise.<name>.toml`) use the scope of the tool
-they configure, or `mise` for the module plumbing itself (`config.toml`, `config.macos.toml`, `miserc.toml`).
+`modules:<name>` (`<name>` = a `conf.d/` folder: `claude`, `dev`, `fish`, `git`,
+`nix`, `ssh`) is for changes that belong to one module as a whole (its
+`mise.toml`, `mise-tasks`, `scripts`, dotfile groups). A change to a tool's own
+config file keeps the tool scope (`fish`, `git`, ...). `mise` is for base
+plumbing (`config.toml`, `config.macos.toml`, `miserc.toml`, `tasks/`,
+`scripts/`). Machine files (`conf.d/machines/mise.<name>.toml`) use the scope of
+the tool they configure.
 
 ## Examples
 
@@ -63,4 +69,6 @@ should now be written:
 ```
 +[fish]: Add nono-profile picker
 ![nono]: Fix cwd read/write on sandboxed claude
++[modules:nix]: Add the /nix volume check
+~[modules:git]: Keep the signing key out of the repo
 ```
