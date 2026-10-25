@@ -45,15 +45,15 @@ function ssh-import-key --description "Import SSH public key from URL or string"
 
     # Ensure directory exists
     mkdir -p (dirname $file)
-    
+
     # Check if key already exists to avoid duplicates
     if not grep -qF "$key" "$file" 2>/dev/null
         echo "$entry" >> "$file"
         echo "Successfully added key to $file"
-        
+
         # If it's a mise-managed file, warn user
-        if test -f "$HOME/.local/share/chezmoi/home/.ssh/"(basename $file)".tera"
-            echo "Warning: This file is managed by mise dotfiles. You should update the source in home/.ssh to make it permanent."
+        if test -f "$HOME/.config/mise/conf.d/ssh/home/.ssh/"(basename $file)".tera"
+            echo "Warning: This file is managed by mise dotfiles. You should update the source in conf.d/ssh/home/.ssh to make it permanent."
         end
     else
         echo "Key already exists in $file"
