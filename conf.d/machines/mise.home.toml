@@ -18,9 +18,7 @@
 
 [vars]
 # Commit address: the default from conf.d/git (GitHub noreply) applies, nothing to set here.
-# Public key of this Mac's Secretive (Secure Enclave) key: signs commits (gitconfig) and is trusted
-# by allowed_signers. One key per machine; empty means commits are not signed.
-git_signingkey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIU3To0OeQv9jeA0TlLznXgNvV/h3iWqQ9FqG7YKjOOcZwRK4URn9KZwbd6AAxH6eVuEBBzP3QIFFDIcrLFGqJY= git-signing@secretive.Mac-Mini-M4.local"
+# git_signingkey is machine-local, not here: `mise run --skip-tools setup-signing-key` (conf.d/git).
 
 # =============================================================================
 # Packages

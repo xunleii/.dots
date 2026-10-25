@@ -23,6 +23,17 @@
 git_email = "xunleii@users.noreply.github.com"
 
 # =============================================================================
+# Tasks
+# =============================================================================
+# Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
+
+[tasks.setup-signing-key]
+description = "Pick this machine's SSH signing key from the agent (ssh-add -L, fzf) and store it locally"
+# Run once per machine, and again to change the key, then `mise dot apply`. Details in the script.
+tools = { fzf = "latest" }
+run = "sh scripts/setup-signing-key.sh"
+
+# =============================================================================
 # Tools
 # =============================================================================
 # Global mise tools, on PATH everywhere (not only inside this repo).

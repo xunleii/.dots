@@ -17,6 +17,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
+| `conf.d/git/scripts/` | `setup-signing-key.sh`, the body of the `setup-signing-key` task |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
@@ -36,7 +37,7 @@ Modules follow [mise modules](https://mise.jdx.dev/bootstrap/modules.html): a
 folder `conf.d/<name>/` with `mise.toml` (+ per-OS files) inside.
 They are NOT optional: always loaded. Differences between machines live in the
 machine files. `config.toml` loads after `conf.d`, so it would override it:
-`git_signingkey` has no base default (`git_email` defaults in `conf.d/git`); templates
+`git_email` defaults in `conf.d/git` (`git_signingkey` is local, not in the repo); templates
 keep `| default(value="")` as a safety net (a profile is always active).
 
 | Module | Holds |
@@ -47,7 +48,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
 | `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
 | `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim, orbstack |
-| `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email` override (`radiofrance`), `git_signingkey` (home only) |
+| `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email` override (`radiofrance`) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
 `platform_overrides.macos`.
@@ -135,8 +136,10 @@ purpose since it ends up in every commit.
 - `git_email`: default GitHub noreply in `conf.d/git/mise.toml` (not `config.toml`,
   which loads after `conf.d` and would override machine files); `radiofrance`
   overrides it with the work address. `home` and no `-E` inherit the default.
-- `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.home.toml`.
-  Empty means no signing.
+- `git_signingkey`: not in the repo. After creating the key in Secretive, run
+  `mise run setup-signing-key` (picks from `ssh-add -L`, writes
+  the gitignored `conf.d/git/mise.local.toml`), then `mise dot apply`; rerun to change it.
+  Unset means no signing config at all (no `signingkey`, `[gpg]` or `gpgsign`; empty `allowed_signers`).
 
 ## chezmoi to mise
 

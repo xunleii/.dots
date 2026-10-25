@@ -20,7 +20,7 @@ profile; `-E` (`mise -E radiofrance bootstrap`, comma list allowed), `MISE_ENV` 
 bootstrap if absent, never overwritten; edit it to change profile) REPLACE that list,
 they do not add to it. The root
 `config.toml` loads after the `conf.d` fragments and overrides them, so
-`git_signingkey` has no base default (`git_email` defaults in `conf.d/git`; templates keep `| default(value="")` as a safety net; a profile is always active).
+`git_email` defaults in `conf.d/git` (`git_signingkey` is local, see below); templates keep `| default(value="")` as a safety net; a profile is always active).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
 module folder; files are symlinked into the repo, only `*.tera` files are
 rendered templates, copied). Base task bodies live in `scripts/` (`banner.sh`),
@@ -64,7 +64,7 @@ Concretely, when editing a template here:
 - **Do** still branch where a real difference exists (e.g. Intel vs Apple
   Silicon release assets).
 - **Do** still vary by machine, with the machine files (`conf.d/machines/mise.{home,radiofrance}.toml`): extra packages and `[vars]` overrides
-  (`git_email` for `radiofrance`, `git_signingkey`) live there, and templates read the vars.
+  (`git_email` for `radiofrance`) live there, and templates read the vars.
   Those are not OS branches.
 
 ## Machine layout: Runtimes and Spaces
@@ -93,9 +93,9 @@ the app is not the same as configuring it — anything that only has a GUI setup
 flow (e.g. Secretive: open the app once and generate a Secure Enclave key
 yourself, there's no CLI for that) needs a manual step afterwards, and any
 config value that depends on it has to be updated by hand, then re-applied.
-For the signing key, that value is the `git_signingkey` var in the
-machine file (e.g. `conf.d/machines/mise.home.toml`; empty means no signing); update it, then
-re-run `mise bootstrap`. There are no secrets in this setup: `git_name` is a plain
+For the signing key, once the Secretive key exists run
+`mise run setup-signing-key` (fzf pick from `ssh-add -L`; writes `git_signingkey` to the gitignored
+`conf.d/git/mise.local.toml`, which the task owns), then `mise dot apply`. Until then nothing is signed. There are no secrets in this setup: `git_name` is a plain
 `[vars]` entry in `config.toml`; `git_email` defaults in `conf.d/git/mise.toml` (GitHub noreply; it must not
 live in `config.toml`, which loads after `conf.d` and would override machine files) and `radiofrance` overrides it.
 

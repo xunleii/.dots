@@ -113,8 +113,9 @@ Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 Then the manual steps that have no CLI (see
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md)): open Secretive once to generate
-a Secure Enclave key, put the public key in `git_signingkey` (in the machine's
-`conf.d/machines/mise.<name>.toml`), then re-run `mise bootstrap`.
+a Secure Enclave key, then run `mise run setup-signing-key` (pick the key with fzf; it writes
+`git_signingkey` to the gitignored `conf.d/git/mise.local.toml`) and `mise dot apply`.
+Until then commits are unsigned.
 
 Day to day, from anywhere: `mise dot diff` to preview, `mise dot apply` for
 dotfiles only, `mise bootstrap` for everything. Update with
@@ -154,7 +155,7 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 
 `home` loads by default (`miserc.toml`); `-E`, `MISE_ENV` or `miserc.local.toml` replace it.
 `config.toml` loads after the `conf.d` fragments and overrides them, so
-per-machine vars have no base default (`git_signingkey`; `git_email` defaults in
+per-machine vars have no base default (`git_email` defaults in
 `conf.d/git`, which loads before the machine files). Modules
 are loaded globally, so their `[tools]` and `[env]` apply everywhere.
 `mise bootstrap unapply <module>` removes a module. To add one: create

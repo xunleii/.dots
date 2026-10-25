@@ -30,7 +30,7 @@ no CLI equivalent, and are required for the rest of the config to work:
 
 | App | Step | Why it matters |
 | --- | --- | --- |
-| **Secretive** | Open it once, create a Secure Enclave key, copy the public key | `git` commit signing. Put it in `git_signingkey` in the machine file (e.g. `conf.d/machines/mise.home.toml`), then re-run `mise bootstrap` — it also lands in `~/.ssh/allowed_signers`. Installed by `conf.d/ssh/mise.macos.toml`; see `conf.d/ssh/home/.config/fish/conf.d/80-secretive-ssh.fish.tera`. |
+| **Secretive** | Open it once, create a Secure Enclave key, copy the public key | `git` commit signing. Then run `mise run setup-signing-key` and `mise dot apply`: it sets `git_signingkey` (also lands in `~/.ssh/allowed_signers`); until then commits are unsigned. Installed by `conf.d/ssh/mise.macos.toml`; see `conf.d/ssh/home/.config/fish/conf.d/80-secretive-ssh.fish.tera`. |
 | **Bitwarden** (desktop) | Enable the SSH agent in Settings, unlock the vault | `bwssh` / `bwansible*` need the agent socket to reach fleet hosts. See `functions/__bw_ssh_sock.fish`. `bwansible*` run only if the `ansible` binaries are on `PATH` (no module installs ansible). Only the desktop app and its SSH agent are used here; there is no secrets manager in this setup. |
 | **Little Snitch** | Approve the system extension, then reboot | Nothing else installs cleanly while its rules prompt is pending. |
 | **Tailscale** | Sign in | Fleet access. |
