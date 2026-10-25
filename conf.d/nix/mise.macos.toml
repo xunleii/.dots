@@ -8,7 +8,19 @@
 #                           Module nix (macOS only)
 #
 # Nix package manager. Always loaded, but only relevant when the `nix` profile is active
-# (`mise -E home,nix bootstrap`, see conf.d/machines/mise.nix.toml): check-volumes (config.macos.toml) then requires /nix to be a
+# (`mise -E home,nix bootstrap`, see conf.d/machines/mise.nix.toml): dots:check:nix then requires /nix to be a
 # dedicated APFS volume. Volume setup (diskutil, /etc/fstab, /etc/synthetic.conf) and the installer
 # are not wired yet.
 # =============================================================================
+
+# =============================================================================
+# Bootstrap
+# =============================================================================
+# What `mise bootstrap` does around its phases: hooks. Hooks of every loaded file run (this one first,
+# then the base volumes check in config.macos.toml), and run EVERY time, so keep them safe to repeat.
+
+# Task: conf.d/nix/mise-tasks/dots/check/nix (file task, documented in its header). It does nothing
+# unless the nix profile is on.
+[bootstrap.hooks.pre-packages]
+# --skip-tools: `mise run` would otherwise install every global tool before the packages phase.
+run = ["mise run --skip-tools dots:check:nix"]

@@ -66,7 +66,7 @@ _.path = [
 ]
 
 # [vars] exported as environment variables, for scripts and tasks that cannot read Tera
-# (the dots:check:volumes task).
+# (the dots:check:volumes and dots:check:nix tasks).
 # Each toolchain's cache/install dir, redirected onto the runtimes volume (one block per runtime
 # declared in [tools] below).
 npm_config_cache = "{{ vars.runtimes_root }}/node/npm/cache"

@@ -18,6 +18,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `dots:fish:plugins` toml task |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
+| `conf.d/nix/mise-tasks/` | File task `dots/check/nix` (`dots:check:nix`), run by the nix module's own `pre-packages` hook |
 | `tasks/` | File tasks `dots/check/volumes` and `dots/persist/profile` (mise's global task dir) |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task); `ui.sh` (output helper) and `volumes.sh` (`diskutil_field`, `require_apfs_volume`; sources `ui.sh`), both sourced by task scripts, see [Tasks](#tasks) |
@@ -74,7 +75,7 @@ or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`.
 
 - **Naming**: `dots:<area>:<action>` (`dots:check:volumes`, `dots:persist:profile`, `dots:setup:signing:key`, `dots:fish:plugins`); `:` is the separator.
 - **File tasks**: `tasks/` at the repo root (= `~/.config/mise/tasks`, mise's global task dir) and `conf.d/<name>/mise-tasks/` in a module (`.mise/tasks/` also works). The path gives the name, `/` becomes `:` (`tasks/dots/check/volumes` is `dots:check:volumes`). `conf.d/<m>/tasks/` is NOT discovered.
-- **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the preflight check (`dots:check:volumes`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
+- **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the preflight checks (`dots:check:volumes`, `dots:check:nix`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
 - **Toml task**: only `dots:fish:plugins` (`conf.d/fish/mise.toml`, wrapper around `conf.d/fish/scripts/fish-plugins.fish`): it needs a Homebrew PATH preamble because fish does not exist yet in the hook phase.
 - **`scripts/ui.sh`**: sourced by task scripts; `ui_step` / `ui_ok` / `ui_warn` / `ui_fail` print coloured through `gum` when installed and on a tty, plain text otherwise (also if gum fails, or before Homebrew installs it). Tasks run quiet (no `[task] $ cmd` echo).
 - **Hooks** call tasks with `mise run --skip-tools <name>`, so no tool gets installed during bootstrap.
@@ -123,7 +124,9 @@ Caveats:
 
 `mise bootstrap` order, with this repo's hooks (hooks of all active modules run):
 
-1. `pre-packages` (`config.macos.toml`): `dots:check:volumes` (run with `--skip-tools` so no tool is installed yet)
+1. `pre-packages`, hooks from different files add up (`mise run --skip-tools`, so no tool is installed yet):
+   1. nix module (`conf.d/nix/mise.macos.toml`): `dots:check:nix`
+   2. base (`config.macos.toml`): `dots:check:volumes`
 2. `[bootstrap.packages]` (Homebrew)
 3. `post-packages`: `dots:persist:profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
 4. `[dotfiles]`

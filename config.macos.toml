@@ -16,7 +16,8 @@
 # What `mise bootstrap` does around its phases: shell activation and hooks.
 # Hooks run EVERY time, so keep them safe to repeat.
 
-# Task: tasks/dots/check/volumes (file task, documented in its header).
+# Task: tasks/dots/check/volumes (file task, documented in its header). /nix has its own check in
+# the nix module (dots:check:nix).
 [bootstrap.hooks.pre-packages]
 # --skip-tools: `mise run` would otherwise install every global tool before the packages phase.
 run = ["mise run --skip-tools dots:check:volumes"]

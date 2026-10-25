@@ -13,6 +13,6 @@
 # =============================================================================
 
 [vars]
-# Makes check-volumes require /nix to be a dedicated APFS volume (see conf.d/nix). Without this
+# Makes dots:check:volumes require /nix to be a dedicated APFS volume (see conf.d/nix). Without this
 # profile the var is unset and /nix is not checked.
 nix = "true"

@@ -1,0 +1,28 @@
+#!/bin/sh
+#MISE description="Abort early unless /nix is a dedicated APFS volume (nix profile only)"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#MISE hide=true
+#
+# dots:check:nix -- preflight: with the nix profile, require /nix to be a dedicated APFS volume.
+#
+# Runs as the pre-packages hook of the nix module (conf.d/nix/mise.macos.toml), and by hand:
+#   mise -E home,nix run dots:check:nix      (hidden from `mise tasks`: it is a preflight)
+#
+# The Nix store path is baked into every store path hash, so /nix must be the real mount point of
+# its own volume (not a symlink or a folder on the boot disk). Skips silently-ish when the nix
+# profile is off, so the hook is safe on every machine.
+#
+# Inputs (exported by config.toml [env]): MISE_VAR_NIX ("true" with the nix profile, see
+# conf.d/machines/mise.nix.toml).
+# Exit: 0 when /nix is fine or not wanted, 1 with the reason on stderr otherwise.
+
+UI_TASK="dots:check:nix"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
+
+if [ "$MISE_VAR_NIX" != true ]; then
+  ui_step "/nix not checked (nix profile off)"
+  exit 0
+fi
+
+require_apfs_volume /nix

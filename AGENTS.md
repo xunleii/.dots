@@ -52,7 +52,7 @@ other OSes.
 The `dots:check:volumes` task (file task `tasks/dots/check/volumes`) is the `pre-packages`
 bootstrap hook, wired in `config.macos.toml` (so macOS only), and runs on every
 `mise bootstrap` before anything is installed. It fails hard when the
-Runtimes/Spaces volumes are not mounted. macOS-only content goes in
+Runtimes/Spaces volumes are not mounted (`/nix` is checked separately by `dots:check:nix`, nix module, when the nix profile is on). macOS-only content goes in
 `config.macos.toml` / a module's `mise.macos.toml`. Keep it working.
 
 Concretely, when editing a template here:
