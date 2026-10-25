@@ -10,7 +10,7 @@
 # This repo IS ~/.config/mise (installed with `mise bootstrap --adopt`): this file is the global
 # config, conf.d/<module>/ are global fragments, so every mise command works from anywhere.
 # Always loaded, on every OS. Loaded AFTER conf.d, so it overrides it: never give per-machine
-# vars (git_email, git_signingkey) a default here.
+# vars (git_email, git_signingkey) a default here (git_email's default lives in conf.d/git).
 # Modules: conf.d/<name>/mise.toml (always), mise.macos.toml / mise.linux.toml (per OS), and
 # conf.d/machines/mise.<profile>.toml (selected with -E or miserc.local.toml).
 # Sources of [dotfiles] are relative to the file that declares them; *.tera files are rendered.
@@ -44,9 +44,9 @@ spaces_root = "/Volumes/Spaces"
 spaces = "Lab Work OSS Personal"
 
 # Git identity, rendered into ~/.gitconfig and ~/.ssh/allowed_signers (conf.d/git, conf.d/ssh).
-# It is public on purpose (it ends up in every commit). The name is shared; git_email and
-# git_signingkey differ per machine and live in conf.d/machines/: this file loads AFTER conf.d, so
-# a default here would override them (templates fall back to an empty value without a profile).
+# It is public on purpose (it ends up in every commit). The name is shared; git_email (default in
+# conf.d/git, overridden per profile) and git_signingkey (per machine) must NOT be set here: this
+# file loads AFTER conf.d, so a value here would override the machine files.
 git_name = "Alexandre NICOLAIE"
 
 # =============================================================================
@@ -94,8 +94,8 @@ MISE_VAR_NIX = "{{ vars.nix | default(value=\"\") }}"
 [tasks.persist-profile]
 description = "Remember the machine profile (-E <profile>) in miserc.local.toml, once"
 # `mise -E radiofrance bootstrap --adopt <repo>` only applies the profile for that run. Without it
-# later commands (mise dot apply, mise bootstrap) would see no profile: empty git_email, and the
-# profile's packages pruned. So the first bootstrap writes it to the machine-local, gitignored
+# later commands (mise dot apply, mise bootstrap) would see no profile: default git_email, and the
+# profile's packages missing. So the first bootstrap writes it to the machine-local, gitignored
 # miserc.local.toml. Never overwrites: edit that file to change the profile of a machine.
 # Neither hooks nor templates receive the -E value (MISE_ENV stays empty), so besides $MISE_ENV
 # the task reads the `-E` / `--env` option from the command line of the parent `mise bootstrap`.
@@ -133,7 +133,7 @@ echo "persist-profile: wrote $rc (env = $profile)"
 fish = "auto"
 
 [bootstrap.hooks.post-packages]
-# persist-profile first: later runs without -E must keep the same profile (and not prune its packages).
+# persist-profile first: later runs without -E must keep the same profile (and keep its packages).
 # --skip-tools: `mise run` would otherwise install every global tool before the `tools` phase.
 run = ["mise run --skip-tools persist-profile"]
 
@@ -164,10 +164,7 @@ usage = "latest"
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
-
-# Like the old `brew bundle cleanup --force`, anything not declared by an active module is
-# uninstalled by the post-packages hook (`mise bootstrap packages prune --yes`).
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 [bootstrap.packages]
 # -----------------------------------------------------------------------------
 # Downloads

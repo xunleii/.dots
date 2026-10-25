@@ -24,7 +24,7 @@ git_email = "alexandre.nicolaie@radiofrance.com"
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 
 [bootstrap.packages]
 # -----------------------------------------------------------------------------

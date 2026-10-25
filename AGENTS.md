@@ -20,7 +20,7 @@ profile; `-E` (`mise -E radiofrance bootstrap`, comma list allowed), `MISE_ENV` 
 bootstrap if absent, never overwritten; edit it to change profile) REPLACE that list,
 they do not add to it. The root
 `config.toml` loads after the `conf.d` fragments and overrides them, so
-per-machine vars have no base default (templates keep `| default(value="")` as a safety net; a profile is always active).
+`git_signingkey` has no base default (`git_email` defaults in `conf.d/git`; templates keep `| default(value="")` as a safety net; a profile is always active).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
 module folder; files are symlinked into the repo, only `*.tera` files are
 rendered templates, copied). Base task bodies live in `scripts/` (`banner.sh`),
@@ -64,7 +64,7 @@ Concretely, when editing a template here:
 - **Do** still branch where a real difference exists (e.g. Intel vs Apple
   Silicon release assets).
 - **Do** still vary by machine, with the machine files (`conf.d/machines/mise.{home,radiofrance}.toml`): extra packages and `[vars]` overrides
-  (`git_email`, `git_signingkey`) live there, and templates read the vars.
+  (`git_email` for `radiofrance`, `git_signingkey`) live there, and templates read the vars.
   Those are not OS branches.
 
 ## Machine layout: Runtimes and Spaces
@@ -96,15 +96,16 @@ config value that depends on it has to be updated by hand, then re-applied.
 For the signing key, that value is the `git_signingkey` var in the
 machine file (e.g. `conf.d/machines/mise.home.toml`; empty means no signing); update it, then
 re-run `mise bootstrap`. There are no secrets in this setup: `git_name` is a plain
-`[vars]` entry in `config.toml`; `git_email` lives in the machine files.
+`[vars]` entry in `config.toml`; `git_email` defaults in `conf.d/git/mise.toml` (GitHub noreply; it must not
+live in `config.toml`, which loads after `conf.d` and would override machine files) and `radiofrance` overrides it.
 
-The post-packages hook runs `persist-profile`, then `mise bootstrap packages prune --yes`, so anything
-**not** declared in `[bootstrap.packages]` gets uninstalled on the next
-bootstrap, across the active files (a non-default profile selected only with `-E` and not
-persisted in `miserc.local.toml` counts as dropped: the run falls back to `home`, adds
-its packages and prunes the other profile's; `persist-profile` normally writes the file,
+The post-packages hook only runs `persist-profile`; bootstrap never uninstalls. Pruning is manual:
+`mise bootstrap packages prune` uninstalls anything **not** declared in `[bootstrap.packages]`
+across the active files (a non-default profile selected only with `-E` and not
+persisted in `miserc.local.toml` counts as dropped: the run falls back to `home` and its
+packages are not installed; `persist-profile` normally writes the file,
 unless bootstrap failed before this hook). The list is hand-curated: never suggest a
-bare `brew install`, it gets reverted. Edit the right `config*.toml` / `conf.d/` file instead.
+bare `brew install`, it is drift that a prune removes. Edit the right `config*.toml` / `conf.d/` file instead.
 
 ## Where a new tool goes
 

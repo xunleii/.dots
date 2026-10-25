@@ -10,7 +10,7 @@ gone. Everything below is what to know when editing the setup.
 
 | Path | Role |
 | --- | --- |
-| `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, prune hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
+| `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, post-packages hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
 | `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (inlined) |
 | `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
@@ -36,7 +36,7 @@ Modules follow [mise modules](https://mise.jdx.dev/bootstrap/modules.html): a
 folder `conf.d/<name>/` with `mise.toml` (+ per-OS files) inside.
 They are NOT optional: always loaded. Differences between machines live in the
 machine files. `config.toml` loads after `conf.d`, so it would override it:
-per-machine vars (`git_email`, `git_signingkey`) have no base default; templates
+`git_signingkey` has no base default (`git_email` defaults in `conf.d/git`); templates
 keep `| default(value="")` as a safety net (a profile is always active).
 
 | Module | Holds |
@@ -47,7 +47,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
 | `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
 | `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim, orbstack |
-| `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (home only) |
+| `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email` override (`radiofrance`), `git_signingkey` (home only) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
 `platform_overrides.macos`.
@@ -97,7 +97,7 @@ Caveats:
   need no `-E`. To change the profile, edit that file by hand. If bootstrap
   failed before the post-packages hook, no file is written: rerun with `-E` or
   create it manually, else a bare `mise bootstrap` falls back to `home`
-  (home email, home packages added, the omitted profile's packages pruned).
+  (home packages added, the omitted profile's packages not installed).
 - **How `persist-profile` finds `-E`.** Workaround: hooks and templates do not
   receive the `-E` value (`MISE_ENV` stays empty in a hook, even with `-E`).
   The task uses `$MISE_ENV` if set, else walks up the process tree and reads
@@ -113,7 +113,7 @@ Caveats:
 
 1. `pre-packages` (`config.macos.toml`): `check-volumes`
 2. `[bootstrap.packages]` (Homebrew)
-3. `post-packages`: `persist-profile` (writes `miserc.local.toml` from `-E` if absent), then `mise bootstrap packages prune --yes` (uninstalls anything not declared)
+3. `post-packages`: `persist-profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
 4. `[dotfiles]`
 5. `post-dotfiles` (fish module): `fish-plugins`
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
@@ -132,9 +132,9 @@ No secrets to provision. The git identity is plain `[vars]`, public on
 purpose since it ends up in every commit.
 
 - `git_name`: in `config.toml`.
-- `git_email`: per machine, in the machine file (`home`: GitHub noreply;
-  `radiofrance`: work address). No base default (`config.toml` loads after
-  `conf.d` and would override machine files); no profile selected falls back to `home` (default), so it is never empty.
+- `git_email`: default GitHub noreply in `conf.d/git/mise.toml` (not `config.toml`,
+  which loads after `conf.d` and would override machine files); `radiofrance`
+  overrides it with the work address. `home` and no `-E` inherit the default.
 - `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.home.toml`.
   Empty means no signing.
 
@@ -149,7 +149,7 @@ purpose since it ends up in every commit.
 | `.chezmoiexternal` | mise tools (`usage`, in `config.toml`) + vendored `kubectl.fish` dotfile (dev module); mise itself comes from <https://mise.run> |
 | `.chezmoiremove` | `{ mode = "absent" }` entries in `[dotfiles]` |
 | `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`conf.d/claude/home/.claude/SOUL.md`) |
-| `dot_Brewfile.tmpl` | `[bootstrap.packages]` (base + modules). Pruning is automatic, like `brew bundle cleanup --force`: the post-packages hook runs `mise bootstrap packages prune --yes` (preview: `mise bootstrap packages prune --dry-run`) |
+| `dot_Brewfile.tmpl` | `[bootstrap.packages]` (base + modules). Pruning is manual, like `brew bundle cleanup --force`: `mise bootstrap packages prune` (preview: `--dry-run`); bootstrap never runs it |
 
 ## chezmoi cheat sheet
 

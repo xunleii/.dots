@@ -12,6 +12,17 @@
 # =============================================================================
 
 # =============================================================================
+# Variables
+# =============================================================================
+# Values shared by templates and tasks; read them as {{ vars.<name> }}.
+
+[vars]
+# Default commit address (~/.gitconfig, ~/.ssh/allowed_signers): used when no machine profile sets
+# one. Lives here, not in config.toml: config.toml loads AFTER conf.d and would override the
+# machine files (conf.d/machines/), which are the ones allowed to replace it (radiofrance).
+git_email = "xunleii@users.noreply.github.com"
+
+# =============================================================================
 # Tools
 # =============================================================================
 # Global mise tools, on PATH everywhere (not only inside this repo).
@@ -26,7 +37,7 @@
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 
 [bootstrap.packages]
 # -----------------------------------------------------------------------------

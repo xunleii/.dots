@@ -102,13 +102,13 @@ Caveats:
   it; later `mise bootstrap` / `mise dot ...` need no `-E`. To change the profile,
   edit that file. If bootstrap failed before the post-packages hook, nothing is
   written: rerun with `-E` or create the file by hand, else a bare `mise bootstrap`
-  falls back to `home` (home email, home packages added, the
-  radiofrance packages pruned).
+  falls back to `home` (home packages added, the
+  radiofrance packages not installed).
 - **Homebrew must already exist**: brew packages need it, mise does not install it.
 - **Trust**: every `conf.d/<module>/mise*.toml` must be trusted
   (`mise trust`). Unverified whether `--adopt` handles this on its own.
 
-No token or prompt is needed: the git identity is plain `[vars]` in the repo (`git_name` in `config.toml`, `git_email` in the machine file).
+No token or prompt is needed: the git identity is plain `[vars]` in the repo (`git_name` in `config.toml`, `git_email` in `conf.d/git`, overridden in the `radiofrance` machine file).
 Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 Then the manual steps that have no CLI (see
@@ -154,7 +154,8 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 
 `home` loads by default (`miserc.toml`); `-E`, `MISE_ENV` or `miserc.local.toml` replace it.
 `config.toml` loads after the `conf.d` fragments and overrides them, so
-per-machine vars (`git_email`, `git_signingkey`) have no base default. Modules
+per-machine vars have no base default (`git_signingkey`; `git_email` defaults in
+`conf.d/git`, which loads before the machine files). Modules
 are loaded globally, so their `[tools]` and `[env]` apply everywhere.
 `mise bootstrap unapply <module>` removes a module. To add one: create
 `conf.d/<name>/mise.toml` (+ per-OS files, `home/`) and `mise trust` it.
@@ -175,9 +176,9 @@ Where each thing is installed from — and therefore where to add a new one:
 | Homebrew | `[bootstrap.packages]` in `config.toml` / `config.macos.toml` (base) or the module / machine file that needs it (`conf.d/...`) | almost everything, formulae and casks |
 | mise | `[tools]` of `conf.d/<module>/mise.toml`; base `config.toml` | language runtimes and `uv` (base), CLIs only published to npm/pipx (git, claude), GitHub-release binaries brew doesn't carry (`usage`, plannotator) |
 
-Anything **not** declared in `[bootstrap.packages]` of an active file is uninstalled by the
-post-packages hook (`persist-profile`, then `mise bootstrap packages prune --yes`) on every bootstrap.
-Installing by hand is therefore temporary: add the line to the right `config.toml` / `conf.d/...` file and
+Bootstrap never uninstalls anything. Packages **not** declared in `[bootstrap.packages]` of an active file
+are removed by `mise bootstrap packages prune` (manual; preview with `--dry-run`).
+Installing by hand is therefore drift: add the line to the right `config.toml` / `conf.d/...` file and
 bootstrap, rather than running `brew install`.
 
 [docs/APPLICATIONS.md](docs/APPLICATIONS.md) covers only the apps that need a

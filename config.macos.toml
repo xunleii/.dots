@@ -48,7 +48,7 @@ run = ["mise run check-volumes"]
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 
 [bootstrap.packages]
 # GNU userland (preferred over BSD, see conf.d/fish 05-gnu-userland)

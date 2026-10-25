@@ -55,7 +55,7 @@ the Space is what decides the target path.
 ### No per-Space git identity
 
 Work and personal each have their own machine, so `user.email` is settled once
-per machine from the plain `git_email` var (`config.toml`, overridable in a machine file under `conf.d/machines/`). `conf.d/git/home/.gitconfig.tera` deliberately emits no
+per machine from the plain `git_email` var (default in `conf.d/git/mise.toml`, overridden in a machine file under `conf.d/machines/`). `conf.d/git/home/.gitconfig.tera` deliberately emits no
 `includeIf "gitdir:"` blocks — Spaces are about *where things live*, not about
 who you are while editing them.
 

@@ -17,8 +17,7 @@
 # Values shared by templates and tasks; read them as {{ vars.<name> }}.
 
 [vars]
-# Home commit address (~/.gitconfig, ~/.ssh/allowed_signers).
-git_email = "xunleii@users.noreply.github.com"
+# Commit address: the default from conf.d/git (GitHub noreply) applies, nothing to set here.
 # Public key of this Mac's Secretive (Secure Enclave) key: signs commits (gitconfig) and is trusted
 # by allowed_signers. One key per machine; empty means commits are not signed.
 git_signingkey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIU3To0OeQv9jeA0TlLznXgNvV/h3iWqQ9FqG7YKjOOcZwRK4URn9KZwbd6AAxH6eVuEBBzP3QIFFDIcrLFGqJY= git-signing@secretive.Mac-Mini-M4.local"
@@ -27,7 +26,7 @@ git_signingkey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdH
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 
 [bootstrap.packages]
 # Making: CAD and 3D printing

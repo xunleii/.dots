@@ -14,7 +14,7 @@
 # Packages
 # =============================================================================
 # Homebrew formulas and casks to install.
-# Anything not declared by a loaded file is pruned after install.
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
 
 [bootstrap.packages]
 "brew-cask:font-iosevka-term-nerd-font" = "latest"  # Iosevka Term patched with Nerd Font icons

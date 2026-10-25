@@ -20,9 +20,8 @@ brew leaves                        # formulae nobody depends on
 mise ls                            # runtimes and mise-managed CLIs
 ```
 
-The post-packages hook runs `mise bootstrap packages prune --yes` on every
-bootstrap, so the active `[bootstrap.packages]` *is* the state: anything not listed gets
-uninstalled. Dropping a non-default machine profile (running without its `-E` and without `miserc.local.toml`) or `mise bootstrap unapply <module>` drops its apps.
+`mise bootstrap packages prune` (manual, never run by bootstrap) makes the active
+`[bootstrap.packages]` *the* state: anything not listed gets uninstalled. Dropping a non-default machine profile (running without its `-E` and without `miserc.local.toml`) or `mise bootstrap unapply <module>` drops its apps.
 
 ## Manual steps `mise bootstrap` cannot do
 
