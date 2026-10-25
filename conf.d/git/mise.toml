@@ -63,8 +63,19 @@ git_email = "xunleii@users.noreply.github.com"
 # re-apply), `template` renders a *.tera file, `absent` removes a retired file.
 
 [dotfiles]
-"~/.config/lazygit" = { source = "home/.config/lazygit", mode = "symlink-each" }
+# -----------------------------------------------------------------------------
+# Git config
+# -----------------------------------------------------------------------------
 "~/.gitconfig" = { source = "home/.gitconfig.tera", mode = "template" }
 "~/.gitignore" = { source = "home/.gitignore", mode = "symlink" }
-"~/.config/fish/functions/__git_remote_slug.fish" = { source = "home/.config/fish/functions/__git_remote_slug.fish", mode = "symlink" }
+
+# -----------------------------------------------------------------------------
+# Git tooling
+# -----------------------------------------------------------------------------
+"~/.config/lazygit" = { source = "home/.config/lazygit", mode = "symlink-each" }
+
+# -----------------------------------------------------------------------------
+# Fish helpers
+# -----------------------------------------------------------------------------
 "~/.config/fish/functions/clone.fish" = { source = "home/.config/fish/functions/clone.fish", mode = "symlink" }
+"~/.config/fish/functions/__git_remote_slug.fish" = { source = "home/.config/fish/functions/__git_remote_slug.fish", mode = "symlink" }

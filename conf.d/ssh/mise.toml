@@ -19,10 +19,21 @@
 # re-apply), `template` renders a *.tera file, `absent` removes a retired file.
 
 [dotfiles]
+# -----------------------------------------------------------------------------
+# Commit signing: trusted keys
+# -----------------------------------------------------------------------------
 "~/.ssh/allowed_signers" = { source = "home/.ssh/allowed_signers.tera", mode = "template" }
+
+# -----------------------------------------------------------------------------
+# Bitwarden SSH agent: wrappers
+# -----------------------------------------------------------------------------
 "~/.config/fish/functions/__bw_exec.fish" = { source = "home/.config/fish/functions/__bw_exec.fish", mode = "symlink" }
 "~/.config/fish/functions/__bw_ssh_sock.fish" = { source = "home/.config/fish/functions/__bw_ssh_sock.fish", mode = "symlink" }
 "~/.config/fish/functions/bwssh.fish" = { source = "home/.config/fish/functions/bwssh.fish", mode = "symlink" }
 "~/.config/fish/functions/bwansible.fish" = { source = "home/.config/fish/functions/bwansible.fish", mode = "symlink" }
 "~/.config/fish/functions/bwansible-playbook.fish" = { source = "home/.config/fish/functions/bwansible-playbook.fish", mode = "symlink" }
+
+# -----------------------------------------------------------------------------
+# Key management
+# -----------------------------------------------------------------------------
 "~/.config/fish/functions/ssh-import-key.fish" = { source = "home/.config/fish/functions/ssh-import-key.fish", mode = "symlink" }

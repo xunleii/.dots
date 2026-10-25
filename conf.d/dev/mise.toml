@@ -45,6 +45,17 @@ doggo = "latest"
 # re-apply), `template` renders a *.tera file, `absent` removes a retired file.
 
 [dotfiles]
+# -----------------------------------------------------------------------------
+# Terminal
+# -----------------------------------------------------------------------------
 "~/.config/ghostty" = { source = "home/.config/ghostty", mode = "symlink-each" }
+
+# -----------------------------------------------------------------------------
+# Editor
+# -----------------------------------------------------------------------------
 "~/.config/zed/settings.json" = { source = "home/.config/zed/settings.json", mode = "symlink" }
+
+# -----------------------------------------------------------------------------
+# Kubernetes
+# -----------------------------------------------------------------------------
 "~/.config/fish/completions/kubectl.fish" = { source = "home/.config/fish/completions/kubectl.fish", mode = "symlink" }

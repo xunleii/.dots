@@ -69,7 +69,7 @@ Remove a module with `mise bootstrap unapply <module>`.
 Add a module: create `conf.d/<name>/mise.toml` (+ per-OS files) with
 its `[dotfiles]` (`source = "home/..."`, relative to the module folder), put the
 files in `conf.d/<name>/home/`, then `mise trust` the files. Add a dotfile
-or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`.
+or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`; put a dotfile in the matching commented group (or add a new commented group).
 
 ## Tasks
 

@@ -34,7 +34,7 @@ Tera gotchas, safe testing).
 **Never edit files on the live machine to fix something — edit the source in
 this repo instead**, then apply. If you're asked to change `~/.config/foo` or
 similar, find its entry in `[dotfiles]` (in `config.toml` / `config.macos.toml` or the owning `conf.d/<name>/mise[.macos].toml`)
-and edit the `source` it points to (usually `conf.d/<name>/home/.config/foo`). Dotfiles are
+and edit the `source` it points to (usually `conf.d/<name>/home/.config/foo`). A new dotfile goes in the matching commented group of `[dotfiles]` (or a new commented group). Dotfiles are
 symlinks into this repo, so for those the edit is live (and already in git); templates need an apply. A fix made only on disk is clobbered
 by the next apply.
 

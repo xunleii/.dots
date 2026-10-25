@@ -82,16 +82,27 @@ fzf = "latest"
 # re-apply), `template` renders a *.tera file, `absent` removes a retired file.
 
 [dotfiles]
-"~/.config/atuin" = { source = "home/.config/atuin", mode = "symlink-each" }
-"~/.config/starship.toml" = { source = "home/.config/starship.toml", mode = "symlink" }
-"~/.config/fish/.gitignore" = { source = "home/.config/fish/.gitignore", mode = "symlink" }
-"~/.config/fish/fish_plugins" = { source = "home/.config/fish/fish_plugins", mode = "symlink" }
-"~/.config/fish/functions/fish_greeting.fish" = { source = "home/.config/fish/functions/fish_greeting.fish", mode = "symlink" }
-"~/.config/fish/completions/fd.fish" = { source = "home/.config/fish/completions/fd.fish", mode = "symlink" }
+# -----------------------------------------------------------------------------
+# Fish config: conf.d files (loaded in numeric order)
+# -----------------------------------------------------------------------------
 "~/.config/fish/conf.d/00-base.fish" = { source = "home/.config/fish/conf.d/00-base.fish", mode = "symlink" }
 "~/.config/fish/conf.d/10-keybindings.fish" = { source = "home/.config/fish/conf.d/10-keybindings.fish", mode = "symlink" }
 "~/.config/fish/conf.d/20-prompt.fish" = { source = "home/.config/fish/conf.d/20-prompt.fish", mode = "symlink" }
 "~/.config/fish/conf.d/25-tools.fish" = { source = "home/.config/fish/conf.d/25-tools.fish", mode = "symlink" }
+"~/.config/fish/conf.d/40-environment.fish" = { source = "home/.config/fish/conf.d/40-environment.fish.tera", mode = "template" }
 "~/.config/fish/conf.d/50-aliases.fish" = { source = "home/.config/fish/conf.d/50-aliases.fish", mode = "symlink" }
 "~/.config/fish/conf.d/60-functions.fish" = { source = "home/.config/fish/conf.d/60-functions.fish", mode = "symlink" }
-"~/.config/fish/conf.d/40-environment.fish" = { source = "home/.config/fish/conf.d/40-environment.fish.tera", mode = "template" }
+
+# -----------------------------------------------------------------------------
+# Fish: functions, completions and plugins
+# -----------------------------------------------------------------------------
+"~/.config/fish/functions/fish_greeting.fish" = { source = "home/.config/fish/functions/fish_greeting.fish", mode = "symlink" }
+"~/.config/fish/completions/fd.fish" = { source = "home/.config/fish/completions/fd.fish", mode = "symlink" }
+"~/.config/fish/fish_plugins" = { source = "home/.config/fish/fish_plugins", mode = "symlink" }
+"~/.config/fish/.gitignore" = { source = "home/.config/fish/.gitignore", mode = "symlink" }
+
+# -----------------------------------------------------------------------------
+# Prompt and history
+# -----------------------------------------------------------------------------
+"~/.config/starship.toml" = { source = "home/.config/starship.toml", mode = "symlink" }
+"~/.config/atuin" = { source = "home/.config/atuin", mode = "symlink-each" }
