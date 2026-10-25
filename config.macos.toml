@@ -16,24 +16,9 @@
 # Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
 
 [tasks.check-volumes]
-description = "Abort early when Runtimes, Spaces (and /nix when the nix module is enabled) is not a mounted, dedicated APFS volume"
-run = """
-# A plain folder on the boot volume reports MountPoint "/", so it fails the equality below.
-dedicated_apfs() {
-  info=$(diskutil info -plist "$1" 2>/dev/null)
-  mp=$(echo "$info" | plutil -extract MountPoint raw - 2>/dev/null)
-  fs=$(echo "$info" | plutil -extract FilesystemType raw - 2>/dev/null)
-  [ "$mp" = "$1" ] && [ "$fs" = apfs ] && return 0
-  echo "check-volumes: $1 is not a dedicated APFS volume (mount point: ${mp:-none}, fs: ${fs:-none})" >&2
-  exit 1
-}
-for vol in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
-  [ -d "$vol" ] || { echo "check-volumes: $vol is not mounted" >&2; exit 1; }
-  dedicated_apfs "$vol"
-done
-# /nix only matters on devices that opted in to the nix module (`nix = "true"`, set by the `nix` profile: `mise -E home,nix bootstrap`).
-[ "$MISE_VAR_NIX" != true ] || dedicated_apfs /nix
-"""
+description = "Abort early unless Runtimes and Spaces (and /nix with the nix profile) are mounted, dedicated APFS volumes"
+# Absolute path, so the task does not depend on the working directory.
+run = "sh ${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/check-volumes.sh"
 
 # =============================================================================
 # Bootstrap
@@ -42,7 +27,8 @@ done
 # Hooks run EVERY time, so keep them safe to repeat.
 
 [bootstrap.hooks.pre-packages]
-run = ["mise run check-volumes"]
+# --skip-tools: `mise run` would otherwise install every global tool before the packages phase.
+run = ["mise run --skip-tools check-volumes"]
 
 # =============================================================================
 # Packages

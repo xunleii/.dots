@@ -93,32 +93,8 @@ MISE_VAR_NIX = "{{ vars.nix | default(value=\"\") }}"
 
 [tasks.persist-profile]
 description = "Remember the machine profile (-E <profile>) in miserc.local.toml, once"
-# `mise -E radiofrance bootstrap --adopt <repo>` only applies the profile for that run. Without it
-# later commands (mise dot apply, mise bootstrap) would see no profile: default git_email, and the
-# profile's packages missing. So the first bootstrap writes it to the machine-local, gitignored
-# miserc.local.toml. Never overwrites: edit that file to change the profile of a machine.
-# Neither hooks nor templates receive the -E value (MISE_ENV stays empty), so besides $MISE_ENV
-# the task reads the `-E` / `--env` option from the command line of the parent `mise bootstrap`.
-run = """
-profile="${MISE_ENV:-}"
-if [ -z "$profile" ]; then
-  pid=$$
-  for _ in 1 2 3 4 5 6 7 8; do
-    pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
-    [ -n "$pid" ] && [ "$pid" -gt 1 ] || break
-    args=$(ps -o args= -p "$pid" 2>/dev/null)
-    case " $args " in *" bootstrap "*)
-      profile=$(printf '%s\\n' "$args" | sed -n -E 's/.* (-E|--env)[ =]([^ ]+).*/\\2/p')
-      [ -n "$profile" ] && break ;;
-    esac
-  done
-fi
-[ -n "$profile" ] || exit 0
-rc="${MISE_CONFIG_DIR:-$HOME/.config/mise}/miserc.local.toml"
-[ -e "$rc" ] && exit 0
-printf 'env = ["%s"]\\n' "$(printf '%s' "$profile" | sed 's/,/", "/g')" > "$rc"
-echo "persist-profile: wrote $rc (env = $profile)"
-"""
+# Why and how: see the script. Absolute path, so the task does not depend on the working directory.
+run = "sh ${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/persist-profile.sh"
 
 # =============================================================================
 # Bootstrap

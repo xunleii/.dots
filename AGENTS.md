@@ -23,7 +23,7 @@ they do not add to it. The root
 `git_email` defaults in `conf.d/git` (`git_signingkey` is local, see below); templates keep `| default(value="")` as a safety net; a profile is always active).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
 module folder; files are symlinked into the repo, only `*.tera` files are
-rendered templates, copied). Base task bodies live in `scripts/` (`banner.sh`),
+rendered templates, copied). Base task bodies live in `scripts/` (`banner.sh`, `check-volumes.sh`, `persist-profile.sh`),
 module task bodies in `conf.d/<name>/scripts/`. A fresh Mac: install mise, then
 `mise bootstrap --adopt https://github.com/xunleii/.dots.git` (add `-E radiofrance` for a non-default profile) into
 an empty `~/.config/mise`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) for the
@@ -50,7 +50,7 @@ This repo is **single-platform on purpose**. Do not add portability: no
 Linux/WSL/Windows branches, no per-distro package abstraction, no CI images for
 other OSes.
 
-The `check-volumes` task (inlined in `config.macos.toml`) is the `pre-packages`
+The `check-volumes` task (body in `scripts/check-volumes.sh`) is the `pre-packages`
 bootstrap hook, defined in `config.macos.toml` (so macOS only), and runs on every
 `mise bootstrap` before anything is installed. It fails hard when the
 Runtimes/Spaces volumes are not mounted. macOS-only content goes in

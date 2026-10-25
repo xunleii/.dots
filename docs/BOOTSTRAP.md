@@ -11,7 +11,7 @@ gone. Everything below is what to know when editing the setup.
 | Path | Role |
 | --- | --- |
 | `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, post-packages hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
-| `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (inlined) |
+| `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (body in `scripts/`) |
 | `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
@@ -19,7 +19,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
 | `conf.d/git/scripts/` | `setup-signing-key.sh`, the body of the `setup-signing-key` task |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
-| `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
+| `scripts/` | `check-volumes.sh`, `persist-profile.sh` (bodies of the base tasks); `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
 Every config file carries the dots banner and a header explaining its role and documenting its sections.
 Every `[dotfiles]` entry points into its own `home/` (module), or `scripts/` for `dots-banner`.
@@ -112,7 +112,7 @@ Caveats:
 
 `mise bootstrap` order, with this repo's hooks (hooks of all active modules run):
 
-1. `pre-packages` (`config.macos.toml`): `check-volumes`
+1. `pre-packages` (`config.macos.toml`): `check-volumes` (body in `scripts/check-volumes.sh`, run with `--skip-tools` so no tool is installed yet)
 2. `[bootstrap.packages]` (Homebrew)
 3. `post-packages`: `persist-profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
 4. `[dotfiles]`
@@ -120,7 +120,7 @@ Caveats:
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
 
 `check-volumes` is a hard
-failure (macOS only, a task inlined in `config.macos.toml`, no `uname` guard): it aborts before anything is installed unless both
+failure (macOS only, task body in `scripts/check-volumes.sh`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
 refused). `/nix` gets the same check when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
