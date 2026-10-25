@@ -16,8 +16,9 @@
 # Inputs (exported by config.toml [env]): MISE_VAR_RUNTIMES_ROOT, MISE_VAR_SPACES_ROOT.
 # Exit: 0 when everything is in place, 1 with the reason on stderr otherwise.
 
-UI_TASK="dots:check:volumes"
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
+
+ui_title "Volumes"
 
 for volume in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
   [ -d "$volume" ] || ui_fail "$volume is not mounted"

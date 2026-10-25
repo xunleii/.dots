@@ -17,8 +17,9 @@
 # conf.d/machines/mise.nix.toml).
 # Exit: 0 when /nix is fine or not wanted, 1 with the reason on stderr otherwise.
 
-UI_TASK="dots:check:nix"
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
+
+ui_title "Nix volume"
 
 if [ "$MISE_VAR_NIX" != true ]; then
   ui_step "/nix not checked (nix profile off)"

@@ -1,6 +1,5 @@
 # APFS volume helpers shared by the dots:check:* tasks. Source it, do not run it:
 #
-#   UI_TASK="dots:check:something"
 #   . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
 #
 # Needs ui.sh (sourced here): require_apfs_volume reports through ui_ok / ui_fail.

@@ -16,8 +16,9 @@
 # Needs: ssh-add (system) with a reachable agent ($SSH_AUTH_SOCK), fzf, gum (colours, optional).
 # Exit: 0 when the key is written, 1 when the agent has no key or the pick is cancelled.
 
-UI_TASK="dots:setup:signing:key"
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+ui_title "Signing key"
 
 out="${MISE_CONFIG_DIR:-$HOME/.config/mise}/conf.d/git/mise.local.toml"
 
@@ -29,5 +30,5 @@ key=$(printf '%s\n' "$keys" | fzf --prompt='signing key> ' --height=40% --revers
   ui_fail "nothing selected, nothing written"
 
 printf '[vars]\ngit_signingkey = "%s"\n' "$key" > "$out"
-ui_ok "wrote $out"
-ui_step "next: mise dot apply"
+ui_ok "saved $out"
+ui_hint "mise dot apply"

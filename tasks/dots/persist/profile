@@ -19,7 +19,6 @@
 # the parent `mise bootstrap` command line (hooks and templates do not receive it).
 # Output: miserc.local.toml containing e.g. env = ["home", "nix"].
 
-UI_TASK="dots:persist:profile"
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
 
 rc="${MISE_CONFIG_DIR:-$HOME/.config/mise}/miserc.local.toml"
@@ -47,4 +46,5 @@ profile="${MISE_ENV:-$(profile_from_parent)}"
 
 # "home,nix" -> env = ["home", "nix"]
 printf 'env = ["%s"]\n' "$(printf '%s' "$profile" | sed 's/,/", "/g')" > "$rc"
-ui_ok "wrote $rc (env = $profile)"
+ui_title "Machine profile"
+ui_ok "saved env = $profile to $rc"
