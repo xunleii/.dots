@@ -105,6 +105,8 @@ persisted in `miserc.local.toml` counts as dropped: the run falls back to `home`
 packages are not installed; `dots:persist:profile` normally writes the file,
 unless bootstrap failed before this hook). The list is hand-curated: never suggest a
 bare `brew install`, it is drift that a prune removes. Edit the right `config*.toml` / `conf.d/` file instead.
+Upgrades go through `mise bootstrap packages upgrade`; `[bootstrap.brew] adopt = true` and the one-time
+`brew upgrade --cask` step are explained in [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
 
 ## Where a new tool goes
 

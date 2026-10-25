@@ -133,6 +133,14 @@ Caveats:
 5. `post-dotfiles` (fish module): `dots:fish:plugins`
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
 
+Package upgrades: `mise bootstrap packages upgrade` only upgrades casks mise itself installed
+(it records a receipt in the Caskroom); casks installed by Homebrew are skipped ("installed and
+managed by Homebrew; leaving unchanged"). `[bootstrap.brew] adopt = true` (`config.toml`) lets mise
+take over a Homebrew-installed cask whose app is identical to the cask's current download (a single
+entry can opt out with `{ adopt = false }`). One-time migration: `brew upgrade --cask`, then
+`mise bootstrap packages apply`; after that `packages upgrade` covers them. Unverified in practice:
+that `apply` adopts an already brew-installed cask.
+
 `dots:check:volumes` is a hard
 failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
