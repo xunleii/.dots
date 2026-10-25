@@ -1,0 +1,92 @@
+#!/bin/sh
+#MISE description="Move Homebrew-installed casks under mise (adopt), one at a time"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# dots:packages:adopt -- hand casks that Homebrew installed over to mise, so that
+# `mise bootstrap packages upgrade` can upgrade them.
+#
+# Usage:
+#   mise run dots:packages:adopt <cask>...     the named casks
+#   mise run dots:packages:adopt --all         every declared cask Homebrew still owns (asks first)
+#
+# Why: mise only manages casks it installed itself (a .mise-cask.toml receipt in the Caskroom). A
+# cask Homebrew installed is "installed and managed by Homebrew; leaving unchanged": `apply` and
+# `upgrade` skip it, and `[bootstrap.brew] adopt = true` (config.toml) only acts on a cask that is
+# NOT installed yet. So per cask this task:
+#   1. brew upgrade --cask <cask>    the installed app must match the cask's current download
+#   2. moves the cask's Caskroom dir to a backup (the app in /Applications is not touched), so
+#      Homebrew no longer lists it
+#   3. mise bootstrap packages apply brew-cask:<cask>    mise downloads it and, with adopt, takes
+#      over the identical app (or reinstalls it if the content differs)
+# If step 3 fails the Caskroom dir is put back. Homebrew no longer sees an adopted cask: from then
+# on `mise bootstrap packages upgrade` is its upgrade path, not `brew upgrade --cask`.
+#
+# Refused: casks from third-party taps (untrusted) and pkg/installer casks (Tailscale, Fusion...).
+# Quit the apps first: replacing a running app, or the terminal you run this from, is asking for it.
+# Tried by hand on rsyncui; not on the others yet.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+caskroom=$(brew --caskroom)
+backup="${XDG_STATE_HOME:-$HOME/.local/state}/dots-caskroom-backup"
+
+# Declared casks that Homebrew owns (Caskroom dir without a mise receipt).
+brew_owned_casks() {
+  mise bootstrap packages status 2>/dev/null | awk '$1 == "brew-cask" { print $2 }' | while read -r cask; do
+    dir="$caskroom/${cask##*/}"
+    [ -d "$dir" ] || continue
+    ls "$dir"/*/.mise-cask.toml >/dev/null 2>&1 || echo "$cask"
+  done
+}
+
+adopt_one() { # <cask>
+  cask=$1
+  token=${cask##*/}
+  dir="$caskroom/$token"
+
+  case "$cask" in */*) ui_warn "$cask: third-party tap, skipped"; return 0 ;; esac
+  [ -d "$dir" ] || { ui_warn "$cask: not installed by Homebrew, skipped"; return 0; }
+  if ls "$dir"/*/.mise-cask.toml >/dev/null 2>&1; then
+    ui_ok "$cask: already managed by mise"
+    return 0
+  fi
+  if brew info --cask --json=v2 "$cask" 2>/dev/null | grep -Eq '"(pkg|installer)"'; then
+    ui_warn "$cask: pkg/installer cask, skipped"
+    return 0
+  fi
+
+  ui_step "$cask: brew upgrade --cask"
+  brew upgrade --cask "$cask" >/dev/null 2>&1 || ui_warn "$cask: brew upgrade did not succeed, continuing"
+
+  mkdir -p "$backup"
+  rm -rf "$backup/$token"
+  mv "$dir" "$backup/$token" || { ui_warn "$cask: cannot move $dir, skipped"; return 0; }
+
+  ui_step "$cask: mise bootstrap packages apply"
+  if mise bootstrap packages apply "brew-cask:$cask" >/dev/null 2>&1; then
+    rm -rf "$backup/$token"
+    ui_ok "$cask: now managed by mise"
+  else
+    rm -rf "$dir"
+    mv "$backup/$token" "$dir"
+    ui_warn "$cask: mise failed, Homebrew's Caskroom dir restored"
+  fi
+}
+
+ui_title "Moving Homebrew casks under mise"
+
+[ $# -gt 0 ] || ui_fail "usage: mise run dots:packages:adopt <cask>... | --all"
+
+if [ "$1" = "--all" ]; then
+  set -- $(brew_owned_casks)
+  [ $# -gt 0 ] || { ui_ok "nothing to adopt"; exit 0; }
+  ui_step "candidates: $*"
+  printf '  continue? [y/N] ' >&2
+  read -r answer < /dev/tty
+  [ "$answer" = y ] || ui_fail "aborted"
+fi
+
+for cask in "$@"; do
+  adopt_one "$cask"
+done

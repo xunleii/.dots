@@ -19,7 +19,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
 | `conf.d/nix/mise-tasks/` | File task `dots/check/nix` (`dots:check:nix`), run by the nix module's own `pre-packages` hook |
-| `tasks/` | File tasks `dots/check/volumes` and `dots/persist/profile` (mise's global task dir) |
+| `tasks/` | File tasks `dots/check/volumes`, `dots/persist/profile` and `dots/packages/adopt` (mise's global task dir) |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task); `ui.sh` (output helper) and `volumes.sh` (`diskutil_field`, `require_apfs_volume`; sources `ui.sh`), both sourced by task scripts, see [Tasks](#tasks) |
 
@@ -134,12 +134,17 @@ Caveats:
 6. tools (`[tools]` of the base config and of each module); no `post-tools` hook
 
 Package upgrades: `mise bootstrap packages upgrade` only upgrades casks mise itself installed
-(it records a receipt in the Caskroom); casks installed by Homebrew are skipped ("installed and
-managed by Homebrew; leaving unchanged"). `[bootstrap.brew] adopt = true` (`config.toml`) lets mise
-take over a Homebrew-installed cask whose app is identical to the cask's current download (a single
-entry can opt out with `{ adopt = false }`). One-time migration: `brew upgrade --cask`, then
-`mise bootstrap packages apply`; after that `packages upgrade` covers them. Unverified in practice:
-that `apply` adopts an already brew-installed cask.
+(it records a `.mise-cask.toml` receipt in the Caskroom); a cask still listed by Homebrew is skipped
+("installed and managed by Homebrew; leaving unchanged") and `apply` says "already installed".
+`[bootstrap.brew] adopt = true` (`config.toml`) only acts on a cask that is NOT installed yet: mise
+downloads it and takes over the identical app on disk instead of replacing it. So to hand an
+existing Homebrew cask over, run `mise run dots:packages:adopt <cask>...` (or `--all`, which asks
+first; quit the apps first). Per cask it runs `brew upgrade --cask`, moves the Caskroom dir to
+`~/.local/state/dots-caskroom-backup` (the app in `/Applications` is untouched), runs
+`mise bootstrap packages apply brew-cask:<cask>`, and restores the dir if that fails. It refuses
+third-party-tap casks and pkg/installer casks (Tailscale, Fusion). After adoption Homebrew no longer
+lists the cask: upgrade with `mise bootstrap packages upgrade`, not `brew upgrade --cask`. Verified
+by hand on `rsyncui` only; the task itself was tested with stub `brew`/`mise`.
 
 `dots:check:volumes` is a hard
 failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it aborts before anything is installed unless both

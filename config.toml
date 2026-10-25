@@ -99,10 +99,11 @@ MISE_VAR_NIX = "{{ vars.nix | default(value=\"\") }}"
 [bootstrap.mise_shell_activate]
 fish = "auto"
 
-# Homebrew behaviour. adopt: a cask already installed by Homebrew is taken over by mise when its
-# content is identical to the cask's download, so `mise bootstrap packages upgrade` can upgrade it
-# (it skips Homebrew-managed casks otherwise). Run `brew upgrade --cask` once first so the installed
-# app matches the current download. A single entry can opt out with `{ adopt = false }`.
+# Homebrew behaviour. adopt: when mise installs a cask whose app is already on disk and identical to
+# the cask's download, it takes the app over instead of replacing it. It does NOT act on a cask
+# Homebrew still lists (mise then reports "installed and managed by Homebrew" and skips it): move
+# those over with `mise run dots:packages:adopt <cask>...`. A single entry can opt out with
+# `{ adopt = false }`.
 [bootstrap.brew]
 adopt = true
 
