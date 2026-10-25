@@ -46,5 +46,5 @@ profile="${MISE_ENV:-$(profile_from_parent)}"
 
 # "home,nix" -> env = ["home", "nix"]
 printf 'env = ["%s"]\n' "$(printf '%s' "$profile" | sed 's/,/", "/g')" > "$rc"
-ui_title "Machine profile"
+ui_title "Saving the machine profile for later runs"
 ui_ok "saved env = $profile to $rc"

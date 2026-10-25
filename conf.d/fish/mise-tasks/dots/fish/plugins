@@ -1,0 +1,39 @@
+#!/bin/sh
+#MISE description="fisher update, only when fish_plugins changed"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# dots:fish:plugins -- update the fisher plugins when ~/.config/fish/fish_plugins changed.
+#
+# Runs as the post-dotfiles hook (conf.d/fish/mise.toml), right after fish_plugins is deployed, and
+# by hand: mise run dots:fish:plugins. Replaces chezmoi's run_onchange_after_fish_plugins.
+#
+# Flow: checksum fish_plugins and compare it with the one stored after the last successful update
+# ($XDG_STATE_HOME/dots-fisher, default ~/.local/state/dots-fisher). Unchanged: exit silently. Changed:
+# install fisher if missing, `fisher update`, then store the new checksum (only on success, so a
+# failed update is retried on the next run).
+#
+# fish comes from Homebrew, and this hook runs before the `tools` phase, when Homebrew's bin dir may
+# not be on PATH yet: look for fish in its usual prefixes first.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+plugins="$HOME/.config/fish/fish_plugins"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}"
+state="$state_dir/dots-fisher"
+
+sum=$(shasum -a 256 < "$plugins" | cut -d' ' -f1)
+[ "$sum" = "$(cat "$state" 2>/dev/null)" ] && exit 0
+
+ui_title "Updating the fish plugins (fisher)"
+command -v fish >/dev/null 2>&1 || ui_fail "fish not found (Homebrew installs it in the packages phase)"
+
+ui_step "fish_plugins changed, running fisher update"
+fish -c 'if not functions -q fisher; curl -sL https://git.io/fisher | source; end; fisher update' ||
+  ui_fail "fisher update failed, it will be retried on the next run"
+
+mkdir -p "$state_dir"
+printf %s "$sum" > "$state"
+ui_ok "plugins up to date"

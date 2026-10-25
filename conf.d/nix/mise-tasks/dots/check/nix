@@ -19,7 +19,7 @@
 
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
 
-ui_title "Nix volume"
+ui_title "Checking the /nix volume"
 
 if [ "$MISE_VAR_NIX" != true ]; then
   ui_step "/nix not checked (nix profile off)"

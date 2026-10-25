@@ -1,13 +1,13 @@
 # Tiny output helpers shared by the task scripts. Source it, do not run it:
 #
 #   . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
-#   ui_title "Signing key"
+#   ui_title "Choosing the key that signs your commits"
 #   ui_step  "pick the key that signs your commits"
 #   ui_ok    "wrote ~/.config/mise/conf.d/git/mise.local.toml"
 #
 # Output is a bold title, then one short line per event under a 4-character label:
 #
-#   Signing key
+#   Choosing the key that signs your commits
 #     ..  pick the key that signs your commits
 #     ok  wrote ~/.config/mise/conf.d/git/mise.local.toml
 #     ->  mise dot apply

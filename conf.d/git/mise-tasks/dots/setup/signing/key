@@ -18,7 +18,7 @@
 
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
 
-ui_title "Signing key"
+ui_title "Choosing the key that signs your commits"
 
 out="${MISE_CONFIG_DIR:-$HOME/.config/mise}/conf.d/git/mise.local.toml"
 

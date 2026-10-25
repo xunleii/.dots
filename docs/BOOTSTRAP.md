@@ -16,7 +16,7 @@ gone. Everything below is what to know when editing the setup.
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
-| `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `dots:fish:plugins` toml task |
+| `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
 | `conf.d/nix/mise-tasks/` | File task `dots/check/nix` (`dots:check:nix`), run by the nix module's own `pre-packages` hook |
 | `tasks/` | File tasks `dots/check/volumes` and `dots/persist/profile` (mise's global task dir) |
@@ -76,7 +76,7 @@ or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`; put 
 - **Naming**: `dots:<area>:<action>` (`dots:check:volumes`, `dots:persist:profile`, `dots:setup:signing:key`, `dots:fish:plugins`); `:` is the separator.
 - **File tasks**: `tasks/` at the repo root (= `~/.config/mise/tasks`, mise's global task dir) and `conf.d/<name>/mise-tasks/` in a module (`.mise/tasks/` also works). The path gives the name, `/` becomes `:` (`tasks/dots/check/volumes` is `dots:check:volumes`). `conf.d/<m>/tasks/` is NOT discovered.
 - **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the preflight checks (`dots:check:volumes`, `dots:check:nix`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
-- **Toml task**: only `dots:fish:plugins` (`conf.d/fish/mise.toml`, wrapper around `conf.d/fish/scripts/fish-plugins.fish`): it needs a Homebrew PATH preamble because fish does not exist yet in the hook phase.
+- **All tasks are file tasks**: there is no toml task.
 - **`scripts/ui.sh`**: sourced by task scripts; a bold `ui_title`, then one short line per event under a label (`ui_step` `..`, `ui_ok` `ok`, `ui_hint` `->`, `ui_warn` `!!`, `ui_fail` `xx`), `$HOME` shown as `~`, coloured through `gum` when installed and on a tty, plain text otherwise (also if gum fails, or before Homebrew installs it). Tasks run quiet (no `[task] $ cmd` echo).
 - **Hooks** call tasks with `mise run --skip-tools <name>`, so no tool gets installed during bootstrap.
 - **Tool declaration**: a file task declares each non-system tool it uses (`fzf`, `gum`, ...) in its `#MISE` header, all on one line in the [inline-table form](https://mise.jdx.dev/tasks/file-tasks.html): `#MISE tools={fzf="latest", gum="latest"}` (or `#MISE tools={gum="latest"}`). A task that only reaches gum through `scripts/ui.sh` still declares it (output falls back to plain text without it). System commands (`ssh-add`, `diskutil`, `plutil`, `ps`, `sed`) are not declared. Since hooks use `--skip-tools`, declared tools are not installed there: they must exist another way (Homebrew `brew:gum`, or the module's global `[tools]` for `fzf`).

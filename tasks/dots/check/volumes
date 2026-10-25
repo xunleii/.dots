@@ -18,7 +18,7 @@
 
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/volumes.sh"
 
-ui_title "Volumes"
+ui_title "Checking the Runtimes and Spaces volumes"
 
 for volume in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
   [ -d "$volume" ] || ui_fail "$volume is not mounted"

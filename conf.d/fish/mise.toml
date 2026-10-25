@@ -13,30 +13,12 @@
 # =============================================================================
 
 # =============================================================================
-# Tasks
-# =============================================================================
-# Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
-
-[tasks."dots:fish:plugins"]
-description = "fisher update, only when fish_plugins changed"
-# This hook runs before the `tools` phase and right after packages, when Homebrew's bin dir may not be
-# in mise's PATH yet. Look for fish in the usual Homebrew prefixes first; if it is still missing
-# (Linux without brew), let mise fetch a static build for this one run.
-run = """
-PATH="/opt/homebrew/bin:/usr/local/bin:/home/linuxbrew/.linuxbrew/bin:$PATH"
-if command -v fish >/dev/null 2>&1; then
-  fish scripts/fish-plugins.fish
-else
-  mise exec aqua:fish-shell/fish-shell@latest -- fish scripts/fish-plugins.fish
-fi
-"""
-
-# =============================================================================
 # Bootstrap
 # =============================================================================
 # What `mise bootstrap` does around its phases: shell activation and hooks.
 # Hooks run EVERY time, so keep them safe to repeat.
 
+# Task: conf.d/fish/mise-tasks/dots/fish/plugins (file task, documented in its header).
 [bootstrap.hooks.post-dotfiles]
 # --skip-tools: `mise run` would otherwise install every global tool first, before the `tools`
 # phase (and before uv/pipx exist for the pipx: tools).
