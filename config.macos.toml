@@ -43,7 +43,6 @@ run = ["mise run --skip-tools dots:check:volumes"]
 "brew-cask:betterdisplay" = "latest"  # external display management
 "brew-cask:raycast" = "latest"  # launcher / productivity toolbox
 "brew-cask:appcleaner" = "latest"  # thorough application uninstaller
-"brew-cask:rar" = "latest"  # RAR archive tool
 "brew-cask:rsyncui" = "latest"  # GUI for rsync
 
 # -----------------------------------------------------------------------------
