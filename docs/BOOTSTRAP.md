@@ -12,12 +12,12 @@ gone. Everything below is what to know when editing the setup.
 | --- | --- |
 | `config.toml` | Base global config: `[vars]`, `[env]`, `[settings]`, `[tools]` (`usage`), shell activation, prune hook, general `[bootstrap.packages]`, shared `[dotfiles]` and retired `absent` targets |
 | `config.macos.toml` | macOS base: general casks, GNU userland, the `check-volumes` task and its `pre-packages` hook (inlined) |
-| `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["personal"]`: default machine profile |
+| `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
-| `conf.d/machines/mise.{personal,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `personal` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
+| `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
 Every config file carries the dots banner and a header explaining its role and documenting its sections.
@@ -47,7 +47,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
 | `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
 | `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim, orbstack |
-| `personal`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (personal only) |
+| `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email`, `git_signingkey` (home only) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
 `platform_overrides.macos`.
@@ -74,16 +74,16 @@ Needs `git`.
 
 ```sh
 curl https://mise.run | sh
-mise bootstrap --adopt https://github.com/xunleii/.dots.git                # personal (default)
+mise bootstrap --adopt https://github.com/xunleii/.dots.git                # home (default)
 mise -E radiofrance bootstrap --adopt https://github.com/xunleii/.dots.git  # other profile
 ```
 
 `--adopt` clones the repo's default branch into `$MISE_CONFIG_DIR` (default
 `~/.config/mise`) and bootstraps from it. To try a branch, `?ref=<branch>` on
-the URL may work (unverified). The machine profile (`personal` or `radiofrance`,
-i.e. `conf.d/machines/mise.<name>.toml`) defaults to `personal` (`env` in
+the URL may work (unverified). The machine profile (`home` or `radiofrance`,
+i.e. `conf.d/machines/mise.<name>.toml`) defaults to `home` (`env` in
 `miserc.toml`); `-E` selects another one (comma list allowed) and REPLACES the
-default, it does not add to it. A personal machine needs no `-E`.
+default, it does not add to it. A home machine needs no `-E`.
 
 Caveats:
 
@@ -96,8 +96,8 @@ Caveats:
   does nothing without `-E`. It replaces the `miserc.toml` default too. Later `mise dot apply|diff` and `mise bootstrap`
   need no `-E`. To change the profile, edit that file by hand. If bootstrap
   failed before the post-packages hook, no file is written: rerun with `-E` or
-  create it manually, else a bare `mise bootstrap` falls back to `personal`
-  (personal email, personal packages added, the omitted profile's packages pruned).
+  create it manually, else a bare `mise bootstrap` falls back to `home`
+  (home email, home packages added, the omitted profile's packages pruned).
 - **How `persist-profile` finds `-E`.** Workaround: hooks and templates do not
   receive the `-E` value (`MISE_ENV` stays empty in a hook, even with `-E`).
   The task uses `$MISE_ENV` if set, else walks up the process tree and reads
@@ -123,7 +123,7 @@ failure (macOS only, a task inlined in `config.macos.toml`, no `uname` guard): i
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
 refused). `/nix` gets the same check when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
-sets `nix = "true"`): `mise -E personal,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
+sets `nix = "true"`): `mise -E home,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
 replaces the default, so list the machine profile too). Without it, `/nix` is not checked.
 
 ## Identity
@@ -132,10 +132,10 @@ No secrets to provision. The git identity is plain `[vars]`, public on
 purpose since it ends up in every commit.
 
 - `git_name`: in `config.toml`.
-- `git_email`: per machine, in the machine file (`personal`: GitHub noreply;
+- `git_email`: per machine, in the machine file (`home`: GitHub noreply;
   `radiofrance`: work address). No base default (`config.toml` loads after
-  `conf.d` and would override machine files); no profile selected falls back to `personal` (default), so it is never empty.
-- `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.personal.toml`.
+  `conf.d` and would override machine files); no profile selected falls back to `home` (default), so it is never empty.
+- `git_signingkey`: per machine (Secretive public key), in `conf.d/machines/mise.home.toml`.
   Empty means no signing.
 
 ## chezmoi to mise

@@ -8,7 +8,7 @@
 #                           Machine - nix
 #
 # Not a machine: a feature flag for devices with a dedicated /nix APFS volume.
-# Combine it with a profile, since -E replaces the default: mise -E personal,nix bootstrap
+# Combine it with a profile, since -E replaces the default: mise -E home,nix bootstrap
 # (or radiofrance,nix). Loaded last, wins on conflicts.
 # =============================================================================
 

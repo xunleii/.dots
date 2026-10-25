@@ -12,8 +12,8 @@ only. It is extended by modules, folders `conf.d/<name>/` (`fish`, `git`, `ssh`,
 `claude`, `dev`), each with `mise.toml` plus `mise.macos.toml` / `mise.linux.toml`
 where needed. Modules are always loaded (not optional) and globally, so their
 `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` apply everywhere;
-machine files `conf.d/machines/mise.{personal,radiofrance}.toml` carry the
-differences. `miserc.toml` sets `env = ["personal"]`, so `personal` is the default
+machine files `conf.d/machines/mise.{home,radiofrance}.toml` carry the
+differences. `miserc.toml` sets `env = ["home"]`, so `home` is the default
 profile; `-E` (`mise -E radiofrance bootstrap`, comma list allowed), `MISE_ENV` or
 `~/.config/mise/miserc.local.toml` (gitignored; written automatically by the
 `persist-profile` task, first command of the post-packages hook, from the first `-E`
@@ -63,7 +63,7 @@ Concretely, when editing a template here:
   `os() == "macos"` in a template only when one file serves both).
 - **Do** still branch where a real difference exists (e.g. Intel vs Apple
   Silicon release assets).
-- **Do** still vary by machine, with the machine files (`conf.d/machines/mise.{personal,radiofrance}.toml`): extra packages and `[vars]` overrides
+- **Do** still vary by machine, with the machine files (`conf.d/machines/mise.{home,radiofrance}.toml`): extra packages and `[vars]` overrides
   (`git_email`, `git_signingkey`) live there, and templates read the vars.
   Those are not OS branches.
 
@@ -94,14 +94,14 @@ flow (e.g. Secretive: open the app once and generate a Secure Enclave key
 yourself, there's no CLI for that) needs a manual step afterwards, and any
 config value that depends on it has to be updated by hand, then re-applied.
 For the signing key, that value is the `git_signingkey` var in the
-machine file (e.g. `conf.d/machines/mise.personal.toml`; empty means no signing); update it, then
+machine file (e.g. `conf.d/machines/mise.home.toml`; empty means no signing); update it, then
 re-run `mise bootstrap`. There are no secrets in this setup: `git_name` is a plain
 `[vars]` entry in `config.toml`; `git_email` lives in the machine files.
 
 The post-packages hook runs `persist-profile`, then `mise bootstrap packages prune --yes`, so anything
 **not** declared in `[bootstrap.packages]` gets uninstalled on the next
 bootstrap, across the active files (a non-default profile selected only with `-E` and not
-persisted in `miserc.local.toml` counts as dropped: the run falls back to `personal`, adds
+persisted in `miserc.local.toml` counts as dropped: the run falls back to `home`, adds
 its packages and prunes the other profile's; `persist-profile` normally writes the file,
 unless bootstrap failed before this hook). The list is hand-curated: never suggest a
 bare `brew install`, it gets reverted. Edit the right `config*.toml` / `conf.d/` file instead.

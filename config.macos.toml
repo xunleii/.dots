@@ -31,7 +31,7 @@ for vol in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
   [ -d "$vol" ] || { echo "check-volumes: $vol is not mounted" >&2; exit 1; }
   dedicated_apfs "$vol"
 done
-# /nix only matters on devices that opted in to the nix module (`nix = "true"`, set by the `nix` profile: `mise -E personal,nix bootstrap`).
+# /nix only matters on devices that opted in to the nix module (`nix = "true"`, set by the `nix` profile: `mise -E home,nix bootstrap`).
 [ "$MISE_VAR_NIX" != true ] || dedicated_apfs /nix
 """
 

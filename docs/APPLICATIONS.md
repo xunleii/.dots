@@ -9,7 +9,7 @@ only that:
 
 | Method | Source of truth |
 | --- | --- |
-| Homebrew formulae & casks | `[bootstrap.packages]` in [`config.toml`](../config.toml) / [`config.macos.toml`](../config.macos.toml) (base), `conf.d/<module>/mise.toml` / `mise.macos.toml` (fish, git, ssh, claude, dev; casks in the macOS file) or `conf.d/machines/mise.<profile>.toml` (personal, radiofrance) — commented, one line per app |
+| Homebrew formulae & casks | `[bootstrap.packages]` in [`config.toml`](../config.toml) / [`config.macos.toml`](../config.macos.toml) (base), `conf.d/<module>/mise.toml` / `mise.macos.toml` (fish, git, ssh, claude, dev; casks in the macOS file) or `conf.d/machines/mise.<profile>.toml` (home, radiofrance) — commented, one line per app |
 | Language runtimes, npm/pipx CLIs, GitHub-release binaries | `[tools]` of `config.toml` (go, node, rust, python, uv; `usage`) and of each module's `conf.d/<module>/mise.toml` (dev: jqp, crane, doggo, rage; git: czg; claude: claude-swap, ccstatusline, plannotator; fish on Linux: fish itself) |
 
 To see what's actually on the machine right now, ask the machine:
@@ -31,7 +31,7 @@ no CLI equivalent, and are required for the rest of the config to work:
 
 | App | Step | Why it matters |
 | --- | --- | --- |
-| **Secretive** | Open it once, create a Secure Enclave key, copy the public key | `git` commit signing. Put it in `git_signingkey` in the machine file (e.g. `conf.d/machines/mise.personal.toml`), then re-run `mise bootstrap` — it also lands in `~/.ssh/allowed_signers`. Installed by `conf.d/ssh/mise.macos.toml`; see `conf.d/ssh/home/.config/fish/conf.d/80-secretive-ssh.fish.tera`. |
+| **Secretive** | Open it once, create a Secure Enclave key, copy the public key | `git` commit signing. Put it in `git_signingkey` in the machine file (e.g. `conf.d/machines/mise.home.toml`), then re-run `mise bootstrap` — it also lands in `~/.ssh/allowed_signers`. Installed by `conf.d/ssh/mise.macos.toml`; see `conf.d/ssh/home/.config/fish/conf.d/80-secretive-ssh.fish.tera`. |
 | **Bitwarden** (desktop) | Enable the SSH agent in Settings, unlock the vault | `bwssh` / `bwansible*` need the agent socket to reach fleet hosts. See `functions/__bw_ssh_sock.fish`. `bwansible*` run only if the `ansible` binaries are on `PATH` (no module installs ansible). Only the desktop app and its SSH agent are used here; there is no secrets manager in this setup. |
 | **Little Snitch** | Approve the system extension, then reboot | Nothing else installs cleanly while its rules prompt is pending. |
 | **Tailscale** | Sign in | Fleet access. |

@@ -2,6 +2,6 @@
 # active automatically, so each module's mise.macos.toml loads on macOS only.
 auto_env = true
 
-# Default machine profile (conf.d/machines/mise.personal.toml). `-E <profile>` and the machine-local,
+# Default machine profile (conf.d/machines/mise.home.toml). `-E <profile>` and the machine-local,
 # gitignored miserc.local.toml (written by the persist-profile task) replace this list, they do not add to it.
-env = ["personal"]
+env = ["home"]
