@@ -16,10 +16,20 @@
 # Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
 
 [tasks.check-volumes]
-description = "Abort early when /Volumes/Runtimes or /Volumes/Spaces is not mounted"
+description = "Abort early when Runtimes or Spaces is not a mounted, dedicated APFS volume"
 run = """
+# A plain folder on the boot volume reports MountPoint "/", so it fails the equality below.
+dedicated_apfs() {
+  info=$(diskutil info -plist "$1" 2>/dev/null)
+  mp=$(echo "$info" | plutil -extract MountPoint raw - 2>/dev/null)
+  fs=$(echo "$info" | plutil -extract FilesystemType raw - 2>/dev/null)
+  [ "$mp" = "$1" ] && [ "$fs" = apfs ] && return 0
+  echo "check-volumes: $1 is not a dedicated APFS volume (mount point: ${mp:-none}, fs: ${fs:-none})" >&2
+  exit 1
+}
 for vol in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
   [ -d "$vol" ] || { echo "check-volumes: $vol is not mounted" >&2; exit 1; }
+  dedicated_apfs "$vol"
 done
 """
 

@@ -120,8 +120,9 @@ Caveats:
 
 `check-volumes` is a hard
 failure (macOS only, a task inlined in `config.macos.toml`, no `uname` guard): it aborts before anything is installed unless both
-`/Volumes/Runtimes` and `/Volumes/Spaces` exist (read from `[vars]` via
-`MISE_VAR_*`).
+`/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
+`MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
+refused).
 
 ## Identity
 
