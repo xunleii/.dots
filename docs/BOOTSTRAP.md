@@ -17,7 +17,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/scripts/` | `fish-plugins.fish`, the body of the `fish-plugins` task |
-| `conf.d/machines/mise.{personal,radiofrance}.toml` | Machine files; `personal` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
+| `conf.d/machines/mise.{personal,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `personal` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task) |
 
 Every config file carries the dots banner and a header explaining its role and documenting its sections.
@@ -122,7 +122,9 @@ Caveats:
 failure (macOS only, a task inlined in `config.macos.toml`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
-refused).
+refused). `/nix` gets the same check when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
+sets `nix = "true"`): `mise -E personal,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
+replaces the default, so list the machine profile too). Without it, `/nix` is not checked.
 
 ## Identity
 

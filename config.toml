@@ -84,6 +84,7 @@ UV_CACHE_DIR = "{{ vars.runtimes_root }}/python/uv"
 
 MISE_VAR_RUNTIMES_ROOT = "{{ vars.runtimes_root }}"
 MISE_VAR_SPACES_ROOT = "{{ vars.spaces_root }}"
+MISE_VAR_NIX = "{{ vars.nix | default(value=\"\") }}"
 
 # =============================================================================
 # Tasks

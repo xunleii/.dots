@@ -16,7 +16,7 @@
 # Small idempotent scripts, run by the bootstrap hooks or with `mise run <name>`.
 
 [tasks.check-volumes]
-description = "Abort early when Runtimes or Spaces is not a mounted, dedicated APFS volume"
+description = "Abort early when Runtimes, Spaces (and /nix when the nix module is enabled) is not a mounted, dedicated APFS volume"
 run = """
 # A plain folder on the boot volume reports MountPoint "/", so it fails the equality below.
 dedicated_apfs() {
@@ -31,6 +31,8 @@ for vol in "$MISE_VAR_RUNTIMES_ROOT" "$MISE_VAR_SPACES_ROOT"; do
   [ -d "$vol" ] || { echo "check-volumes: $vol is not mounted" >&2; exit 1; }
   dedicated_apfs "$vol"
 done
+# /nix only matters on devices that opted in to the nix module (`nix = "true"`, set by the `nix` profile: `mise -E personal,nix bootstrap`).
+[ "$MISE_VAR_NIX" != true ] || dedicated_apfs /nix
 """
 
 # =============================================================================

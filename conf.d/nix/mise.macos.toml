@@ -1,0 +1,14 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module nix (macOS only)
+#
+# Nix package manager. Always loaded, but only relevant when the `nix` profile is active
+# (`mise -E personal,nix bootstrap`, see conf.d/machines/mise.nix.toml): check-volumes (config.macos.toml) then requires /nix to be a
+# dedicated APFS volume. Volume setup (diskutil, /etc/fstab, /etc/synthetic.conf) and the installer
+# are not wired yet.
+# =============================================================================
