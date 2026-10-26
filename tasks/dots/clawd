@@ -1,0 +1,12 @@
+#!/bin/sh
+#MISE description="Open Claude Code (clawd) in the mise config repo with the mise MCP server"
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:clawd -- manage the dotfiles with Claude: cd to this repo, launch the fish `clawd` function
+# (sandboxed claude) with the `mise mcp` server (tasks, env, config) attached. Extra args go to claude.
+
+root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
+cd "$root" || exit 1
+mcp='{"mcpServers":{"mise":{"command":"mise","args":["mcp","--cd","'"$root"'"]}}}'
+exec fish -c 'clawd --mcp-config $argv[1] $argv[2..-1]' "$mcp" "$@"

@@ -1,0 +1,9 @@
+{
+  "document": { "color": "141", "margin": 6 },
+  "paragraph": { "block_suffix": "\n" },
+  "strong": { "bold": true, "color": "183" },
+  "emph": { "italic": true },
+  "code": { "color": "213" },
+  "list": { "level_indent": 2 },
+  "item": { "block_prefix": "• " }
+}

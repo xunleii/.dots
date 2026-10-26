@@ -1,0 +1,56 @@
+#!/bin/sh
+#MISE description="Pick unmanaged Homebrew packages and have Claude declare + commit them"
+#MISE tools={gum="latest", glow="latest"}  # pickers + spinner (gum), Markdown reply (glow), scripts/ui.sh
+#MISE raw=true
+#MISE quiet=true
+#
+# brew:sync -- for packages from `brew:unsync`: you pick the packages and the target file (base
+# config, a machine/profile file, or a module), then `claude -p` (this repo's CLAUDE.md applies)
+# edits that file's [bootstrap.packages] and commits. Its recap is printed in the AI colour.
+# Claude runs unsandboxed here, limited to Read/Edit and a few git commands.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/brew.sh"
+
+root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
+cd "$root" || ui_fail "cannot cd to $root"
+
+ui_title "Syncing Homebrew packages into mise"
+list=$(brew_unmanaged)
+[ -n "$list" ] || { ui_ok "everything installed is declared"; exit 0; }
+
+picked=$(printf '%s\n' "$list" | gum choose --no-limit --height 20 --header "Packages to declare (space selects, enter confirms)") || ui_fail "aborted"
+[ -n "$picked" ] || ui_fail "nothing selected"
+
+# ponytail: env and module are one pick (the file); Claude chooses the commented group inside it
+names=$(printf '%s\n' "$picked" | awk '{ printf "%s%s", sep, $2; sep = ", " }')
+target=$(ls config.macos.toml conf.d/machines/mise.*.toml conf.d/*/mise.macos.toml | gum choose --header "Where to declare: $names ?") || ui_fail "aborted"
+
+ui_step "to declare in $target:"
+printf '%s\n' "$picked" | while read -r kind name; do
+  ui_ok "$(printf '%-10s %s' "$kind" "$name")"
+done
+
+details=$(printf '%s\n' "$picked" | while read -r kind name; do
+  flag=--formula
+  [ "$kind" = brew-cask ] && flag=--cask
+  printf '## "%s:%s"\n%s\n\n' "$kind" "$name" "$(brew info $flag "$name" 2>/dev/null | sed -n 1,4p)"
+done)
+
+prompt="Declare these Homebrew packages in $target, under [bootstrap.packages], as \"brew:<name>\" = \"latest\" (casks: \"brew-cask:<name>\"), each with a short trailing comment. Put each in the matching commented group, or create one. Follow AGENTS.md (casks belong in macOS files) and docs/COMMITS.md. Then make one commit per package. Do not run mise or brew. Answer in French, in friendly Markdown: one warm sentence saying what you did, then at most 4 bullets (what went where, commit hashes in \`code\`, anything odd you noticed). No heading.
+
+$details"
+
+ui_ai_prompt "Ask Claude to declare $names in $target
+(under [bootstrap.packages], in the right commented group), then commit once per package.
+e.g. $(printf '%s\n' "$picked" | awk 'NR == 1 { printf "\"%s:%s\" = \"latest\"", $1, $2 }')"
+# the answer goes to a file: gum spin draws on stdout, a $(...) capture would swallow the spinner
+out=$(mktemp)
+export prompt out
+gum spin --spinner dot --spinner.foreground 141 --title "Claude is working..." -- sh -c \
+  'claude -p "$prompt" --model haiku --permission-mode acceptEdits \
+    --allowedTools Read Edit "Bash(git add:*)" "Bash(git commit:*)" "Bash(git status:*)" "Bash(git diff:*)" "Bash(rtk git:*)" > "$out"' \
+  || { rm -f "$out"; ui_fail "claude failed"; }
+reply=$(cat "$out")
+rm -f "$out"
+ui_ai_reply "$reply"

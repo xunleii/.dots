@@ -49,3 +49,32 @@ ui_fail() {
   _ui "--foreground 1 --bold" 2 "$(_line 'xx' "$@")"
   exit 1
 }
+
+# AI turns get their own colour (violet) and symbols so they stand apart from task output:
+#
+#   ui_ai_prompt <text>   violet ✦>   what was sent to Claude
+#   ui_ai_reply  <text>   violet <✦   what Claude answered, Markdown-rendered by glow on a terminal
+_ai() { # <label> <text>
+  label=$1 first=1
+  shift
+  printf '%s\n' "$*" | while IFS= read -r line; do
+    if [ "$first" = 1 ]; then
+      _ui "--foreground 141" 1 "$(_line "$label" "$line")"
+      first=0
+    else
+      _ui "--foreground 141" 1 "$(_line '  ' "$line")"
+    fi
+  done
+}
+ui_ai_prompt() { _ai '✦>' "$@"; }
+ui_ai_reply() { # Markdown through glow (violet, indented under the message column), gum format if glow is missing
+  if [ -t 1 ] && command -v glow >/dev/null 2>&1; then
+    _ui "--foreground 141" 1 "$(_line '<✦' 'Done, here is the recap:')"
+    printf '%s\n' "$*" | glow -s "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/glow-ai.json" - && return 0
+  elif [ -t 1 ] && command -v gum >/dev/null 2>&1 && md=$(printf '%s\n' "$*" | gum format 2>/dev/null); then
+    _ui "--foreground 141" 1 "$(_line '<✦' 'Done, here is the recap:')"
+    printf '%s\n' "$md" | sed 's/^/      /'
+    return 0
+  fi
+  _ai '<✦' "$@"
+}

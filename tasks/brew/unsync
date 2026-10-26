@@ -1,0 +1,18 @@
+#!/bin/sh
+#MISE description="List Homebrew packages installed here but not managed by mise"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# brew:unsync -- read-only: what `brew:sync` would offer to declare.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/brew.sh"
+
+ui_title "Homebrew packages mise does not manage"
+list=$(brew_unmanaged)
+[ -n "$list" ] || { ui_ok "everything installed is declared"; exit 0; }
+
+printf '%s\n' "$list" | while read -r kind name; do
+  ui_step "$(printf '%-10s %s' "$kind" "$name")"
+done
+ui_hint "mise run brew:sync"
