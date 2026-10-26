@@ -61,8 +61,9 @@ everywhere, not only inside the repo.
 mise activation in fish comes from `[bootstrap.mise_shell_activate]
 fish = "auto"` (mise edits `~/.config/fish/config.fish`). The old
 `mise activate fish | source` block and its first-prompt workaround were
-removed from `00-base.fish`; whether that workaround was still needed is
-unverified.
+removed from `00-base.fish`. If the block is missing from `config.fish`, mise is not
+activated in fish and per-directory `.mise.toml` (env, tools) is ignored: see
+[Verify shell activation](#verify-shell-activation).
 
 Remove a module with `mise bootstrap unapply <module>`.
 
@@ -146,6 +147,22 @@ third-party-tap casks and pkg/installer casks (Tailscale, Fusion). After adoptio
 lists the cask: upgrade with `mise bootstrap packages upgrade`, not `brew upgrade --cask`. Verified
 by hand on `rsyncui` only; the task itself was tested with stub `brew`/`mise`.
 
+### Verify shell activation
+
+`mise bootstrap` writes the `activate` block into `~/.config/fish/config.fish`
+(a live file mise edits, not a dotfile of this repo). Check it in a normal fish:
+
+```sh
+mise bootstrap mise-shell-activate status   # expects: applied
+mise doctor | grep activated                # expects: activated: yes
+```
+
+When absent, `status` shows `missing` (also in `mise bootstrap status | grep shell`),
+`mise doctor` shows `activated: no`, and only `mise activate fish | source` by hand
+works. Fix: `mise bootstrap mise-shell-activate apply` (or a full `mise bootstrap`),
+then `exec fish`. Run these checks outside the nono sandbox used by Claude Code: it
+denies `~/.config/fish`, so the status reads `differs (failed read_to_string)` there.
+
 `dots:check:volumes` is a hard
 failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
@@ -227,6 +244,10 @@ cd $fake && HOME=$fake MISE_CEILING_PATHS=$real mise -E radiofrance dot status
 
 ## Known gaps
 
+- The fish activation block was once missing from `config.fish` after a bootstrap;
+  `mise bootstrap mise-shell-activate apply` restored it. Root cause not established
+  (a bootstrap that failed before the activation step, or something rewriting
+  `config.fish`). If it vanishes again, investigate.
 - Directory permissions: `private_` dirs were `0700` and are not reproduced.
 - `trusted_signers` support in `allowed_signers` dropped (the chezmoi data key was never set).
 - The old clawd-browser LaunchAgent (`dev.axnic.clawd-browser`) is removed from

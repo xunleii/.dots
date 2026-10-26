@@ -121,6 +121,24 @@ Day to day, from anywhere: `mise dot diff` to preview, `mise dot apply` for
 dotfiles only, `mise bootstrap` for everything. Update with
 `git -C ~/.config/mise pull` then `mise bootstrap`.
 
+### TL;DR
+
+Two settings in `config.toml` matter after the install:
+
+- `[bootstrap.brew] adopt = true`: when mise installs a cask whose app is already
+  on disk and identical to the cask download, it takes it over instead of replacing
+  it. It does not act on casks Homebrew still lists (mise reports "installed and
+  managed by Homebrew" and skips): hand those over once with
+  `mise run dots:packages:adopt <cask>...`. Upgrade with
+  `mise bootstrap packages upgrade`. Package lists are hand-curated: never a bare
+  `brew install`.
+- `[bootstrap.mise_shell_activate] fish = "auto"`: mise writes its `activate` block
+  into `~/.config/fish/config.fish`. Check with
+  `mise bootstrap mise-shell-activate status` (expects `applied`); if `missing`, run
+  `mise bootstrap mise-shell-activate apply`, then `exec fish`.
+
+Details: [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md).
+
 ## How to use this repository
 
 To be honest, I recommend NOT using this repository, but building your own fork
