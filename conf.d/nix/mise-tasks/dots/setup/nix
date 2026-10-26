@@ -1,0 +1,74 @@
+#!/bin/sh
+#MISE description="Install Nix (Determinate installer) on a volume it creates, once (nix profile only)"
+#MISE tools={gum="latest"}  # pickers and coloured output through scripts/ui.sh
+#MISE raw=true
+#MISE quiet=true
+#MISE hide=true
+#
+# dots:setup:nix -- install Nix with the Determinate Systems installer, once.
+#
+# Runs as the pre-packages hook of the nix module (conf.d/nix/mise.macos.toml), BEFORE
+# dots:check:nix, and by hand: mise run dots:setup:nix. The installer creates the /nix APFS volume
+# itself (synthetic.conf, fstab, "Nix Store"), there is nothing to prepare. Steps:
+#   1. pick the APFS container that will host the volume (internal or external disk)
+#   2. plan: the installer prints what it will change (--explain)
+#   3. you confirm (the installer's own prompt, answer no and nothing is touched)
+#   4. it installs
+#   5. the downloaded installer script is removed (the installer itself stays in
+#      /nix/nix-installer, `/nix/nix-installer uninstall` removes Nix)
+# Needs a terminal (picker, prompt, sudo). Does nothing without the nix profile, nor when Nix is
+# installed, so it is safe to repeat.
+#
+# --case-sensitive: the volume is case sensitive. --diagnostic-endpoint "": no anonymous report.
+# Untested: whether --root-disk wants the container (diskutil apfs list) or the physical disk;
+# the plan of step 2 shows what it will do, read it before confirming.
+#
+# ponytail: latest installer, not pinned; pin it in the URL (install.determinate.systems/nix/tag/vX.Y.Z)
+# if a reproducible version matters.
+#
+# Inputs (exported by config.toml [env]): MISE_VAR_NIX ("true" with the nix profile).
+# Exit: 0 when Nix is installed or not wanted, 1 on failure or if you decline.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+ui_title "Installing Nix"
+
+if [ "$MISE_VAR_NIX" != true ]; then
+  ui_step "Nix not installed (nix profile off)"
+  exit 0
+fi
+
+nix=/nix/var/nix/profiles/default/bin/nix
+if [ -x "$nix" ]; then
+  ui_ok "already installed ($("$nix" --version))"
+  exit 0
+fi
+
+[ -t 0 ] || ui_fail "needs a terminal: run mise run dots:setup:nix"
+
+# "<container>  <Internal|External>  <size>" per APFS container
+containers() {
+  diskutil apfs list | awk '/Container Reference:/ { print $NF }' | while read -r c; do
+    info=$(diskutil info "$c")
+    loc=$(printf '%s\n' "$info" | awk -F': *' '/Device Location/ { print $2 }')
+    size=$(printf '%s\n' "$info" | awk -F': *' '/Disk Size/ { print $2 }' | cut -d'(' -f1)
+    printf '%s  %s  %s\n' "$c" "$loc" "$size"
+  done
+}
+
+disk=$(containers | gum choose --header "Disk that will host the /nix volume") || ui_fail "aborted"
+disk=${disk%% *}
+[ -n "$disk" ] || ui_fail "no disk selected"
+
+installer=$(mktemp)
+trap 'rm -f "$installer"' EXIT
+
+ui_step "downloading the Determinate Nix installer"
+curl --proto =https --tlsv1.2 -sSfL -o "$installer" https://install.determinate.systems/nix || ui_fail "download failed"
+
+ui_step "plan on $disk (read it, then confirm or decline)"
+sh "$installer" install macos --root-disk "$disk" --case-sensitive --diagnostic-endpoint "" --explain \
+  || ui_fail "declined or failed, see above"
+
+rm -f "$installer"
+ui_ok "Nix installed, open a new shell to use it"
