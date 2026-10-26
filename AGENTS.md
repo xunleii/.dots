@@ -23,7 +23,7 @@ they do not add to it. The root
 `git_email` defaults in `conf.d/git` (`git_signingkey` is local, see below); templates keep `| default(value="")` as a safety net; a profile is always active).
 Each module has its own `home/` tree (mirrors `$HOME`, resolved relative to the
 module folder; files are symlinked into the repo, only `*.tera` files are
-rendered templates, copied). Tasks are named `dots:<area>:<action>`; all are file tasks (`tasks/dots/...` at the root, `conf.d/<name>/mise-tasks/dots/...` in a module). `scripts/` holds `banner.sh`, `ui.sh` (coloured output helper) and `volumes.sh` (volume checks), both sourced by tasks. Every file task declares each non-system tool it uses (`fzf`, `gum`) on one header line (`#MISE tools={fzf="latest", gum="latest"}`) (see BOOTSTRAP.md, Tasks). A fresh Mac: install mise, then
+rendered templates, copied). Tasks are named `dots:<area>:<action>`; all are file tasks (`tasks/dots/...` at the root, `conf.d/<name>/mise-tasks/dots/...` in a module). `scripts/` holds `banner.sh`, `ui.sh` (coloured output helper) and `volumes.sh` (volume checks) and `brew.sh` (unmanaged brew list), sourced by tasks. Helper tasks: `dots:clawd` (claude here with the mise MCP), `brew:unsync` (list brews no config declares), `brew:sync` (pick them, Claude declares + commits). Every file task declares each non-system tool it uses (`fzf`, `gum`) on one header line (`#MISE tools={fzf="latest", gum="latest"}`) (see BOOTSTRAP.md, Tasks). A fresh Mac: install mise, then
 `mise bootstrap --adopt https://github.com/xunleii/.dots.git` (add `-E radiofrance` for a non-default profile) into
 an empty `~/.config/mise`. See [docs/BOOTSTRAP.md](docs/BOOTSTRAP.md) for the
 full cheat sheet (layout, modules, hook order, identity, chezmoi equivalents,
