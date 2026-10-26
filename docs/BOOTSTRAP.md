@@ -18,7 +18,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
-| `conf.d/nix/mise-tasks/` | File task `dots/check/nix` (`dots:check:nix`), run by the nix module's own `pre-packages` hook |
+| `conf.d/nix/mise-tasks/` | File tasks `dots/check/nix` (`dots:check:nix`) and `dots/setup/nix` (`dots:setup:nix`), run by the nix module's own `pre-packages` hook |
 | `tasks/` | File tasks `dots/check/volumes`, `dots/persist/profile` and `dots/packages/adopt` (mise's global task dir) |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
 | `scripts/` | `banner.sh` (deployed as `~/.local/bin/dots-banner`, not a task); `ui.sh` (output helper) and `volumes.sh` (`diskutil_field`, `require_apfs_volume`; sources `ui.sh`), both sourced by task scripts, see [Tasks](#tasks) |
@@ -76,7 +76,7 @@ or package: edit the owning module's `[dotfiles]` / `[bootstrap.packages]`; put 
 
 - **Naming**: `dots:<area>:<action>` (`dots:check:volumes`, `dots:persist:profile`, `dots:setup:signing:key`, `dots:fish:plugins`); `:` is the separator.
 - **File tasks**: `tasks/` at the repo root (= `~/.config/mise/tasks`, mise's global task dir) and `conf.d/<name>/mise-tasks/` in a module (`.mise/tasks/` also works). The path gives the name, `/` becomes `:` (`tasks/dots/check/volumes` is `dots:check:volumes`). `conf.d/<m>/tasks/` is NOT discovered.
-- **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the hook-only tasks (`dots:check:volumes`, `dots:check:nix`, `dots:persist:profile`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
+- **Header**: `#MISE description=...`, `#MISE tools={fzf="latest", gum="latest"}` (all tools on one line), `#MISE quiet=true` comments, plus `#MISE hide=true` on the hook-only tasks (`dots:check:volumes`, `dots:check:nix`, `dots:setup:nix`, `dots:persist:profile`: not listed by `mise tasks`, run by name or `mise tasks ls --hidden`) at the top, then a long doc comment in the file.
 - **All tasks are file tasks**: there is no toml task.
 - **`scripts/ui.sh`**: sourced by task scripts; a bold `ui_title`, then one short line per event under a label (`ui_step` `..`, `ui_ok` `ok`, `ui_hint` `->`, `ui_warn` `!!`, `ui_fail` `xx`), `$HOME` shown as `~`, coloured through `gum` when installed and on a tty, plain text otherwise (also if gum fails, or before Homebrew installs it). Tasks run quiet (no `[task] $ cmd` echo).
 - **Hooks** call tasks with `mise run --skip-tools <name>`, so no tool gets installed during bootstrap.
@@ -126,7 +126,7 @@ Caveats:
 `mise bootstrap` order, with this repo's hooks (hooks of all active modules run):
 
 1. `pre-packages`, hooks from different files add up (`mise run --skip-tools`, so no tool is installed yet):
-   1. nix module (`conf.d/nix/mise.macos.toml`): `dots:check:nix`
+   1. nix module (`conf.d/nix/mise.macos.toml`): `dots:setup:nix` (interactive: disk picker, installer prompt, sudo), then `dots:check:nix`
    2. base (`config.macos.toml`): `dots:check:volumes`
 2. `[bootstrap.packages]` (Homebrew)
 3. `post-packages`: `dots:persist:profile` (writes `miserc.local.toml` from `-E` if absent), nothing else (no pruning)
@@ -167,9 +167,9 @@ denies `~/.config/fish`, so the status reads `differs (failed read_to_string)` t
 failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it aborts before anything is installed unless both
 `/Volumes/Runtimes` and `/Volumes/Spaces` (read from `[vars]` via
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
-refused). `/nix` is checked by its own task, `dots:check:nix` (`conf.d/nix/mise-tasks/dots/check/nix`, nix module hook, runs first), only when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
+refused). `/nix` is created by `dots:setup:nix` (`conf.d/nix/mise-tasks/dots/setup/nix`, first hook, interactive, installs Nix with the Determinate Systems installer which makes the volume) and checked by `dots:check:nix` (`conf.d/nix/mise-tasks/dots/check/nix`, runs right after), only when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
 sets `nix = "true"`): `mise -E home,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
-replaces the default, so list the machine profile too). Without it, `dots:check:nix` does nothing (`/nix not checked`), so it is safe on every machine. Creating the `/nix` volume: [NIX.md](NIX.md).
+replaces the default, so list the machine profile too). Without it, both do nothing (`/nix not checked`), so it is safe on every machine. Details: [NIX.md](NIX.md). `dots:setup:nix` is a no-op without the nix profile or when Nix is installed.
 
 ## Identity
 
