@@ -169,7 +169,7 @@ failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it
 `MISE_VAR_*`) are mounted and are dedicated APFS volumes (a plain folder on the boot disk is
 refused). `/nix` is checked by its own task, `dots:check:nix` (`conf.d/nix/mise-tasks/dots/check/nix`, nix module hook, runs first), only when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
 sets `nix = "true"`): `mise -E home,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
-replaces the default, so list the machine profile too). Without it, `dots:check:nix` does nothing (`/nix not checked`), so it is safe on every machine.
+replaces the default, so list the machine profile too). Without it, `dots:check:nix` does nothing (`/nix not checked`), so it is safe on every machine. Creating the `/nix` volume: [NIX.md](NIX.md).
 
 ## Identity
 
