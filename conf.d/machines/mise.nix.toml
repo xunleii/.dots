@@ -16,3 +16,15 @@
 # Makes dots:check:volumes require /nix to be a dedicated APFS volume (see conf.d/nix). Without this
 # profile the var is unset and /nix is not checked.
 nix = "true"
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Nix packages (nixpkgs attributes), installed by `mise bootstrap` once Nix is on PATH: on the first
+# run, right after dots:setup:nix, open a new shell and run `mise bootstrap` again. Without Nix the
+# entries are skipped. `prune` does not handle `nix:`, remove them by hand with `nix profile`.
+
+[bootstrap.packages]
+"nix:nixos-anywhere" = "latest"  # install NixOS on a remote machine over SSH
+"nix:nixos-rebuild" = "latest"  # build and switch NixOS configurations, locally or on a remote host (nixos-rebuild-ng)
+"nix:nix-output-monitor" = "latest"  # `nom`: readable progress for nix builds
