@@ -1,0 +1,81 @@
+#!/bin/sh
+#MISE description="Subscribe Little Snitch, one after the other, to the rule lists of conf.d/*/little-snitch not subscribed yet"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:snitch:subscribe -- subscribe Little Snitch to the rule lists the modules ship.
+#
+# Runs as the post-dotfiles hook (conf.d/little-snitch/mise.macos.toml) and by hand:
+#   mise run dots:snitch:subscribe [--force] [--dry-run]
+#
+# A module that needs rules ships conf.d/<module>/little-snitch/<name>.lsrules. Little Snitch 6 loads a
+# .lsrules only as a *remote rule group* (https URL), not from a local file, so each list is subscribed
+# through its raw GitHub URL (from `origin`, branch of origin/HEAD, default main) with the deep link
+#   x-littlesnitch:subscribe-rules?url=<percent-encoded URL>
+# which opens Little Snitch with the dialog filled in. It cannot be silent (the only way is
+# `littlesnitch restore-model` as root, which replaces every rule you have).
+#
+# State: ${XDG_STATE_HOME:-~/.local/state}/dots-little-snitch, one "<sha256>  <module>/<name>" line per
+# subscribed list. Not in the file = not subscribed. For each such list, in order: reachability check
+# (skipped while the repo is not pushed), dialog opened, you confirm it in Little Snitch, then answer
+# here to record it. Already subscribed with another sha = the list changed: Little Snitch refreshes it
+# by itself at the interval you chose, so only the stored sha is updated. Without a terminal (no
+# prompt possible) it only reports how many lists are waiting.
+#
+# Untested: the deep link on Little Snitch 6 (the binary contains `subscribe-rules`, the doc page is
+# for 4/5).
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+ui_title "Subscribing Little Snitch to the module rule lists"
+
+[ -d "/Applications/Little Snitch.app" ] || { ui_warn "Little Snitch is not installed yet, nothing to do"; exit 0; }
+
+repo=${MISE_CONFIG_DIR:-$HOME/.config/mise}
+slug=$(git -C "$repo" remote get-url origin 2>/dev/null | sed -E 's#^.*github\.com[:/]##; s#\.git$##')
+[ -n "$slug" ] || ui_fail "origin is not a GitHub remote, cannot build the raw URLs"
+branch=$(git -C "$repo" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##')
+state="${XDG_STATE_HOME:-$HOME/.local/state}/dots-little-snitch"
+
+force=0 dry=0
+for a in "$@"; do case $a in --force) force=1 ;; --dry-run) dry=1 ;; esac; done
+
+todo=0
+for f in "$repo"/conf.d/*/little-snitch/*.lsrules; do
+  [ -f "$f" ] || continue
+  key=$(basename "$(dirname "$(dirname "$f")")")/$(basename "$f")
+  sha=$(shasum -a 256 "$f" | cut -d' ' -f1)
+  old=$(awk -v k="$key" '$2 == k { print $1 }' "$state" 2>/dev/null)
+
+  if [ "$force" = 0 ] && [ -n "$old" ]; then
+    if [ "$old" = "$sha" ]; then ui_ok "$key already subscribed"; continue; fi
+    ui_warn "$key changed since you subscribed: Little Snitch refreshes it by itself once pushed"
+    { grep -v -F " $key" "$state"; echo "$sha  $key"; } >"$state.new"; mv "$state.new" "$state"
+    continue
+  fi
+
+  # the raw URL carries the module folder name as is, so ':' becomes %3A there, then everything is
+  # percent-encoded once more for the deep link (% first)
+  url="https://raw.githubusercontent.com/$slug/${branch:-main}/$(printf %s "conf.d/$key" | sed 's#/#/little-snitch/#2; s/:/%3A/g')"
+  link="x-littlesnitch:subscribe-rules?url=$(printf %s "$url" | sed 's/%/%25/g; s/:/%3A/g; s#/#%2F#g')"
+  if [ "$dry" = 1 ]; then ui_hint "$key  $link"; continue; fi
+  todo=$((todo + 1))
+  if ! curl -fsIL --max-time 10 "$url" >/dev/null 2>&1; then
+    ui_warn "$key: $url is not reachable (repo not pushed yet?), skipped"
+    continue
+  fi
+  if [ ! -t 0 ]; then ui_warn "$key waits for a subscription: run mise run dots:snitch:subscribe in a terminal"; continue; fi
+  ui_step "$key: opening the subscription dialog in Little Snitch"
+  open "$link" || ui_fail "could not open $link"
+  printf '  ??  confirm it in Little Snitch, then press Enter to record it (s: skip for now) '
+  read -r answer
+  case $answer in
+    s | S) ui_hint "$key left for next time" ;;
+    *)
+      mkdir -p "$(dirname "$state")"
+      { grep -v -F " $key" "$state" 2>/dev/null; echo "$sha  $key"; } >"$state.new"; mv "$state.new" "$state"
+      ui_ok "$key recorded" ;;
+  esac
+done
+[ "$todo" -gt 0 ] || ui_ok "nothing left to subscribe"

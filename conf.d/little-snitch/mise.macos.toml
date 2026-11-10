@@ -1,0 +1,23 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                       Module little-snitch (macOS only)
+#
+# Subscribes Little Snitch (the cask comes from config.macos.toml) to the rule lists that the other
+# modules ship: every conf.d/<module>/little-snitch/<name>.lsrules. A module that needs rules just drops
+# its file there; the post-dotfiles hook below offers the ones not yet subscribed, one after the other:
+# see conf.d/little-snitch/mise-tasks/dots/snitch/subscribe.
+# =============================================================================
+
+# =============================================================================
+# Bootstrap
+# =============================================================================
+# Hooks run EVERY time, so keep them safe to repeat (the task remembers what is already subscribed).
+
+[bootstrap.hooks.post-dotfiles]
+# --skip-tools: `mise run` would otherwise install every global tool first.
+run = ["mise run --skip-tools dots:snitch:subscribe"]
