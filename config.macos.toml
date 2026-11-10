@@ -60,6 +60,5 @@ run = ["mise run --skip-tools dots:check:volumes"]
 # -----------------------------------------------------------------------------
 # Notes and media
 # -----------------------------------------------------------------------------
-"brew-cask:octarine" = "latest"  # markdown note-taking app
 "brew-cask:deezer" = "latest"  # music streaming
 "brew-cask:vlc" = "latest"  # media player
