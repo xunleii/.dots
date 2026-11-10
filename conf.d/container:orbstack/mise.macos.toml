@@ -1,0 +1,25 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module container:orbstack (macOS only)
+# OrbStack: container runtime and docker CLI, plus a Little Snitch rule group that cuts its
+# telemetry and vendor traffic. Loaded automatically on macOS, on every machine.
+# =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
+
+[bootstrap.packages]
+# The cask also brings the docker CLI (docker, docker-compose, kubectl in ~/.orbstack/bin),
+# so there is no separate docker formula.
+"brew-cask:orbstack" = "latest"  # lightweight Docker Desktop replacement (runtime + docker CLI)
+
+# Its Little Snitch rule list (denies OrbStack's own processes any traffic to orbstack.dev and sentry.io:
+# telemetry, license, updates) is little-snitch/orbstack.lsrules in this module; conf.d/little-snitch offers it
+# to Little Snitch (`mise run dots:snitch:subscribe`).

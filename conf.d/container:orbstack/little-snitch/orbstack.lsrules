@@ -1,0 +1,72 @@
+{
+  "name": "OrbStack: no telemetry, no vendor traffic",
+  "description": "Denies OrbStack's own processes any connection to orbstack.dev (license, updates, registry, misc API) and to sentry.io (crash/telemetry reports). Only these processes: docs.orbstack.dev stays reachable from a browser, image pulls and container traffic are untouched. Side effect: no in-app update check and no license/sign-in refresh; update with `mise bootstrap packages upgrade`.",
+  "rules": [
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/MacOS/OrbStack",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/Frameworks/OrbStack Helper.app/Contents/MacOS/OrbStack Helper",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/MacOS/sparkle-cli",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/MacOS/scli.app/Contents/MacOS/scli",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/OrbStack.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader",
+      "direction": "outgoing",
+      "remote-domains": [
+        "orbstack.dev",
+        "sentry.io"
+      ],
+      "priority": "high",
+      "notes": "OrbStack telemetry and vendor servers"
+    }
+  ]
+}
