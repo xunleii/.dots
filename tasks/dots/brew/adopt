@@ -16,7 +16,7 @@ root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
 cd "$root" || ui_fail "cannot cd to $root"
 
 ui_title "Adopting Homebrew packages into mise"
-list=$(brew_unmanaged)
+list=$(brew_unmanaged) || ui_fail "cannot read mise package status (see above)"
 [ -n "$list" ] || { ui_ok "everything installed is declared"; exit 0; }
 
 picked=$(printf '%s\n' "$list" | gum choose --no-limit --height 20 --header "Packages to declare (space selects, enter confirms)") || ui_fail "aborted"
