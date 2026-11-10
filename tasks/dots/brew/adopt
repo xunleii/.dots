@@ -1,10 +1,10 @@
 #!/bin/sh
-#MISE description="Pick unmanaged Homebrew packages and have Claude declare + commit them"
+#MISE description="Pick brew packages not declared in mise and have Claude declare + commit them"
 #MISE tools={gum="latest", glow="latest"}  # pickers + spinner (gum), Markdown reply (glow), scripts/ui.sh
 #MISE raw=true
 #MISE quiet=true
 #
-# brew:sync -- for packages from `brew:unsync`: you pick the packages and the target file (base
+# dots:brew:adopt -- for packages from `dots:brew:drift`: you pick the packages and the target file (base
 # config, a machine/profile file, or a module), then `claude -p` (this repo's CLAUDE.md applies)
 # edits that file's [bootstrap.packages] and commits. Its recap is printed in the AI colour.
 # Claude runs unsandboxed here, limited to Read/Edit and a few git commands.
@@ -15,7 +15,7 @@
 root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
 cd "$root" || ui_fail "cannot cd to $root"
 
-ui_title "Syncing Homebrew packages into mise"
+ui_title "Adopting Homebrew packages into mise"
 list=$(brew_unmanaged)
 [ -n "$list" ] || { ui_ok "everything installed is declared"; exit 0; }
 

@@ -154,7 +154,7 @@ usage = "latest"
 "brew:procs" = "latest"  # modern `ps` replacement
 "brew:tree" = "latest"  # directory tree listing
 "brew:gum" = "latest"  # styled output for the task scripts (scripts/ui.sh)
-"brew:glow" = "latest"  # Markdown renderer, shows the AI reply of brew:sync
+"brew:glow" = "latest"  # Markdown renderer, shows the AI reply of dots:brew:adopt
 
 # -----------------------------------------------------------------------------
 # Files and search

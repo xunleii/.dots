@@ -1,0 +1,19 @@
+#!/bin/sh
+#MISE description="List brew formulae/casks installed here but not declared in mise"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# dots:brew:drift -- read-only: what `dots:brew:adopt` would offer to declare.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/brew.sh"
+
+list=$(brew_unmanaged)
+[ -n "$list" ] || { ui_title "Installed with brew but not declared in mise"; ui_ok "everything installed is declared"; exit 0; }
+ui_title "Installed with brew but not declared in mise ($(printf '%s\n' "$list" | wc -l | tr -d ' '))"
+
+printf '%s\n' "$list" | while read -r kind name; do
+  [ "$kind" = brew-cask ] && kind=cask || kind=formula
+  ui_step "$(printf '%-8s %s' "$kind" "$name")"
+done
+ui_hint "declare them: mise run dots:brew:adopt"
