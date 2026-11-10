@@ -3,7 +3,7 @@
 #MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
 #MISE quiet=true
 #
-# dots:brew:drift -- read-only: what `dots:brew:adopt` would offer to declare.
+# dots:brew:drift -- read-only: what `dots:brew:declare` would offer to declare.
 
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
 . "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/brew.sh"
@@ -16,4 +16,4 @@ printf '%s\n' "$list" | while read -r kind name; do
   [ "$kind" = brew-cask ] && kind=cask || kind=formula
   ui_step "$(printf '%-8s %s' "$kind" "$name")"
 done
-ui_hint "declare them: mise run dots:brew:adopt"
+ui_hint "declare them: mise run dots:brew:declare"

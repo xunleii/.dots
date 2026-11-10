@@ -4,7 +4,7 @@
 #MISE raw=true
 #MISE quiet=true
 #
-# dots:brew:adopt -- for packages from `dots:brew:drift`: you pick the packages and the target file (base
+# dots:brew:declare -- for packages from `dots:brew:drift`: you pick the packages and the target file (base
 # config, a machine/profile file, or a module), then `claude -p` (this repo's CLAUDE.md applies)
 # edits that file's [bootstrap.packages] and commits. Its recap is printed in the AI colour.
 # Claude runs unsandboxed here, limited to Read/Edit and a few git commands.
@@ -15,7 +15,7 @@
 root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
 cd "$root" || ui_fail "cannot cd to $root"
 
-ui_title "Adopting Homebrew packages into mise"
+ui_title "Declaring Homebrew packages into mise"
 list=$(brew_unmanaged) || ui_fail "cannot read mise package status (see above)"
 [ -n "$list" ] || { ui_ok "everything installed is declared"; exit 0; }
 
