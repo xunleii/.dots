@@ -7,11 +7,19 @@
 #                                   . d o t s
 #                       Module little-snitch (macOS only)
 #
-# Subscribes Little Snitch (the cask comes from config.macos.toml) to the rule lists that the other
-# modules ship: every conf.d/<module>/little-snitch/<name>.lsrules. A module that needs rules just drops
+# Little Snitch, the outbound application firewall: the cask, and the subscription to the rule lists that
+# the other modules ship: every conf.d/<module>/little-snitch/<name>.lsrules. A module that needs rules just drops
 # its file there; the post-dotfiles hook below offers the ones not yet subscribed, one after the other:
 # see conf.d/little-snitch/mise-tasks/dots/snitch/subscribe.
 # =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
+
+[bootstrap.packages]
+"brew-cask:little-snitch" = "latest"  # outbound application firewall (approve its system extension once, see docs/APPLICATIONS.md)
 
 # =============================================================================
 # Bootstrap

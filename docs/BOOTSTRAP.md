@@ -14,10 +14,11 @@ gone. Everything below is what to know when editing the setup.
 | `config.macos.toml` | macOS base: general casks, GNU userland, the `pre-packages` hook that runs `dots:check:volumes` (Runtimes/Spaces) |
 | `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
-| `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
+| `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`, `container:orbstack`, `little-snitch`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
+| `conf.d/little-snitch/mise-tasks/` | File task `dots/snitch/subscribe` (`dots:snitch:subscribe`), the `post-dotfiles` hook of the little-snitch module |
 | `conf.d/nix/mise-tasks/` | File tasks `dots/check/nix` (`dots:check:nix`) and `dots/setup/nix` (`dots:setup:nix`), run by the nix module's own `pre-packages` hook |
 | `tasks/` | File tasks `dots/check/volumes`, `dots/persist/profile` and `dots/packages/adopt` (mise's global task dir) |
 | `conf.d/machines/mise.{home,radiofrance,nix}.toml` | Machine files (`nix` is a feature flag combined with one of the others); `home` is the default (`env` in `miserc.toml`), `-E` / `miserc.local.toml` replace it |
@@ -49,7 +50,9 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
 | `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
-| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim, orbstack |
+| `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
+| `container:orbstack` | macOS only: the OrbStack cask (runtime + docker CLI) and its Little Snitch rule list `little-snitch/orbstack.lsrules` (denies OrbStack's own processes any traffic to `orbstack.dev` and `sentry.io`) |
+| `little-snitch` | macOS only: the Little Snitch cask and the task `dots:snitch:subscribe` (post-dotfiles hook) that subscribes Little Snitch to every `conf.d/<module>/little-snitch/<name>.lsrules` shipped by the modules. Little Snitch 6 cannot import a local file, so each list is offered as a remote rule group through its raw GitHub URL (deep link `x-littlesnitch:subscribe-rules`, one confirmation per list, one after the other; needs the repo pushed). `~/.local/state/dots-little-snitch` stores the sha256 of each subscribed list; a changed sha only updates it (Little Snitch refreshes the group itself); `--force` redoes everything |
 | `home`, `radiofrance` | machine files (`conf.d/machines/`): extra casks, `git_email` override (`radiofrance`) |
 
 The `claude-ssh-signing` nono profile carries the Secretive socket under
@@ -170,6 +173,7 @@ failure (macOS only, file task `tasks/dots/check/volumes`, no `uname` guard): it
 refused). `/nix` is created by `dots:setup:nix` (`conf.d/nix/mise-tasks/dots/setup/nix`, first hook, interactive, installs Nix with the Determinate Systems installer which makes the volume) and checked by `dots:check:nix` (`conf.d/nix/mise-tasks/dots/check/nix`, runs right after), only when the `nix` feature profile is active (`conf.d/machines/mise.nix.toml`
 sets `nix = "true"`): `mise -E home,nix bootstrap` or `mise -E radiofrance,nix bootstrap` (`-E`
 replaces the default, so list the machine profile too). Without it, both do nothing (`/nix not checked`), so it is safe on every machine. Details: [NIX.md](NIX.md). `dots:setup:nix` is a no-op without the nix profile or when Nix is installed.
+
 
 ## Identity
 

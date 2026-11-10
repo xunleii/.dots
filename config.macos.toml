@@ -46,11 +46,6 @@ run = ["mise run --skip-tools dots:check:volumes"]
 "brew-cask:rsyncui" = "latest"  # GUI for rsync
 
 # -----------------------------------------------------------------------------
-# Security and network
-# -----------------------------------------------------------------------------
-"brew-cask:little-snitch" = "latest"  # outbound application firewall
-
-# -----------------------------------------------------------------------------
 # Communication and browsers
 # -----------------------------------------------------------------------------
 "brew-cask:slack" = "latest"  # team chat
