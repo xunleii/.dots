@@ -1,0 +1,31 @@
+#!/bin/sh
+#MISE description="Interactive upgrade of mise tools (releases >= 48h old) and brew packages"
+#MISE tools={gum="latest"}  # pickers + coloured output through scripts/ui.sh
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:upgrade -- two pickers, nothing is upgraded without being ticked.
+#   1. mise tools:     `mise upgrade --interactive` with a quarantine: a release must be 2+ days
+#                      old to be offered. Tools are "latest": no --bump (it would rewrite configs).
+#   2. brew packages:  declared formulae (brew leaves) that are outdated + the casks mise would
+#                      upgrade (its dry-run), then `mise bootstrap packages upgrade <picked>`.
+# ponytail: no age filter on brew (mise has none for it), and casks Homebrew still owns are not
+# offered (mise leaves them alone, see dots:packages:adopt).
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+ui_title "mise tools (releases older than 48h only)"
+mise upgrade --interactive --minimum-release-age 2d "$@" || ui_warn "mise tools: skipped or failed"
+
+ui_title "brew packages"
+ui_step "looking for updates..."
+casks=$(mise bootstrap packages upgrade --dry-run -m brew-cask 2>&1 | sed -n 's|^install cask \([^/]*\)/.*|brew-cask:\1|p')
+leaves=$(brew leaves)
+formulae=$(brew outdated --formula --quiet 2>/dev/null | grep -Fx "$leaves" | sed 's/^/brew:/')
+list=$(printf '%s\n%s\n' "$formulae" "$casks" | sed '/^$/d')
+[ -n "$list" ] || { ui_ok "brew packages are up to date"; exit 0; }
+
+picked=$(printf '%s\n' "$list" | gum choose --no-limit --height 20 --header "Packages to upgrade (space selects, enter confirms)") || ui_fail "aborted"
+[ -n "$picked" ] || { ui_ok "nothing selected"; exit 0; }
+# shellcheck disable=SC2086
+mise bootstrap packages upgrade --yes $picked
