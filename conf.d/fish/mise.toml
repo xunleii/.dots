@@ -74,6 +74,7 @@ fzf = "latest"
 "~/.config/fish/conf.d/40-environment.fish" = { source = "home/.config/fish/conf.d/40-environment.fish.tera", mode = "template" }
 "~/.config/fish/conf.d/50-aliases.fish" = { source = "home/.config/fish/conf.d/50-aliases.fish", mode = "symlink" }
 "~/.config/fish/conf.d/60-functions.fish" = { source = "home/.config/fish/conf.d/60-functions.fish", mode = "symlink" }
+"~/.config/fish/conf.d/90-prompt-lag.fish" = { source = "home/.config/fish/conf.d/90-prompt-lag.fish", mode = "symlink" }
 
 # -----------------------------------------------------------------------------
 # Fish: functions, completions and plugins
