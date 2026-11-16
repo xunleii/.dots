@@ -33,5 +33,4 @@ echo
 gum confirm "Apply these changes to your dotfiles?" || { ui_warn "left as they are, nothing applied"; exit 0; }
 ui_step "applying the dotfiles"
 mise dot apply || ui_fail "mise dot apply failed, see above"
-ui_ok "dotfiles applied"
 ui_hint "packages and tools are not synced here: run mise bootstrap for those"
