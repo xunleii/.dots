@@ -10,12 +10,28 @@
 root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
 . "$root/scripts/ui.sh"
 
-ui_title "pull"
-git -C "$root" pull --ff-only || ui_fail "git pull failed (local commits or changes?), sort it out first"
+ui_title "Syncing the dotfiles with origin"
 
-ui_title "pending dotfile changes"
-[ -n "$(mise dot diff 2>&1)" ] || { ui_ok "dotfiles are up to date"; exit 0; }
+ui_step "pulling the latest changes into $root"
+before=$(git -C "$root" rev-parse HEAD)
+out=$(git -C "$root" pull --ff-only --quiet 2>&1) ||
+    ui_fail "git pull failed, sort out local commits or changes first: $out"
+if [ "$(git -C "$root" rev-parse HEAD)" = "$before" ]; then
+    ui_ok "the repo was already up to date"
+else
+    ui_ok "pulled $(git -C "$root" rev-list --count "$before..HEAD") new commit(s):"
+    git -C "$root" log --no-show-signature --format='        %h %s' "$before..HEAD"
+fi
+
+ui_step "comparing the deployed dotfiles with the repo"
+[ -n "$(mise dot diff 2>&1)" ] || { ui_ok "every dotfile already matches the repo, nothing to apply"; exit 0; }
+ui_warn "some dotfiles differ from the repo, here is what applying would change:"
+echo
 "$root/tasks/dots/diff"
+echo
 
-gum confirm "Apply these changes?" || { ui_warn "not applied"; exit 0; }
-mise dot apply
+gum confirm "Apply these changes to your dotfiles?" || { ui_warn "left as they are, nothing applied"; exit 0; }
+ui_step "applying the dotfiles"
+mise dot apply || ui_fail "mise dot apply failed, see above"
+ui_ok "dotfiles applied"
+ui_hint "packages and tools are not synced here: run mise bootstrap for those"
