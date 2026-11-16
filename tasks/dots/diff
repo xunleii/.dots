@@ -1,0 +1,47 @@
+#!/bin/sh
+#MISE description="mise dot diff, with each content change shown through difftastic when it is installed"
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:diff [TARGET]... -- `mise dot diff` has no difftool hook, so: run it, keep its plain lines
+# (symlinks, missing files, errors), and for each unified diff rebuild the desired file by patching a
+# copy of the live one, then hand both to `difft`. Without difft, plain `mise dot diff`.
+
+command -v difft >/dev/null 2>&1 || exec mise dot diff "$@"
+
+tmp=$(mktemp -d) || exit 1
+trap 'rm -rf "$tmp"' EXIT
+mise dot diff "$@" >"$tmp/all" 2>&1
+
+# Split: patch N goes to $tmp/N.patch (its live path in $tmp/N.path), its place in the output
+# becomes a "@@difft N" marker line.
+awk -v dir="$tmp" '
+    in_patch && /^[-+ @\\]/ { print > (dir "/" n ".patch"); next }
+    in_patch { close(dir "/" n ".patch"); in_patch = 0 }
+    prev ~ /^  content differs:/ && /^--- / {
+        n++; in_patch = 1
+        path = substr($0, 5); sub(/ \(current\)$/, "", path)
+        print path > (dir "/" n ".path"); close(dir "/" n ".path")
+        print "@@difft " n
+        print > (dir "/" n ".patch"); prev = $0; next
+    }
+    { print; prev = $0 }
+' "$tmp/all" >"$tmp/out"
+
+while IFS= read -r line; do
+    case $line in
+    "@@difft "*)
+        n=${line#@@difft }
+        cur=$(cat "$tmp/$n.path")
+        case $cur in "~/"*) cur="$HOME/${cur#\~/}" ;; esac
+        # Same basename in its own dir, so difft picks the language from the extension.
+        mkdir -p "$tmp/$n" && new="$tmp/$n/$(basename "$cur")"
+        if patch -s -o "$new" "$cur" <"$tmp/$n.patch" >/dev/null 2>&1; then
+            difft "$cur" "$new"
+        else
+            cat "$tmp/$n.patch"
+        fi
+        ;;
+    *) printf '%s\n' "$line" ;;
+    esac
+done <"$tmp/out"

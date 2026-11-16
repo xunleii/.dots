@@ -1,0 +1,21 @@
+#!/bin/sh
+#MISE description="Pull the dotfiles repo, show the pending dotfile changes, apply them on confirmation"
+#MISE tools={gum="latest"}  # confirmation + coloured output through scripts/ui.sh
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:sync -- git pull (fast-forward only), then dots:diff, then `mise dot apply` once confirmed.
+# Dotfiles only: packages and tools still need a full `mise bootstrap`.
+
+root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
+. "$root/scripts/ui.sh"
+
+ui_title "pull"
+git -C "$root" pull --ff-only || ui_fail "git pull failed (local commits or changes?), sort it out first"
+
+ui_title "pending dotfile changes"
+[ -n "$(mise dot diff 2>&1)" ] || { ui_ok "dotfiles are up to date"; exit 0; }
+"$root/tasks/dots/diff"
+
+gum confirm "Apply these changes?" || { ui_warn "not applied"; exit 0; }
+mise dot apply

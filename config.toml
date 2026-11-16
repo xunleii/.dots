@@ -170,6 +170,7 @@ usage = "latest"
 "brew:hexyl" = "latest"  # hex viewer
 "brew:flock" = "latest"  # lock a file for the duration of a command
 "brew:sponge" = "latest"  # soak up stdin, write to a file (moreutils)
+"brew:difftastic" = "latest"  # structural diff (`difft`), used by dots:diff
 
 # -----------------------------------------------------------------------------
 # Graphics and network
