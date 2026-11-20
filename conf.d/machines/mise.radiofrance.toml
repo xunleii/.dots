@@ -28,6 +28,11 @@ git_email = "alexandre.nicolaie@radiofrance.com"
 
 [bootstrap.packages]
 # -----------------------------------------------------------------------------
+# Dev tools
+# -----------------------------------------------------------------------------
+"brew:glab" = "latest"  # GitLab CLI (gitlab.dnm.radiofrance.fr)
+
+# -----------------------------------------------------------------------------
 # Security
 # -----------------------------------------------------------------------------
 "brew-cask:gpg-suite" = "latest"  # GPGTools: GPG keychain, signed/encrypted emails and files
