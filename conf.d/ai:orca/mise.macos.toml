@@ -20,7 +20,7 @@
 # run `brew trust stablyai/orca` once if the install refuses to load the cask.
 "brew-cask:stablyai/orca/orca" = "latest"  # agent IDE
 
-# Settings are not dotfiles: Orca stores them as a JSON document inside a SQLite store
-# (~/Library/Application Support/orca/profiles/<profile>/profile-state.db, with revision and content hash),
-# so nothing here symlinks or templates them. Its agent skills (~/.agents/skills/orca-*) follow the app version
-# through `orca skills update`.
+# Settings are not dotfiles (Orca keeps them in a SQLite store), so nothing here symlinks them. The portable subset
+# lives in orca-settings.json: `mise run dots:orca:export` writes it, `mise run dots:orca:import` applies it (Orca
+# closed), and `dots:sync` reports when this Mac differs. Its agent skills (~/.agents/skills/orca-*) follow the app
+# version through `orca skills update`.

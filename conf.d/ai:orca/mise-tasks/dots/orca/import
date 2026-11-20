@@ -1,0 +1,29 @@
+#!/bin/sh
+#MISE description="Load conf.d/ai:orca/orca-settings.json into Orca (quit Orca first; the store is backed up)"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:orca:import -- conf.d/ai:orca/orca-settings.json -> Orca settings (SQLite store).
+#
+# Only the keys in the JSON are written, every other setting and all the other state (repos,
+# worktrees, sessions) is left as is. Orca must be closed: it keeps the state in memory and would
+# write it back over the import, so the script refuses while Orca (or anything else) holds the store.
+# The store is copied to ~/.local/state/dots-orca/ before the write. Format details and the untested
+# parts: conf.d/ai:orca/orca-settings.py.
+
+root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
+. "$root/scripts/ui.sh"
+
+ui_title "Importing the Orca settings"
+ui_step "writing conf.d/ai:orca/orca-settings.json into Orca's store"
+keys=$(python3 -I "$root/conf.d/ai:orca/orca-settings.py" import)
+case $? in
+    0) ;;
+    3) ui_fail "quit Orca first, then run mise run dots:orca:import again" ;;
+    *) ui_fail "import failed, see above" ;;
+esac
+[ -n "$keys" ] || { ui_ok "Orca already has these settings, nothing written"; exit 0; }
+ui_ok "updated $(printf '%s\n' "$keys" | wc -l | tr -d ' ') setting(s):"
+printf '%s\n' "$keys" | sed 's/^/        /'
+ui_hint "start Orca to use them"

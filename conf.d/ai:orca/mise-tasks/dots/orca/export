@@ -1,0 +1,26 @@
+#!/bin/sh
+#MISE description="Write this Mac's portable Orca settings into conf.d/ai:orca/orca-settings.json (commit it to share them)"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE raw=true
+#MISE quiet=true
+#
+# dots:orca:export -- Orca settings (SQLite store) -> conf.d/ai:orca/orca-settings.json.
+#
+# Only the portable keys go out (look and behaviour: theme, fonts, terminal, editor, diff, chat,
+# notifications...); accounts, secrets, machine paths and Orca's internal flags stay local. The
+# filter and the store format are documented in conf.d/ai:orca/orca-settings.py. Read-only on the
+# store, so Orca can stay open. Review the diff, then commit; other Macs pick it up with
+# dots:orca:import (dots:sync tells when they need to).
+
+root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
+. "$root/scripts/ui.sh"
+
+ui_title "Exporting the Orca settings"
+ui_step "reading the settings from Orca's store"
+keys=$(python3 -I "$root/conf.d/ai:orca/orca-settings.py" export) || ui_fail "export failed, see above"
+ui_ok "wrote $(printf '%s\n' "$keys" | wc -l | tr -d ' ') keys to $root/conf.d/ai:orca/orca-settings.json"
+if [ -z "$(git -C "$root" status --porcelain -- "conf.d/ai:orca/orca-settings.json")" ]; then
+    ui_ok "nothing changed since the last commit"
+else
+    ui_hint "review git -C $root diff conf.d/ai:orca/orca-settings.json, then commit"
+fi

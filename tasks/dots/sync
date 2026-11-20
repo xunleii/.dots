@@ -4,7 +4,8 @@
 #MISE raw=true
 #MISE quiet=true
 #
-# dots:sync -- git pull (fast-forward only), then dots:diff, then `mise dot apply` (its own prompt confirms).
+# dots:sync -- git pull (fast-forward only), then dots:diff, then `mise dot apply` (its own prompt confirms),
+# then tells whether Orca's settings differ from conf.d/ai:orca/orca-settings.json (dots:orca:import fixes it).
 # Dotfiles only: packages and tools still need a full `mise bootstrap`.
 
 root="${MISE_CONFIG_DIR:-$HOME/.config/mise}"
@@ -24,12 +25,31 @@ else
 fi
 
 ui_step "comparing the deployed dotfiles with the repo"
-[ -n "$(mise -q dot diff 2>&1)" ] || { ui_ok "every dotfile already matches the repo, nothing to apply"; exit 0; }
-ui_warn "some dotfiles differ from the repo, here is what applying would change:"
-echo
-"$root/tasks/dots/diff"
-echo
+if [ -z "$(mise -q dot diff 2>&1)" ]; then
+    ui_ok "every dotfile already matches the repo, nothing to apply"
+else
+    ui_warn "some dotfiles differ from the repo, here is what applying would change:"
+    echo
+    "$root/tasks/dots/diff"
+    echo
 
-ui_step "applying the dotfiles"
-mise -q dot apply || ui_fail "mise dot apply failed, see above"
+    ui_step "applying the dotfiles"
+    mise -q dot apply || ui_fail "mise dot apply failed, see above"
+fi
+
+# Orca settings live in a SQLite store, not a dotfile: only report, the import needs Orca closed.
+orca="$root/conf.d/ai:orca/orca-settings.py"
+if [ -f "$root/conf.d/ai:orca/orca-settings.json" ] && [ -d "$HOME/Library/Application Support/orca" ]; then
+    ui_step "comparing the Orca settings with the repo"
+    keys=$(python3 -I "$orca" check 2>/dev/null)
+    case $? in
+        0) ui_ok "Orca already has the repo settings" ;;
+        1)
+            ui_warn "$(printf '%s\n' "$keys" | wc -l | tr -d ' ') Orca setting(s) differ from the repo: $(printf '%s' "$keys" | tr '\n' ' ')"
+            ui_hint "quit Orca, then mise run dots:orca:import (or dots:orca:export to keep this Mac's values)"
+            ;;
+        *) ui_warn "could not read the Orca settings, see python3 $orca check" ;;
+    esac
+fi
+
 ui_hint "packages and tools are not synced here: run mise bootstrap for those"
