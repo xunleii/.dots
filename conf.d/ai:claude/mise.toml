@@ -39,6 +39,7 @@
 # Sandbox and agent tooling
 # -----------------------------------------------------------------------------
 "brew:llmfit" = "latest"  # check what LLMs fit your hardware
+"brew:memex" = "latest"  # indexes and searches past agent sessions (CLI + MCP server, memex-search skill)
 "brew:nono" = "latest"  # sandboxes `claude` (see 50-aliases.fish) — kernel-level tool isolation
 "brew:rtk" = "latest"  # CLI proxy, trims noisy command output before it hits context
 "brew:gitleaks" = "latest"  # secret scanner, used by Claude Code's secret-redactor hook
