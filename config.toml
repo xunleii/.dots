@@ -127,6 +127,7 @@ go = "1.27"
 node = "26"
 rust = "1.99"
 python = "3.15"
+ruby = "3"  # macOS ships 2.6; mise needs Ruby 3+ to evaluate Homebrew casks (orca)
 uv = "latest"
 
 # -----------------------------------------------------------------------------
