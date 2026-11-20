@@ -21,7 +21,6 @@
         ],
         "read": [
             "~/.agents/", // shared cross-project AGENTS.md/agent config
-            "~/.config/ccstatusline", // ccstatusline status-line config (see settings.json hooks)
             "~/.config/gh", // gh CLI auth/config, for PR/issue operations
             "~/.config/mise/", // mise tool-version pins
             "~/.gitignore", // global gitignore (git core.excludesfile)

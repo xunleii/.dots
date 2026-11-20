@@ -36,16 +36,8 @@
             "command": "$HOME/.claude/hooks/per-command/prevent-sleep.sh"
           }
         ]
-      },
-{%- endif %}
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccstatusline --hook"
-          }
-        ]
       }
+{%- endif %}
     ],
     "PreToolUse": [
       {
@@ -54,15 +46,6 @@
           {
             "type": "command",
             "command": "rtk hook claude"
-          }
-        ]
-      },
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccstatusline --hook"
           }
         ]
       },
@@ -87,12 +70,6 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "ccstatusline",
-    "padding": 0,
-    "refreshInterval": 10
   },
   "enabledPlugins": {
     "claude-md-management@claude-plugins-official": true,

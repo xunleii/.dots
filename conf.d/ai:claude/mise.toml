@@ -22,11 +22,6 @@
 # -----------------------------------------------------------------------------
 "pipx:claude-swap" = "latest"
 
-# Claude Code status line + hook renderer (see settings.json). Not on Homebrew; mise
-# installs it once and puts `ccstatusline` on PATH, so no hook or status-line refresh
-# has to resolve a package at call time.
-"npm:ccstatusline" = "latest"
-
 # Plan/diff annotation UI driven by the plannotator-* Claude Code skills. Upstream only
 # ships a `curl | bash` installer and bare GitHub release binaries, so the binary goes
 # through ubi, which picks the darwin/arm64 asset. NOTE: it can self-update in place;
@@ -75,11 +70,6 @@
 "~/.claude/skills/plannotator-annotate" = { source = "home/.claude/skills/plannotator-annotate", mode = "symlink" }
 "~/.claude/skills/plannotator-last" = { source = "home/.claude/skills/plannotator-last", mode = "symlink" }
 "~/.claude/skills/plannotator-review" = { source = "home/.claude/skills/plannotator-review", mode = "symlink" }
-
-# -----------------------------------------------------------------------------
-# Status line
-# -----------------------------------------------------------------------------
-"~/.config/ccstatusline/settings.json" = { source = "home/.config/ccstatusline/settings.json", mode = "symlink" }
 
 # -----------------------------------------------------------------------------
 # nono sandbox: profiles, ssh config and fish helpers

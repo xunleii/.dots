@@ -49,7 +49,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish`; Linux: fish itself as a tool (`mise.linux.toml`) |
 | `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
-| `ai:claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
+| `ai:claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
 | `ai:orca` | macOS only: the Orca cask (agent IDE, tap `stablyai/orca`). Settings are not managed: Orca keeps them as a JSON document inside a SQLite store (`~/Library/Application Support/orca/profiles/<profile>/profile-state.db`, with revision and hash), so there is no file to symlink; its agent skills are kept in step by `orca skills update` |
 | `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
 | `container:orbstack` | macOS only: the OrbStack cask (runtime + docker CLI) and its Little Snitch rule list `little-snitch/orbstack.lsrules` (denies OrbStack's own processes any traffic to `orbstack.dev` and `sentry.io`) |

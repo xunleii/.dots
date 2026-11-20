@@ -213,6 +213,7 @@ usage = "latest"
 "~/.config/fish/functions/gotmp.fish" = { mode = "absent" }
 
 # Retired: other config
+"~/.config/ccstatusline/settings.json" = { mode = "absent" }
 "~/.config/kitty/kitty.conf" = { mode = "absent" }
 
 # Retired: ~/.local/bin tools

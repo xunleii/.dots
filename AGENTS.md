@@ -114,7 +114,7 @@ Pick the narrowest one that works, in this order: `[bootstrap.packages]` in
 `config.toml` / `config.macos.toml` or a module (`brew`, `brew-cask`) → mise
 `[tools]` in the owning module's `conf.d/<m>/mise.toml` (modules are loaded
 globally, so these are on PATH everywhere; `czg` in `git`,
-claude-swap / ccstatusline / plannotator in `claude`, fish on Linux in
+claude-swap / plannotator in `claude`, fish on Linux in
 `fish/mise.linux.toml`). The base `config.toml` holds the language runtimes and `uv` (go, node,
 rust, python, uv: always installed, since the npm:, pipx:, cargo: and go: tools of
 every module depend on them), `usage`, settings, vars, the toolchain cache/install
