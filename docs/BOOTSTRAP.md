@@ -14,7 +14,7 @@ gone. Everything below is what to know when editing the setup.
 | `config.macos.toml` | macOS base: general casks, GNU userland, the `pre-packages` hook that runs `dots:check:volumes` (Runtimes/Spaces) |
 | `miserc.toml` | `auto_env = true`: platform envs (`macos`, `linux`, ...) load automatically; `env = ["home"]`: default machine profile |
 | `.gitignore` | Machine-local files (`miserc.local.toml`, `config.local.toml`, `mise.local.toml`) |
-| `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `claude`, `dev`, `container:orbstack`, `little-snitch`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
+| `conf.d/<name>/mise.toml` (+ `mise.macos.toml`, `mise.linux.toml`) | Modules `fish`, `git`, `ssh`, `ai:claude`, `dev`, `container:orbstack`, `little-snitch`: `mise.toml` loads on every OS, the per-OS files on that OS only. They are loaded globally, so they carry `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` |
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
@@ -49,7 +49,7 @@ keep `| default(value="")` as a safety net (a profile is always active).
 | `fish` | shell, prompt, atuin, fisher, completions; macOS: `conf.d/05-gnu-userland.fish`; Linux: fish itself as a tool (`mise.linux.toml`) |
 | `git` | gitconfig, signing, lazygit, `__git_remote_slug`, `clone`, tool `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: `80-secretive-ssh.fish`, casks Bitwarden and Secretive |
-| `claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
+| `ai:claude` | `~/.claude`, nono profiles, `nono` / `clawd` / `claude` functions and completions, tools claude-swap, ccstatusline, plannotator; macOS: `allow-sleep` / `prevent-sleep` hooks (`settings.json.tera` registers them only when `os() == "macos"`) |
 | `dev` | ghostty, zed, `kubectl.fish` completion (vendored), dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
 | `container:orbstack` | macOS only: the OrbStack cask (runtime + docker CLI) and its Little Snitch rule list `little-snitch/orbstack.lsrules` (denies OrbStack's own processes any traffic to `orbstack.dev` and `sentry.io`) |
 | `little-snitch` | macOS only: the Little Snitch cask and the task `dots:snitch:subscribe` (post-dotfiles hook) that subscribes Little Snitch to every `conf.d/<module>/little-snitch/<name>.lsrules` shipped by the modules. Little Snitch 6 cannot import a local file, so each list is offered as a remote rule group through its raw GitHub URL (deep link `x-littlesnitch:subscribe-rules`, one confirmation per list, one after the other; needs the repo pushed). `~/.local/state/dots-little-snitch` stores the sha256 of each subscribed list; a changed sha only updates it (Little Snitch refreshes the group itself); `--force` redoes everything |
@@ -199,7 +199,7 @@ purpose since it ends up in every commit.
 | `run_onchange_*` | tasks wired as bootstrap hooks. They run every time, so they must be idempotent: `dots:fish:plugins` checksums `fish_plugins` |
 | `.chezmoiexternal` | mise tools (`usage`, in `config.toml`) + vendored `kubectl.fish` dotfile (dev module); mise itself comes from <https://mise.run> |
 | `.chezmoiremove` | `{ mode = "absent" }` entries in `[dotfiles]` |
-| `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`conf.d/claude/home/.claude/SOUL.md`) |
+| `create_` | no equivalent needed: `SOUL.md` (English) is a normal symlinked dotfile (`conf.d/ai:claude/home/.claude/SOUL.md`) |
 | `dot_Brewfile.tmpl` | `[bootstrap.packages]` (base + modules). Pruning is manual, like `brew bundle cleanup --force`: `mise bootstrap packages prune` (preview: `--dry-run`); bootstrap never runs it |
 
 ## chezmoi cheat sheet

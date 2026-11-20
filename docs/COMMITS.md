@@ -49,7 +49,7 @@ folder is valid without being listed here.
 `ghostty`, `lazygit`, `atuin`, `starship`, `zed`, `ssh`, `macOS`,
 `docs`, `claude`
 
-`modules:<name>` (`<name>` = a `conf.d/` folder: `claude`, `container:orbstack`, `dev`, `fish`, `git`,
+`modules:<name>` (`<name>` = a `conf.d/` folder: `ai:claude`, `container:orbstack`, `dev`, `fish`, `git`,
 `little-snitch`, `nix`, `ssh`) is for changes that belong to one module as a whole (its
 `mise.toml`, `mise-tasks`, `scripts`, dotfile groups). A change to a tool's own
 config file keeps the tool scope (`fish`, `git`, ...). `mise` is for base
