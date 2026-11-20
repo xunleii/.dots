@@ -24,9 +24,9 @@
 
 # Plan/diff annotation UI driven by the plannotator-* Claude Code skills. Upstream only
 # ships a `curl | bash` installer and bare GitHub release binaries, so the binary goes
-# through ubi, which picks the darwin/arm64 asset. NOTE: it can self-update in place;
+# through the github backend, which picks the darwin/arm64 asset. NOTE: it can self-update in place;
 # `mise install` decides the version from now on, so re-run it after an in-place update.
-"ubi:backnotprop/plannotator" = "latest"
+"github:backnotprop/plannotator" = "latest"
 
 # =============================================================================
 # Packages
