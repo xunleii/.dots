@@ -72,26 +72,15 @@
     ]
   },
   "enabledPlugins": {
-    "claude-md-management@claude-plugins-official": true,
-    "claude-mermaid@claude-mods": true,
-    "code-review@claude-plugins-official": true,
     "nono@nolabs-ai": true,
     "plannotator@plannotator": true,
     "ponytail@ponytail": true,
     "remember@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "terminal-browser@terminal-browser": true,
-    "understand-anything@understand-anything": true,
-    "waza@waza": true
+    "terminal-browser@terminal-browser": true
   },
   "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
     "ponytail": {
       "source": {
         "source": "github",
@@ -102,24 +91,6 @@
       "source": {
         "source": "github",
         "repo": "backnotprop/plannotator"
-      }
-    },
-    "waza": {
-      "source": {
-        "source": "github",
-        "repo": "tw93/Waza"
-      }
-    },
-    "understand-anything": {
-      "source": {
-        "source": "github",
-        "repo": "Egonex-AI/Understand-Anything"
-      }
-    },
-    "claude-mods": {
-      "source": {
-        "source": "github",
-        "repo": "galElmalah/claude-mods"
       }
     },
     "terminal-browser": {
