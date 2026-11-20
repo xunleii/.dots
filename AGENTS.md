@@ -9,7 +9,7 @@ base config is `config.toml` + `config.macos.toml` at the repo root;
 `miserc.toml` sets `auto_env = true`, so the platform envs (`macos`, `linux`)
 load automatically: `config.toml` is always loaded, `config.macos.toml` on macOS
 only. It is extended by modules, folders `conf.d/<name>/` (`fish`, `git`, `ssh`,
-`ai:claude`, `dev`), each with `mise.toml` plus `mise.macos.toml` / `mise.linux.toml`
+`ai:claude`, `ai:orca`, `dev`), each with `mise.toml` plus `mise.macos.toml` / `mise.linux.toml`
 where needed. Modules are always loaded (not optional) and globally, so their
 `[tools]`, `[env]`, `[bootstrap.packages]` and `[dotfiles]` apply everywhere;
 machine files `conf.d/machines/mise.{home,radiofrance}.toml` carry the

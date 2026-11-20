@@ -1,0 +1,26 @@
+#                                       __
+#                                     /\\ \
+#                                   /\\ \\ \\
+#                                   \// // //
+#                                     \//_/
+#
+#                                   . d o t s
+#                           Module ai:orca (macOS only)
+# Orca: agent IDE (worktrees, terminals and chats for Claude Code, Codex...). Loaded automatically on macOS,
+# on every machine.
+# =============================================================================
+
+# =============================================================================
+# Packages
+# =============================================================================
+# Not pruned automatically: `mise bootstrap packages prune` removes what no loaded file declares.
+
+[bootstrap.packages]
+# The cask also links the `orca` CLI into /opt/homebrew/bin. Homebrew flags the stablyai/orca tap as untrusted:
+# run `brew trust stablyai/orca` once if the install refuses to load the cask.
+"brew-cask:stablyai/orca/orca" = "latest"  # agent IDE
+
+# Settings are not dotfiles: Orca stores them as a JSON document inside a SQLite store
+# (~/Library/Application Support/orca/profiles/<profile>/profile-state.db, with revision and content hash),
+# so nothing here symlinks or templates them. Its agent skills (~/.agents/skills/orca-*) follow the app version
+# through `orca skills update`.

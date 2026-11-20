@@ -168,6 +168,7 @@ dotfiles), plus its own `home/` tree of dotfile sources.
 | `git` | gitconfig, signing, lazygit, `czg` |
 | `ssh` | ssh files, `bw*` functions, `ssh-import-key`; macOS: Secretive, Bitwarden |
 | `ai:claude` | `~/.claude`, nono, `clawd` / `nono-profile` functions; macOS: sleep hooks |
+| `ai:orca` | macOS: Orca cask (agent IDE); its settings live in a SQLite store, not as files |
 | `dev` | ghostty, zed, orbstack, kubectl completion, dev CLIs (`jqp`, `crane`, `doggo`, `rage`), cmake, neovim |
 | `home`, `radiofrance` | machine files in `conf.d/machines/mise.<name>.toml`: extra packages, `[vars]` |
 
