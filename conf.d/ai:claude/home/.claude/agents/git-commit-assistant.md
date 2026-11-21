@@ -59,14 +59,6 @@ Create precise commit messages following project conventions.
 - ❌ NEVER assume missing info — ask
 - ❌ NEVER use "Generated with Claude" disclaimers
 
-## GitButler Workspaces
-
-If the repo is a GitButler workspace (`.git/gitbutler` exists, or the current branch is
-`gitbutler/workspace`), plain `git commit` is blocked by GitButler's hooks. Read
-`~/.claude/skills/but/SKILL.md` (the `but` skill, installed and kept up to date by `but` itself) and create the commit with
-`but` instead. Message rules above still apply (conventions, body, attribution). Any other
-repo: use `git` as usual and ignore that skill.
-
 ## Quick Commands
 
 ```bash

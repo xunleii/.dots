@@ -34,10 +34,6 @@
                 // external volume hosting mise-installed runtimes (node/go/rust/python, see PATH)
                 "allow": [
                     "/Volumes/Runtimes/",
-                    // GitButler (`but` CLI): project registry and settings.json (the latter
-                    // sits in the sibling gitbutler/ dir; `but` fails with EEXIST if it can't stat it)
-                    "~/Library/Application Support/com.gitbutler.app/",
-                    "~/Library/Application Support/gitbutler/",
                 ],
             },
         },
