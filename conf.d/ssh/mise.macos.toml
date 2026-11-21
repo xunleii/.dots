@@ -31,3 +31,15 @@
 
 [dotfiles]
 "~/.config/fish/conf.d/80-secretive-ssh.fish" = { source = "home/.config/fish/conf.d/80-secretive-ssh.fish.tera", mode = "template" }
+
+# =============================================================================
+# LaunchAgents
+# =============================================================================
+# Written to ~/Library/LaunchAgents/dev.mise.<name>.plist and loaded by `mise bootstrap`.
+
+[bootstrap.macos.launchd.agents.secretive-ssh-auth-sock]
+# Same socket for the whole login session (not only fish): GUI apps, zsh, agents launched by Orca.
+# A running process keeps the env it started with: restart the apps after the first load.
+program = "/bin/launchctl"
+args = ["setenv", "SSH_AUTH_SOCK", "{{ env.HOME }}/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"]
+run_at_load = true
