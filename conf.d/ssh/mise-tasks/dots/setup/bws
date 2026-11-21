@@ -1,0 +1,41 @@
+#!/bin/sh
+#MISE description="Store the Bitwarden Secrets Manager access token (for arcane) in the macOS Keychain, once"
+#MISE tools={gum="latest"}  # coloured output through scripts/ui.sh (plain text without it)
+#MISE quiet=true
+#
+# dots:setup:bws -- store the Bitwarden Secrets Manager access token in the login Keychain.
+#
+# Runs as the post-packages bootstrap hook (config.toml) and by hand: mise run dots:setup:bws
+# (--force to replace the stored token).
+#
+# The token lives ONLY in the Keychain (service bws-access-token, account arcane): no env var, no
+# file, nothing in the repo. It is not exported by any shell: the arcane repo reads it per task,
+# so it only exists while `mise run <task>` runs:
+#   [tasks.x]
+#   env = { BWS_ACCESS_TOKEN = "{{ exec(command='security find-generic-password -s bws-access-token -a arcane -w') }}" }
+# Limit: the agent sandbox (nono) grants the login Keychain, so an agent could still call
+# `security find-generic-password -w`. Fully closing that needs an ACL prompt (-T "") or a nono rule.
+#
+# Safe to repeat: does nothing when the token exists, or when there is no terminal to type it in
+# (bootstrap from a non-interactive run); run it by hand then.
+# The token is typed at security's own hidden prompt: never on a command line, never echoed.
+
+. "${MISE_CONFIG_DIR:-$HOME/.config/mise}/scripts/ui.sh"
+
+svc=bws-access-token acct=arcane
+
+if [ "$1" != "--force" ] && security find-generic-password -s "$svc" -a "$acct" >/dev/null 2>&1; then
+  ui_ok "bws token already in the Keychain"
+  exit 0
+fi
+
+if [ ! -t 0 ]; then
+  ui_warn "no terminal, bws token not stored"
+  ui_hint "mise run dots:setup:bws"
+  exit 0
+fi
+
+ui_title "Bitwarden Secrets Manager access token (arcane)"
+ui_step "paste the machine account access token (hidden)"
+security add-generic-password -U -s "$svc" -a "$acct" -w || ui_fail "token not stored"
+ui_ok "saved in the login Keychain ($svc / $acct)"

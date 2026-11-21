@@ -18,6 +18,7 @@ gone. Everything below is what to know when editing the setup.
 | `conf.d/<name>/home/` | The module's dotfile sources, mirroring `$HOME` (resolved relative to the module folder): static files (symlinked) and Tera templates (`*.tera`, rendered) |
 | `conf.d/fish/mise-tasks/` | File task `dots/fish/plugins` (`dots:fish:plugins`), the `post-dotfiles` hook; puts Homebrew's bin dir on PATH itself because fish does not exist yet in the hook phase |
 | `conf.d/git/mise-tasks/` | File task `dots/setup/signing/key` (`dots:setup:signing:key`) |
+| `conf.d/ssh/mise-tasks/` | File task `dots/setup/bws` (`dots:setup:bws`): Bitwarden Secrets Manager token for arcane, stored in the Keychain (post-packages hook, skipped without a terminal; `--force` to replace). Not exported by any shell: arcane reads it per task with `env = { BWS_ACCESS_TOKEN = "{{ exec(command='security find-generic-password -s bws-access-token -a arcane -w') }}" }` |
 | `conf.d/little-snitch/mise-tasks/` | File task `dots/snitch/subscribe` (`dots:snitch:subscribe`), the `post-dotfiles` hook of the little-snitch module |
 | `conf.d/ai:orca/mise-tasks/` | File tasks `dots/orca/export` (`dots:orca:export`) and `dots/orca/import` (`dots:orca:import`): Orca settings <-> `conf.d/ai:orca/orca-settings.json` |
 | `conf.d/nix/mise-tasks/` | File tasks `dots/check/nix` (`dots:check:nix`) and `dots/setup/nix` (`dots:setup:nix`), run by the nix module's own `pre-packages` hook |

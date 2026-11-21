@@ -24,6 +24,7 @@ jqp = "latest"
 crane = "latest"
 doggo = "latest"
 "github:str4d/rage" = "latest"
+bitwarden-secrets-manager = "latest"  # bws CLI; token stored by dots:setup:bws (Keychain)
 
 # =============================================================================
 # Packages

@@ -110,7 +110,7 @@ adopt = true
 [bootstrap.hooks.post-packages]
 # dots:persist:profile first: later runs without -E must keep the same profile (and keep its packages).
 # --skip-tools: `mise run` would otherwise install every global tool before the `tools` phase.
-run = ["mise run --skip-tools dots:persist:profile"]
+run = ["mise run --skip-tools dots:persist:profile", "mise run --skip-tools dots:setup:bws"]
 
 # =============================================================================
 # Tools
