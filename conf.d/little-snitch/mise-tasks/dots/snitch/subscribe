@@ -41,9 +41,15 @@ state="${XDG_STATE_HOME:-$HOME/.local/state}/dots-little-snitch"
 force=0 dry=0
 for a in "$@"; do case $a in --force) force=1 ;; --dry-run) dry=1 ;; esac; done
 
+# Active machine profiles: MISE_ENV, else miserc.local.toml (written by dots:persist:profile), else miserc.toml
+profiles=${MISE_ENV:-$(cat "$repo/miserc.local.toml" "$repo/miserc.toml" 2>/dev/null | sed -n -E 's/^env *= *\[(.*)\]/\1/p' | head -n 1 | tr -d '" ')}
+case ",$profiles," in *,radiofrance,*) hardened=1 ;; *) hardened=0 ;; esac
+
 todo=0
 for f in "$repo"/conf.d/*/little-snitch/*.lsrules; do
   [ -f "$f" ] || continue
+  # <name>-hardened.lsrules replaces <name>.lsrules on the radiofrance profile and is ignored elsewhere
+  case $f in *-hardened.lsrules) [ "$hardened" = 1 ] || continue ;; *) [ "$hardened" = 1 ] && [ -f "${f%.lsrules}-hardened.lsrules" ] && continue ;; esac
   key=$(basename "$(dirname "$(dirname "$f")")")/$(basename "$f")
   sha=$(shasum -a 256 "$f" | cut -d' ' -f1)
   old=$(awk -v k="$key" '$2 == k { print $1 }' "$state" 2>/dev/null)

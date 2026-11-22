@@ -1,0 +1,108 @@
+{
+  "name": "Orca: hardened (no connector)",
+  "description": "Same as the Orca restrictive list, minus the connector: connector.orca.dev, login.onorca.dev and share.onorca.dev are denied so no remote access to an agent, no Orca account and no artifact sharing. Only GitHub and orca.dev (changelog, feedback) stay reachable. Inbound connections are denied. For the radiofrance profile.",
+  "rules": [
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-domains": [
+        "github.com",
+        "githubusercontent.com"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "GitHub: auto-update feed (stablyai/orca/releases), release downloads, API releases list, avatars"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "orca.dev"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "orca.dev only (exact host): changelog.json, nudge.json, /v1/feedback"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-domains": [
+        "github.com",
+        "githubusercontent.com"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "GitHub: auto-update feed (stablyai/orca/releases), release downloads, API releases list, avatars"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "orca.dev"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "orca.dev only (exact host): changelog.json, nudge.json, /v1/feedback"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "connector.orca.dev",
+        "login.onorca.dev",
+        "share.onorca.dev"
+      ],
+      "priority": "high",
+      "notes": "Remote-access / account / sharing hosts: blocked on hardened machines"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "connector.orca.dev",
+        "login.onorca.dev",
+        "share.onorca.dev"
+      ],
+      "priority": "high",
+      "notes": "Remote-access / account / sharing hosts: blocked on hardened machines"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "incoming",
+      "remote": "any",
+      "priority": "high",
+      "notes": "No inbound connection to Orca, whatever the port"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "incoming",
+      "remote": "any",
+      "priority": "high",
+      "notes": "No inbound connection to Orca, whatever the port"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote": "any",
+      "priority": "low",
+      "notes": "Everything else from Orca itself is denied (child processes are allowed separately, see docs)"
+    },
+    {
+      "action": "deny",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote": "any",
+      "priority": "low",
+      "notes": "Everything else from Orca itself is denied (child processes are allowed separately, see docs)"
+    }
+  ]
+}
