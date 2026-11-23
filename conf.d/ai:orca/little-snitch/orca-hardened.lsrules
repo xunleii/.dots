@@ -1,6 +1,6 @@
 {
   "name": "Orca: hardened (no connector)",
-  "description": "Same as the Orca restrictive list, minus the connector: connector.orca.dev, login.onorca.dev and share.onorca.dev are denied so no remote access to an agent, no Orca account and no artifact sharing. Only GitHub, Atlassian and orca.dev (changelog, feedback) stay reachable. Inbound connections are denied. For the radiofrance profile.",
+  "description": "Same as the Orca restrictive list, minus the connector: connector.orca.dev, login.onorca.dev and share.onorca.dev are denied so no remote access to an agent, no Orca account and no artifact sharing. Only GitHub, Atlassian, Anthropic API and orca.dev (changelog, feedback) stay reachable. Inbound connections are denied. For the radiofrance profile.",
   "rules": [
     {
       "action": "allow",
@@ -71,6 +71,50 @@
       "protocol": "tcp",
       "ports": "443",
       "notes": "Atlassian: API (api.atlassian.com, mcp.atlassian.com) and Cloud sites (*.atlassian.net)"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-domains": [
+        "anthropic.com"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Anthropic API (api.anthropic.com)"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-domains": [
+        "anthropic.com"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Anthropic API (api.anthropic.com)"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "downloads.claude.ai"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Claude Code binary downloads (exact host)"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-hosts": [
+        "downloads.claude.ai"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Claude Code binary downloads (exact host)"
     },
     {
       "action": "deny",
