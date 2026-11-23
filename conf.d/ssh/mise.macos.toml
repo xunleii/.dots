@@ -43,3 +43,9 @@
 program = "/bin/launchctl"
 args = ["setenv", "SSH_AUTH_SOCK", "{{ env.HOME }}/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"]
 run_at_load = true
+
+[bootstrap.macos.launchd.agents.teleport-no-agent-keys]
+# Same as [env] TELEPORT_ADD_KEYS_TO_AGENT in mise.toml, for processes not started by a mise-activated shell.
+program = "/bin/launchctl"
+args = ["setenv", "TELEPORT_ADD_KEYS_TO_AGENT", "no"]
+run_at_load = true

@@ -13,6 +13,15 @@
 # =============================================================================
 
 # =============================================================================
+# Environment
+# =============================================================================
+
+[env]
+# The default agents (Secretive, Bitwarden) refuse keys pushed by clients: `tsh login`
+# then fails with `agent: failure`. Keep Teleport certs in ~/.tsh only.
+TELEPORT_ADD_KEYS_TO_AGENT = "no"
+
+# =============================================================================
 # Dotfiles
 # =============================================================================
 # Files deployed into $HOME. `symlink` points back into this repo (edit here, nothing to
