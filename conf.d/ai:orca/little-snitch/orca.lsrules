@@ -1,6 +1,6 @@
 {
   "name": "Orca: restrictive (with connector)",
-  "description": "Orca.app and Orca Helper only: allows GitHub, orca.dev and the connector/login/share hosts (connector.orca.dev, login.onorca.dev, share.onorca.dev); denies every inbound connection and everything else. Child processes (terminals, gh, git, claude...) are not covered: allow them with a process-pair rule (parents Orca and Orca Agents), see docs/BOOTSTRAP.md. For machines that use the Orca connector.",
+  "description": "Orca.app and Orca Helper only: allows GitHub, Atlassian, orca.dev and the connector/login/share hosts (connector.orca.dev, login.onorca.dev, share.onorca.dev); denies every inbound connection and everything else. Child processes (terminals, gh, git, claude...) are not covered: allow them with a process-pair rule (parents Orca and Orca Agents), see docs/BOOTSTRAP.md. For machines that use the Orca connector.",
   "rules": [
     {
       "action": "allow",
@@ -47,6 +47,30 @@
       "protocol": "tcp",
       "ports": "443",
       "notes": "orca.dev only (exact host): changelog.json, nudge.json, /v1/feedback"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/MacOS/Orca",
+      "direction": "outgoing",
+      "remote-domains": [
+        "atlassian.com",
+        "atlassian.net"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Atlassian: API (api.atlassian.com, mcp.atlassian.com) and Cloud sites (*.atlassian.net)"
+    },
+    {
+      "action": "allow",
+      "process": "/Applications/Orca.app/Contents/Frameworks/Orca Helper.app/Contents/MacOS/Orca Helper",
+      "direction": "outgoing",
+      "remote-domains": [
+        "atlassian.com",
+        "atlassian.net"
+      ],
+      "protocol": "tcp",
+      "ports": "443",
+      "notes": "Atlassian: API (api.atlassian.com, mcp.atlassian.com) and Cloud sites (*.atlassian.net)"
     },
     {
       "action": "allow",
