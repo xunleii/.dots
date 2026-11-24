@@ -64,6 +64,11 @@
 "~/.claude/agents/workflow-documentation-assistant.md" = { source = "home/.claude/agents/workflow-documentation-assistant.md", mode = "symlink" }
 
 # -----------------------------------------------------------------------------
+# Remember plugin: external storage mode, memory lives outside the repos (~/.local/share/remember/<slug>)
+# -----------------------------------------------------------------------------
+"~/.remember/config.json" = { source = "home/.remember/config.json", mode = "symlink" }
+
+# -----------------------------------------------------------------------------
 # Claude Code: hooks and skills
 # -----------------------------------------------------------------------------
 "~/.claude/hooks/per-command/gitleaks-redact.sh" = { source = "home/.claude/hooks/per-command/gitleaks-redact.sh", mode = "symlink" }
